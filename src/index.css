@@ -1,15 +1,48 @@
-body {
+* {
   margin: 0;
   padding: 0;
+}
 
+/**
+ * Colors need to be re-choosed.
+ */
+
+:root {
+  --dark-hs: 0, 0%;
+  --background: hsl(0, 0%, 10%);
+  --text-white: hsl(0, 0%, 70%);
+
+  --primary: #14B8EC;
+  --secondary: #E990FF;
+}
+
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  background: var(--background);
+  color: var(--text-white);
+
+  /* Mobile: Disables pull-to-refresh feature. */
+  overscroll-behavior: contain;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+a {
+  text-decoration: none;
+  color: hsl(0, 0%, 80%);
+
+  transition: color .3s;
+}
+
+a:hover,
+a:active {
+  color: hsl(0, 0%, 90%);
 }

@@ -7,6 +7,9 @@ import {
 // Route /
 import Home from "../pages/Home";
 
+// Routes /projects/*
+import ProjectsHome from "../pages/projects/Home";
+
 // Routes /utilities/*
 import UtilitiesHome from "../pages/utilities/Home";
 import UtilitiesAbletonParse from "../pages/utilities/AbletonParse";
@@ -16,6 +19,8 @@ export default function Router () {
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Home} />
+
+        <Route exact path="/projects" component={ProjectsHome} />
 
         <Route exact path="/utilities" component={UtilitiesHome} />
         <Route path="/utilities/ableton-parse" component={UtilitiesAbletonParse} />
