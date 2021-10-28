@@ -1,6 +1,6 @@
 # lpadder. / launchpadder.
 
-<img align="right" src="https://raw.githubusercontent.com/Vexcited/lpadder/main/public/android-chrome-x192.png" />
+<img align="right" src="https://raw.githubusercontent.com/Vexcited/lpadder/main/public/icon-default.png" />
 
 > Still in development !
 
