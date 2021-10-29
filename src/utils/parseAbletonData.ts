@@ -72,7 +72,7 @@ function getTracksData (tracks: Element) {
         const deviceChain = deviceChainGlobal.getElementsByTagName("DeviceChain")[0];
         const devices = deviceChain.getElementsByTagName("Devices")[0];
 
-        //
+        // Debug
         console.log(devices);
 
         tracksData.push({

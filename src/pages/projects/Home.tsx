@@ -1,21 +1,29 @@
-import { Link } from "react-router-dom";
-import localforage from "localforage";
-import { useState, useEffect } from "react";
-
 import type { LpadderProject } from "../../types/LpadderProject";
+
+import ProjectsStore from "../../utils/projectsStore";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function ProjectsHome () {
   const [projects, setProjects] = useState<LpadderProject[]>([]);
+  const projectsStore = new ProjectsStore();
 
+  // Store saved projects in localforage.
   useEffect(() => {
     (async () => {
-      const savedProjects = await localforage.getItem("projects");
-      console.log(savedProjects);
-
-      // TODO
-      setProjects([]);
+      const savedProjects = await projectsStore.getProjects();
+      setProjects(savedProjects);
     })();
   }, []);
+
+  const handleNewProject = async () => {
+    const updatedProjects = await projectsStore.newProject({
+      name: "New Project",
+      author: "Undefined"
+    });
+
+    setProjects([...updatedProjects]);
+  }
 
   return (
     <div>
@@ -25,11 +33,27 @@ export default function ProjectsHome () {
 
       <Link to="/">Home</Link>
 
-      {projects.map((project, key) =>
-        <div key={key}>
-          {project.author} - {project.name}
-        </div>
-      )}
+      <button
+        onClick={handleNewProject}
+      >
+        Create a new one
+      </button>
+
+      {projects.length > 0
+        ? projects.map((project, key) =>
+          <div key={key}>
+            {key}: {project.name} - {project.author}
+          </div>
+        )
+        : <div>
+            No projects yet !
+            <button
+              onClick={handleNewProject}
+            >
+              Create a new one
+            </button>
+          </div>
+      }
     </div>
   );
 }
