@@ -20,6 +20,11 @@ export default function NewProjectModal ({
   ) => {
     e.preventDefault();
 
+    // Check the values (TODO: show a nice error message)
+    if (!slugName || !author || !name) {
+      return;
+    }
+
     const project = await getProject(slugName);
 
     if (!project) {
@@ -34,6 +39,7 @@ export default function NewProjectModal ({
 
     // Reset the slug name.
     setSlugName("");
+    setAuthor("");
     setName("");
   };
 
@@ -74,10 +80,14 @@ export default function NewProjectModal ({
               onChange={(e) => setAuthor(e.target.value)}
             />
 
-            <button onClick={handleConfirm}>
+            <button type="submit" onClick={handleConfirm}>
               Create !
             </button>
           </form>
+
+          <button onClick={closeModal}>
+            Cancel
+          </button>
         </div>
       </div>
     </React.Fragment>

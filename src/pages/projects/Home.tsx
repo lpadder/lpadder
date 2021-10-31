@@ -30,6 +30,13 @@ export default function ProjectsHome () {
     setNewProjectModal(true);
   }
 
+  const deleteProject = async (slugName: string) => {
+    await ProjectsStore.deleteProject(slugName);
+
+    const savedProjects = await ProjectsStore.getProjects();
+    setProjects(savedProjects);
+  }
+
   return (
     <div>
       <h1>
@@ -52,7 +59,16 @@ export default function ProjectsHome () {
       {(Object.keys(projects).length > 0)
         ? Object.keys(projects).map(slugName =>
           <div key={slugName}>
-            {slugName}: {projects[slugName].name} - {projects[slugName].author}
+            <h2>{projects[slugName].name}</h2>
+            <p>Cover's author: {projects[slugName].author}</p>
+
+            {/* Action buttons */}
+            <button onClick={() => deleteProject(slugName)}>Delete</button> {/* Show a warning modal. */}
+            <Link to={`/projects/${slugName}`}>
+              <button>
+                Open
+              </button>
+            </Link>
           </div>
         )
         : <div>

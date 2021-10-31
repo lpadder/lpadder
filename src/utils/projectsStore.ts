@@ -30,3 +30,7 @@ export async function setProject (
 ) {
   await store.setItem(slugName, project);
 }
+
+export async function deleteProject (slugName: string) {
+  await store.removeItem(slugName);
+}
