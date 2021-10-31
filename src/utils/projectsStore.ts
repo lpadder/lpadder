@@ -1,40 +1,31 @@
-import type { LpadderProject } from "../types/LpadderProject";
+import type { StoredProjects, LpadderProject } from "../types/LpadderProjects";
 
 import localforage from "localforage";
 
-export default class ProjectsStore {
-  public projects: LpadderProject[];
-  private store: LocalForage;
+const store = localforage.createInstance({
+  name: "lpadder",
+  storeName: "projects"
+});
 
-  constructor () {
-    this.projects = [];
-    this.store = localforage.createInstance({
-      name: "lpadder"
-    });
-  }
+export async function getProjects (): Promise<StoredProjects> {
+  const projects: StoredProjects = {};
+  
+  await store.iterate((project: LpadderProject, slugName: string) => {
+    projects[slugName] = project;
+  });
 
-  public async getProjects(): Promise<LpadderProject[]> {
-    const projects = await this.store.getItem("projects") as LpadderProject[];
-    if (projects) {
-      this.projects = projects;
-    }
+  return projects;
+}
 
-    return this.projects;
-  }
+export async function getProject (slugName: string) {
+  const project = await store.getItem(slugName);
 
-  public async newProject({
-    name,
-    author
-  }: {
-    name: string;
-    author: string;
-  }): Promise<LpadderProject[]> {
-    await this.getProjects();
-    this.projects.push({
-      name,
-      author
-    });
+  return project;
+}
 
-    return await this.store.setItem("projects", this.projects);
-  }
+export async function setProject (
+  slugName: string,
+  project: LpadderProject
+) {
+  await store.setItem(slugName, project);
 }

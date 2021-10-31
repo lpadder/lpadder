@@ -1,28 +1,33 @@
-import type { LpadderProject } from "../../types/LpadderProject";
+import type { StoredProjects } from "../../types/LpadderProjects";
 
-import ProjectsStore from "../../utils/projectsStore";
+import * as ProjectsStore from "../../utils/projectsStore";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function ProjectsHome () {
-  const [projects, setProjects] = useState<LpadderProject[]>([]);
-  const projectsStore = new ProjectsStore();
+  const [projects, setProjects] = useState<StoredProjects>({});
 
   // Store saved projects in localforage.
   useEffect(() => {
     (async () => {
-      const savedProjects = await projectsStore.getProjects();
+      const savedProjects = await ProjectsStore.getProjects();
       setProjects(savedProjects);
     })();
   }, []);
 
   const handleNewProject = async () => {
-    const updatedProjects = await projectsStore.newProject({
+    const slugName = "undefined";
+    const project = {
       name: "New Project",
       author: "Undefined"
-    });
+    };
 
-    setProjects([...updatedProjects]);
+    await ProjectsStore.setProject(slugName, project);
+
+    setProjects({
+      ...projects,
+      [slugName]: project
+    });
   }
 
   return (
@@ -39,10 +44,10 @@ export default function ProjectsHome () {
         Create a new one
       </button>
 
-      {projects.length > 0
-        ? projects.map((project, key) =>
-          <div key={key}>
-            {key}: {project.name} - {project.author}
+      {(Object.keys(projects).length > 0)
+        ? Object.keys(projects).map(slugName =>
+          <div key={slugName}>
+            {slugName}: {projects[slugName].name} - {projects[slugName].author}
           </div>
         )
         : <div>
