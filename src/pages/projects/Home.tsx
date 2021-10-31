@@ -4,10 +4,14 @@ import * as ProjectsStore from "../../utils/projectsStore";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+import NewProjectModal from "../../components/NewProjectModal";
+
 export default function ProjectsHome () {
   const [projects, setProjects] = useState<StoredProjects>({});
+  const [showNewProjectModal, setNewProjectModal] = useState(false);
 
-  // Store saved projects in localforage.
+  // Show stored projects from localforage
+  // at component mount.
   useEffect(() => {
     (async () => {
       const savedProjects = await ProjectsStore.getProjects();
@@ -15,19 +19,15 @@ export default function ProjectsHome () {
     })();
   }, []);
 
-  const handleNewProject = async () => {
-    const slugName = "undefined";
-    const project = {
-      name: "New Project",
-      author: "Undefined"
-    };
+  const closeNewProjectModal = async () => {
+    const savedProjects = await ProjectsStore.getProjects();
+    setProjects(savedProjects);
+    
+    setNewProjectModal(false);
+  };
 
-    await ProjectsStore.setProject(slugName, project);
-
-    setProjects({
-      ...projects,
-      [slugName]: project
-    });
+  const openNewProjectModal = () => {
+    setNewProjectModal(true);
   }
 
   return (
@@ -38,8 +38,13 @@ export default function ProjectsHome () {
 
       <Link to="/">Home</Link>
 
+      <NewProjectModal
+        show={showNewProjectModal}
+        closeModal={closeNewProjectModal}
+      />
+
       <button
-        onClick={handleNewProject}
+        onClick={openNewProjectModal}
       >
         Create a new one
       </button>
@@ -53,7 +58,7 @@ export default function ProjectsHome () {
         : <div>
             No projects yet !
             <button
-              onClick={handleNewProject}
+              onClick={openNewProjectModal}
             >
               Create a new one
             </button>

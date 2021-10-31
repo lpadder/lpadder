@@ -17,10 +17,11 @@ export async function getProjects (): Promise<StoredProjects> {
   return projects;
 }
 
-export async function getProject (slugName: string) {
+export async function getProject (slugName: string): Promise<LpadderProject | undefined> {
   const project = await store.getItem(slugName);
+  if (!project) return; 
 
-  return project;
+  return project as LpadderProject;
 }
 
 export async function setProject (
