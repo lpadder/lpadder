@@ -1,13 +1,13 @@
 import type { LpadderProject } from "../types/LpadderProjects";
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useContext } from "react";
 
 type CurrentProjectContextType = {
   currentProject: LpadderProject | null;
   setCurrentProject: (value: LpadderProject) => void;
 };
 
-export const CurrentProjectContext = createContext<CurrentProjectContextType | undefined>(
-  undefined
+export const CurrentProjectContext = createContext<CurrentProjectContextType | null>(
+  null
 );
 
 export const CurrentProjectContextProvider = ({
@@ -23,3 +23,5 @@ export const CurrentProjectContextProvider = ({
     </CurrentProjectContext.Provider>
   );
 };
+
+export const useCurrentProject = () => useContext(CurrentProjectContext);
