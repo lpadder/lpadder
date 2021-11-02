@@ -21,6 +21,8 @@ convert Ableton projects to Unipad projects or lpadder projects).
 - We (me and a friend) started to think about an UI for the app (very important haha...) 
 - I need to create a navigation bar for projects path (informations, play, edit) to make the switch easier (like tabs)
 - Merge my `launchpad-midi-converter` repository into this one to make the Launchpad's lights management easier.
+
+- I don't know if it's good or not, but I don't use any context for current project editing. Could this, in the future, slow down the application (?) => When switching play/edit tabs it always needs to reload the project ! (so yea that's really not optimised)
 ## Contribute
 
 ### Development
