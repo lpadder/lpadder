@@ -12,6 +12,11 @@ export default function UtilitiesHome () {
             Parse Ableton Live Set (.als) file
           </Link>
         </li>
+        <li>
+          <Link to="/utilities/convert-midi-files">
+            Convert your MIDI files to Launchpad's programmer or live layout.
+          </Link>
+        </li>
       </ul>
     </div>
   )

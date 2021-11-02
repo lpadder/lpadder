@@ -17,6 +17,7 @@ import ProjectPlay from "../pages/projects/project/Play";
 // Routes /utilities/*
 import UtilitiesHome from "../pages/utilities/Home";
 import UtilitiesAbletonParse from "../pages/utilities/AbletonParse";
+import UtilitiesConvertMidiFile from "../pages/utilities/ConvertMidiFile";
 
 export default function Router () {
   return (
@@ -32,6 +33,7 @@ export default function Router () {
 
         <Route exact path="/utilities" component={UtilitiesHome} />
         <Route path="/utilities/ableton-parse" component={UtilitiesAbletonParse} />
+        <Route path="/utilities/convert-midi-files" component={UtilitiesConvertMidiFile} />
 
         {/* 404 */}
         <Route render={() => <h1>404</h1>} />

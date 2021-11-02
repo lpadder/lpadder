@@ -990,6 +990,14 @@
     ejs "^2.6.1"
     magic-string "^0.25.0"
 
+"@tonejs/midi@^2.0.27":
+  version "2.0.27"
+  resolved "https://registry.yarnpkg.com/@tonejs/midi/-/midi-2.0.27.tgz#15ebedf570ce9e3c6f5e0d25e4f4c4d47398a222"
+  integrity sha512-JYiGA8k37rTWKPoiPhbJfWLotnZFCKw0G0rqijHD+u+LdjewTgt/Ubhn2JnD2yR+6+eLXTqHLJRS2a+tNLla3w==
+  dependencies:
+    array-flatten "^2.1.2"
+    midi-file "^1.1.2"
+
 "@types/estree@0.0.39":
   version "0.0.39"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
@@ -1110,6 +1118,11 @@ anymatch@~3.1.2:
   dependencies:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
+
+array-flatten@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-2.1.2.tgz#24ef80a28c1a893617e2149b0c6d0d788293b099"
+  integrity sha512-hNfzcOV8W4NdualtqBFPyVO+54DSJuZGY9qT4pRroB6S9e3iiido2ISIC5h9R2sPJ8H3FHCIiEnsv1lPXO3KtQ==
 
 at-least-node@^1.0.0:
   version "1.0.0"
@@ -1812,6 +1825,11 @@ micromatch@^4.0.4:
   dependencies:
     braces "^3.0.1"
     picomatch "^2.2.3"
+
+midi-file@^1.1.2:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/midi-file/-/midi-file-1.2.0.tgz#14e784e39e581a0beb8c15b8c67ad80fdcef91fd"
+  integrity sha512-zuCtB4kxVIulKnM/F8At5J+sJx87T1Gszm7u1oimPrtN+tePFpJDbpxJ/2/KHrpYR/t8VYuS+DRlar2r7l8SDw==
 
 mini-create-react-context@^0.4.0:
   version "0.4.1"

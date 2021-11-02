@@ -1,10 +1,18 @@
-import React from "react";
 import styles from "./index.module.scss";
+import { Link } from "react-router-dom";
 
-export default function ProjectNavBar ({ children }: { children: React.ReactNode }) {
+export default function ProjectNavBar () {
   return (
     <div className={styles.container}>
-      {children}
+      <Link to="edit">
+        <button className={styles.button}>Edit</button>
+      </Link>
+      <Link to="play">
+        <button className={styles.button}>Play</button>
+      </Link>
+      <Link to="informations">
+        <button className={styles.button}>Infomations</button>
+      </Link>
     </div>
   );
 }
