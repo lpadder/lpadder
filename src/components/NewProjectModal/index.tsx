@@ -37,10 +37,21 @@ export default function NewProjectModal ({
     // Close modal.
     closeModal();
 
-    // Reset the slug name.
+    // Reset all the values.
     setSlugName("");
     setAuthor("");
     setName("");
+  };
+
+  const updateSlugName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const edited = value.toLowerCase()
+      // Replace all non-alphanumeric characters with a dash.
+      .replace(/[^a-z0-9 -]/g, '-') 
+      // Collapse whitespace and replace by -
+      .replace(/\s+/g, '-');
+
+    setSlugName(edited);
   };
 
   // If the modal is not showing, don't render anything.
@@ -61,7 +72,7 @@ export default function NewProjectModal ({
               placeholder="slug-name"
 
               value={slugName}
-              onChange={(e) => setSlugName(e.target.value)}
+              onChange={updateSlugName}
             />
 
             <input

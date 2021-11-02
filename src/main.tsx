@@ -11,7 +11,7 @@ import Router from "./components/Router";
 ReactDOM.render(
   <React.StrictMode>
     <Router />
-
+    
     <ReloadPrompt />
   </React.StrictMode>,
   document.getElementById("root")

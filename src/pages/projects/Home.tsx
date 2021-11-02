@@ -5,12 +5,10 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import NewProjectModal from "../../components/NewProjectModal";
-import { useCurrentProject } from "../../contexts/CurrentProject";
 
 export default function ProjectsHome () {
   const [projects, setProjects] = useState<StoredProjects>({});
   const [showNewProjectModal, setNewProjectModal] = useState(false);
-  const { setCurrentProject } = useCurrentProject();
 
   // Show stored projects from localforage
   // at component mount.
@@ -39,11 +37,6 @@ export default function ProjectsHome () {
     setProjects(savedProjects);
   }
 
-  const openProject = async (slugName: string) => {
-    const project = projects[slugName];
-    setCurrentProject(project);
-  }
-
   return (
     <div>
       <h1>
@@ -70,7 +63,9 @@ export default function ProjectsHome () {
             <p>Cover's author: {projects[slugName].author}</p>
 
             {/* Action buttons */}
-            <button onClick={() => deleteProject(slugName)}>Delete</button> {/* Show a warning modal. */}
+            <button onClick={() => deleteProject(slugName)}>
+              Delete {/* Show a warning modal. */}
+            </button>
             <Link to={`/projects/${slugName}`}>
               <button>
                 Open
