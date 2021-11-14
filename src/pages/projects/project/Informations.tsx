@@ -6,7 +6,7 @@ import { useParams, useHistory, Link } from "react-router-dom";
 import { getProject } from "../../../utils/projectsStore";
 
 import { Button } from "../../../components/Button";
-import ProjectNavBar from "../../../components/ProjectNavBar";
+import ProjectNavBar from "../../../components/ProjectNavigation";
 
 export default function ProjectInformations() {
   const history = useHistory();

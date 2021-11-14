@@ -1,12 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import "tailwindcss/tailwind.css";
 
-// Style
-import "./index.css";
-
-// App Structure
-import ReloadPrompt from "./components/ReloadPrompt";
 import Router from "./components/Router";
+
+// PWA Content Update
+import ReloadPrompt from "./components/ReloadPrompt";
 
 ReactDOM.render(
   <React.StrictMode>

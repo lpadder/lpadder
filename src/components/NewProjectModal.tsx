@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import styles from "./index.module.scss";
 
-import { setProject, getProject } from "../../utils/projectsStore";
+import { setProject, getProject } from "../utils/projectsStore";
 
 export default function NewProjectModal ({
   show,
@@ -59,8 +58,8 @@ export default function NewProjectModal ({
 
   return (
     <React.Fragment>
-      <div className={styles.modalContainer}>
-        <div className={styles.modalBlock}>
+      <div className="">
+        <div className="">
           <h1>Create a new project</h1>
           <p>
             Here you'll be able to configure your project to your needs.

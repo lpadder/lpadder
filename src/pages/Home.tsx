@@ -2,10 +2,13 @@ import { Link } from "react-router-dom";
 
 export default function Home () {
   return (
-    <div style={{
-      textAlign: "center",
-      padding: "2em"
-    }}>
+    <div className="
+      bg-gray-800 bg-no-repeat bg-contain w-screen h-screen
+      bg-home-mobile bg-bottom
+      md:bg-home-desktop md:bg-right
+    ">
+
+
       <img src="/apple-touch-icon.png" alt="lpadder's logo" />
 
       <div>

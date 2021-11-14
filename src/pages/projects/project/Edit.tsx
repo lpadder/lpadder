@@ -1,4 +1,4 @@
-import ProjectNavBar from "../../../components/ProjectNavBar"
+import ProjectNavBar from "../../../components/ProjectNavigation"
 
 export default function ProjectEdit() {
   return (
