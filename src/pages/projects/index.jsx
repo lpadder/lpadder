@@ -1,13 +1,11 @@
-import type { StoredProjects } from "../../types/LpadderProjects";
-
 import * as ProjectsStore from "../../utils/projectsStore";
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import NewProjectModal from "../../components/NewProjectModal";
 
-export default function ProjectsHome () {
-  const [projects, setProjects] = useState<StoredProjects>({});
+export default function Projects () {
+  const [projects, setProjects] = useState({});
   const [showNewProjectModal, setNewProjectModal] = useState(false);
 
   // Show stored projects from localforage
@@ -30,7 +28,7 @@ export default function ProjectsHome () {
     setNewProjectModal(true);
   }
 
-  const deleteProject = async (slugName: string) => {
+  const deleteProject = async (slugName) => {
     await ProjectsStore.deleteProject(slugName);
 
     const savedProjects = await ProjectsStore.getProjects();

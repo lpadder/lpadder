@@ -1,21 +1,16 @@
-import type { LpadderProject } from "../../../types/LpadderProjects";
-
 import { useState, useEffect } from "react";
-import { useParams, useHistory, Link } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import { getProject } from "../../../utils/projectsStore";
 
-import { Button } from "../../../components/Button";
 import ProjectNavBar from "../../../components/ProjectNavigation";
 
 export default function ProjectInformations() {
   const history = useHistory();
-  const { projectSlugName } = useParams<{
-    projectSlugName: string;
-  }>();
+  const { projectSlugName } = useParams();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [project, setProject] = useState<LpadderProject | null>(null);
+  const [project, setProject] = useState(null);
 
   /**
    * We get the current project.
