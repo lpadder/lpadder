@@ -3,21 +3,14 @@ import { Link } from "react-router-dom";
 export default function Home () {
   return (
     <div className="
-      bg-gray-800 bg-no-repeat bg-contain w-screen h-screen
+      bg-gray-800 text-gray-300
+      bg-no-repeat bg-contain w-screen h-screen
       bg-home-mobile bg-bottom
-      md:bg-home-desktop md:bg-right
+      sm:bg-home-desktop sm:bg-right
     ">
 
-
-      <img src="/apple-touch-icon.png" alt="lpadder's logo" />
-
       <div>
-        <Link to="/projects">
-          <h2>Projects</h2>
-        </Link>
-        <p>
-          Play or edit any of your lpadder projects.
-        </p>
+        <h2>Open a lpadder project</h2>
       </div>
 
       <div>

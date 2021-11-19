@@ -1,15 +1,10 @@
-export type CleanedAbletonData = {
-  abletonVersion: string;
-  tracksData: TrackData[];
-};
-
-export default function parseAbletonData (
-  project: Document
-): CleanedAbletonData {
-
-  // Short-hands
-  const notFound = "Not found !";
-  const getFirstElementByTag = (tag: string) => {
+/**
+ * Parse an .als (Ableton Live Set) project.
+ * @param {Document} project 
+ */
+export default function parseAbletonData (project) {
+  /** @param {string} tag */
+  const getFirstElementByTag = (tag) => {
     const element = project.getElementsByTagName(tag)[0];
     if (!element) {
       throw new Error(`${tag} not found !`);
@@ -19,7 +14,7 @@ export default function parseAbletonData (
   };
 
   // Get Ableton version (ex.: "Ableton Live 11.0.11").
-  const abletonVersion = getFirstElementByTag("Ableton").getAttribute("Creator") ?? notFound;
+  const abletonVersion = getFirstElementByTag("Ableton").getAttribute("Creator");
 
   // Get tracks data (in JSON).
   const tracksData = getTracksData(getFirstElementByTag("Tracks"));
@@ -30,21 +25,21 @@ export default function parseAbletonData (
   };
 }
 
-type TrackData = {
-  type: "midi" | "audio";
-  name: string;
-}
-
 /**
  * Remind: we only care about Audio and Midi tracks.
  * We only care about the tracks that are used in a Launchpad project.
  * (so we don't need to check EVERY values :D)
  */
-function getTracksData (tracks: Element) {
-  const tracksData: TrackData[] = [];  // Initialize the output array.
 
-  const getTrackName = (track: Element) => {
-    return track.getElementsByTagName("EffectiveName")[0].getAttribute("Value") as string;
+/**
+ * @param {Element} tracks 
+ */
+function getTracksData (tracks) {
+  const tracksData = [];  // Initialize the output array.
+
+  /** @param {Element} track */
+  const getTrackName = (track) => {
+    return track.getElementsByTagName("EffectiveName")[0].getAttribute("Value");
   }
   
   for (const track of tracks.children) {

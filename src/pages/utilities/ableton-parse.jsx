@@ -1,13 +1,14 @@
 import { useState } from "react";
 import pako from "pako";
 
-import parseAbletonData, { CleanedAbletonData } from "../../utils/parseAbletonData";
+import parseAbletonData from "../../utils/parseAbletonData";
 
 export default function UtilitiesAbletonParse () {
-  const [cleanedData, setCleanedData] = useState<CleanedAbletonData>();
+  const [cleanedData, setCleanedData] = useState();
   const [isError, setIsError] = useState(false);
 
-  const alsImportHandler = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  /** @param {React.ChangeEvent<HTMLInputElement>} evt */
+  const alsImportHandler = (evt) => {
     evt.preventDefault();
 
     // Check if a file has been uploaded.
@@ -18,7 +19,7 @@ export default function UtilitiesAbletonParse () {
       // Read the ".als" file as a binary string.
       const reader = new FileReader();
       reader.onload = () => {
-        const buffer = reader.result as ArrayBuffer;
+        const buffer = reader.result;
         const array = new Uint8Array(buffer);
 
         // Decompress the binary string into a string.

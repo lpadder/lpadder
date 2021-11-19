@@ -1,9 +1,4 @@
 export class LaunchpadLayout {
-  public layouts: {
-    live: number[][],
-    programmer: number[][]
-  };
-
   constructor () {
     const liveLayout = this.buildLiveLayout();
     const programmerLayout = this.buildProgrammerLayout();
@@ -14,7 +9,7 @@ export class LaunchpadLayout {
     };
   }
 
-  private buildLiveLayout() {
+  buildLiveLayout() {
     const layout = [];
 
     for (let columns = 64; columns >= 36; columns -= 4) {
@@ -39,7 +34,7 @@ export class LaunchpadLayout {
     return layout;
   }
 
-  private buildProgrammerLayout() {
+  buildProgrammerLayout() {
     const layout = [];
 
     for (let columns = 8; columns >= 1; columns--) {
@@ -58,12 +53,12 @@ export class LaunchpadLayout {
 
   /**
    * Convert a midi note ex: MIDI note 88 from Live to Programmer mode. 
+   * @param {number} note
+   * @param {"live" | "programmer"} from
+   * @param {"live" | "programmer"} to
+   * @returns {[boolean, number | null]}
    */
-  public convertLayout (
-    note: number,
-    from: "live" | "programmer",
-    to: "live" | "programmer"
-  ) {
+  convertLayout (note, from, to) {
     // Search in the `from` layout the note.
     this.layouts[from].map((rows, indexRows) => {
       let index = rows.indexOf(note);

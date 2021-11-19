@@ -1,5 +1,4 @@
-// Exported from Kaskobi's Novation RGB Palette.
-
+/** Exported from Kaskobi's Novation RGB Palette. */
 export const novationPalette = [
   "030303",
   "1f1f1f",

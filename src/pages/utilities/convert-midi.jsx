@@ -1,61 +1,63 @@
-import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Midi } from "@tonejs/midi";
-
-import * as LpLayout from "../../utils/launchpadLayout";
 
 export default function UtilitiesConvertMidiFile () {
   const [fromLayout, setFromLayout] = useState("live");
   const [toLayout, setToLayout] = useState("programmer");
 
-  const [uploadedFiles, setUploadedFiles] = useState<FileList | null>(null);
-  const [convertedFiles, setConvertedFiles] = useState<any[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState(null);
+  const [convertedFiles, setConvertedFiles] = useState([]);
 
-  const handleMidiUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  /** @param {React.ChangeEvent<HTMLInputElement>} evt */
+  const handleMidiUpload = (evt) => {
     const files = evt.target.files;
 
     if (files) {
       setUploadedFiles(files);
     }
-  }
-
-  const downloadURL = (data: string, fileName = "converted") => {
-    const a = document.createElement('a')
-    a.href = data
-    a.download = fileName
-    document.body.appendChild(a)
-    a.style.display = 'none'
-    a.click()
-    a.remove()
-  }
+  };
   
-  const downloadBlob = (data: Uint8Array, fileName = "converted") => {
+  /**
+   * @param {Uint8Array} data 
+   * @param {string} fileName 
+   */
+  const downloadBlob = (data, fileName = "converted") => {
     const blob = new Blob([data], {
       type: "audio/midi"
     })
   
-    const url = window.URL.createObjectURL(blob)
+    // Creating an element to auto-download the file.
+    const url = window.URL.createObjectURL(blob);
+    const aInput = document.createElement("a");
+
+    aInput.setAttribute("href", data);
+    aInput.setAttribute("download", fileName);
+    
+    // Append it to the DOM.
+    document.body.appendChild(a);
+    aInput.style.display = "none";
+
+    // Download href and remove the element.
+    a.click();
+    a.remove();
   
-    downloadURL(url, fileName)
-  
-    setTimeout(() => window.URL.revokeObjectURL(url), 1000)
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
   }
 
   const startConvert = () => {
     if (uploadedFiles && uploadedFiles.length > 0) {
       for (let i = 0; i < uploadedFiles.length; i++) {
         const file = uploadedFiles[i];
-
         const reader = new FileReader();
 
         reader.onload = () => {
-          const buffer = reader.result as ArrayBuffer;
+          const buffer = reader.result;
           const midi = new Midi(buffer);
           console.log(midi);
           
           const output = midi.toArray();
           downloadBlob(output, file.name);
-          console.log(output);
         }
         
         reader.readAsArrayBuffer(file);
@@ -65,7 +67,7 @@ export default function UtilitiesConvertMidiFile () {
 
   return (
     <div>
-      <Link to="/utilities">Go back to utilities</Link>
+      <Link to="../">Go back to utilities</Link>
       <h1>Convert layout of MIDI files</h1>
       <p>
         Imagine you have a MIDI file for a Launchpad Live layout and
@@ -107,7 +109,6 @@ export default function UtilitiesConvertMidiFile () {
           Convert {uploadedFiles.length} MIDI files from {fromLayout} to {toLayout}.
         </button>
       }
-      
     </div>
   )
 }
