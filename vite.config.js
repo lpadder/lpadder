@@ -18,8 +18,8 @@ export default defineConfig({
         description: "Offline application that allows you to play Launchpad covers from anywhere.",
 
         // Style
-        background_color: "#191919",
-        theme_color: "#191919",
+        background_color: "#1E293B",
+        theme_color: "#0F172A",
 
         // Icons
         icons: [
