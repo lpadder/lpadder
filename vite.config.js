@@ -17,11 +17,11 @@ export default defineConfig({
         short_name: "lpadder.",
         description: "Offline application that allows you to play Launchpad covers from anywhere.",
 
-        // Style
+        // Style (from Tailwind Palette).
         background_color: "#1E293B",
         theme_color: "#0F172A",
 
-        // Icons
+        // Icons.
         icons: [
           {
             src: "icon-default.png",
