@@ -1,28 +1,29 @@
-# lpadder.
+# lpadder: Play Launchpad covers in your browser !
 
 <img align="right" src="https://raw.githubusercontent.com/Vexcited/lpadder/main/public/icon-default.png" />
 
 > Still in development ! (Really in development, I mean, there's no UI actually, it's juste basic HTML...)
 
-`lpadder` or `launchpadder` is a web application that
+`lpadder` (pronounced `el padder` or `launchpadder`) is a web application that
 lets you play Launchpad covers directly from your browser.
 
-It features projects management (projects are saved locally),
-projects editing, playing, ....
+It feature project editing, playing, saving current project ...
 It also have some utilities like an Ableton parser
 that will give you more informations about an Ableton
 launchpad project. (In the future, we wish to be able to
 convert Ableton projects to Unipad projects or lpadder projects).
+
 ## Development news
 
-- Projects can now be saved locally, we can create a new project, delete it, and enter in it.
-- I am trying also to think about a structure for the projects (samples and lights array, ...).
+- I am trying to think about a structure for the projects (samples and lights array, ...).
+- Creating the process to open a project (.zip)
 - Opening a project leads you to his informations page.
-- We (me and a friend) started to think about an UI for the app (very important haha...) 
-- I need to create a navigation bar for projects path (informations, play, edit) to make the switch easier (like tabs)
-- Merge my `launchpad-midi-converter` repository into this one to make the Launchpad's lights management easier.
+- I started to think about an UI for the app (very important haha...)
+  - About that, I drawn one, but now idk how to implement it ahahahah.... 
+- I need to create a navigation bar for project path (informations, play, edit) to make the switch easier (like tabs)
 
-- I don't know if it's good or not, but I don't use any context for current project editing. Could this, in the future, slow down the application (?) => When switching play/edit tabs it always needs to reload the project ! (so yea that's really not optimised)
+- I'm actually trying, also, to improve projects management (new design !) 
+
 ## Contribute
 
 ### Development

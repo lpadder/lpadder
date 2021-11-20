@@ -1,6 +1,7 @@
 import { VitePWA } from "vite-plugin-pwa";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import path from "path";
 
 export default defineConfig({
   plugins: [
@@ -15,11 +16,11 @@ export default defineConfig({
         // Global informations.
         name: "lpadder.",
         short_name: "lpadder.",
-        description: "Offline application that allows you to play Launchpad covers from anywhere.",
+        description: "Web application that lets you play Launchpad covers directly from your browser.",
 
-        // Style (from Tailwind Palette).
-        background_color: "#1E293B",
-        theme_color: "#0F172A",
+        // Colors from Tailwind's color palette.
+        background_color: "#1E293B", // blueGray-800
+        theme_color: "#0F172A", // blueGray-900
 
         // Icons.
         icons: [
@@ -48,5 +49,10 @@ export default defineConfig({
         ]
       }
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src")
+    }
+  }
 });

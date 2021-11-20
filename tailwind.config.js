@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
   purge: [
     "./index.html",
@@ -10,6 +12,13 @@ module.exports = {
         "home-desktop": "url('/src/assets/backgrounds/home-desktop.svg')",
         "home-mobile": "url('/src/assets/backgrounds/home-mobile.svg')"
       }
+    },
+    colors: {
+      transparent: "transparent",
+      current: "currentColor",
+      purple: colors.fuchsia,
+      gray: colors.blueGray,
+      blue: colors.sky
     }
   },
   variants: {
