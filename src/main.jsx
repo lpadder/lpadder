@@ -22,7 +22,7 @@ import ReloadPrompt from "./components/ReloadPrompt";
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.DEV ? "/absproxy/3000" : "/"}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/projects/*" element={<Projects />} />

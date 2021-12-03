@@ -5,6 +5,15 @@ import Informations from "./slug/informations";
 import Play from "./slug/play";
 import Edit from "./slug/edit";
 
+const ProjectItem = ({ name, slug }) => {
+  return (
+    <div className="w-full h-8 bg-gray-600">
+
+
+    </div>
+  );
+}
+
 export default function Projects () {
   return (
     <Fragment>
@@ -27,7 +36,10 @@ export default function Projects () {
         
         {/** Projects Navigation */}
         <nav className="fixed top-0 left-0 h-full w-72 bg-gray-700 mt-20">
-
+          <ProjectItem
+            name="TestItem"
+            slug="test-item"
+          />
         </nav>
         
         <div className="w-full h-full pl-72 pt-20">
