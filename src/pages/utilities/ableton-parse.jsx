@@ -1,7 +1,7 @@
 import { useState } from "react";
 import pako from "pako";
 
-import parseAbletonData from "../../utils/parseAbletonData";
+import parseAbletonData from "@/utils/parseAbletonData";
 
 export default function UtilitiesAbletonParse () {
   const [cleanedData, setCleanedData] = useState();

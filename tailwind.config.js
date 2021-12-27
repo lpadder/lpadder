@@ -1,11 +1,9 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: [
-    "./index.html",
-    "./src/**/*.{js,jsx}"
-  ],
+  purge: ["./index.html", "./src/**/*.{js,jsx}"],
   darkMode: "class",
+  mode: "jit",
   theme: {
     extend: {
       backgroundImage: {
@@ -25,4 +23,4 @@ module.exports = {
     extend: {}
   },
   plugins: []
-}
+};

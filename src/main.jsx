@@ -13,12 +13,12 @@ import {
 } from "react-router-dom";
 
 // Pages
-import Home from "./pages/index";
-import Projects from "./pages/projects/index";
-import Utilities from "./pages/utilities/index";
+import Home from "@/pages/index";
+import Projects from "@/pages/projects/index";
+import Utilities from "@/pages/utilities/index";
 
 // PWA Content Update
-import ReloadPrompt from "./components/ReloadPrompt";
+import ReloadPrompt from "@/components/ReloadPrompt";
 
 ReactDOM.render(
   <React.StrictMode>
