@@ -13,16 +13,17 @@ that will give you more informations about an Ableton
 launchpad project. (In the future, we wish to be able to
 convert Ableton projects to Unipad projects or lpadder projects).
 
-## Development news
+## Things TODO
 
-- I am trying to think about a structure for the projects (samples and lights array, ...).
-- Creating the process to open a project (.zip)
-- Opening a project leads you to his informations page.
-- I started to think about an UI for the app (very important haha...)
-  - About that, I drawn one, but now idk how to implement it ahahahah.... 
-- I need to create a navigation bar for project path (informations, play, edit) to make the switch easier (like tabs)
+There's lists of what I need to work on to make this app better !
+It can also help the contributors to know what they can work on.
 
-- I'm actually trying, also, to improve projects management (new design !) 
+### App Structure
+- [ ] Think about a way to store projects (structure of the .zip).
+- [ ] Import projects support.
+
+### Design
+- [x] Responsive menus for `/projects`. 
 
 ## Contribute
 
@@ -31,8 +32,8 @@ convert Ableton projects to Unipad projects or lpadder projects).
 This app is boostrapped by Vite, its PWA plugin,
 React and TypeScript.
 
-- `yarn dev`: Starts the development server.
-- `yarn build`: Builds the app.
-- `yarn serve`: Serves the builded app.
+- `yarn dev`: Starts the Vite development server (on path `/absproxy/3000`).
+- `yarn build`: Builds the app into `dist` directory.
+- `yarn serve`: Serves the builded app under `dist`.
 
 ### Contributions are welcome !
