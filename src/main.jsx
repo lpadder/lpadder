@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-// Styles
+// Fonts
+import "@fontsource/poppins";
+
+// TailwindCSS
 import "tailwindcss/tailwind.css";
 
 // Routing

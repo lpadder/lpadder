@@ -1,9 +1,11 @@
 import { Link, Routes, Route, Outlet } from "react-router-dom";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 
 import Informations from "./slug/informations";
 import Play from "./slug/play";
 import Edit from "./slug/edit";
+
+import stores from "../../stores";
 
 const ProjectItem = ({ name, slug }) => {
   const handleProjectUpdate = () => {
@@ -21,8 +23,33 @@ const ProjectItem = ({ name, slug }) => {
   );
 };
 
+const NavbarItem = ({ children, ...props }) => {
+  return (
+    <button className={`font-medium w-full transition-colors hover:bg-gray-50 hover:bg-opacity-20 hover:shadow-sm hover:text-gray-800 backdrop-blur-md mx-4 py-2 rounded`} {...props}>
+      {children}
+    </button>
+  );
+};
+
 export default function Projects() {
+  const [savedProjects, setSavedProjects] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  /** Get the projects  */
+  useEffect (() => {
+    (async () => {
+      const projects = await stores.projects.getStoredProjects();
+      setSavedProjects(projects);
+    })();
+  }, []);
+
+  const handleCreateCover = async () => {
+    console.log("Creating...")
+  }
+
+  const handleImportCover = async () => {
+    console.log("Importing...")
+  }
 
   return (
     <Fragment>
@@ -50,23 +77,46 @@ export default function Projects() {
         {/** Projects Navigation */}
         <nav className={`${menuOpen ? "block" : "hidden"} md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700`}>
           {/** Import / Create */}
-          <div className="w-auto px-4 h-12 flex justify-around items-center bg-gray-800 bg-opacity-60">
-            <p>Import</p>
-            <p>Create</p>
+          <div className="w-auto h-12 flex justify-around items-center bg-gradient-to-r from-blue-600 to-pink-600">
+            <NavbarItem
+              onClick={handleImportCover}
+            >
+              Import
+            </NavbarItem>
+            <NavbarItem
+              onClick={handleCreateCover}
+            >
+              Create
+            </NavbarItem>
           </div>
 
           {/** Projects List */}
           <div className="fixed bottom-0 top-32 md:w-72 w-full overflow-auto">
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
-            <ProjectItem name="TestItem" slug="test-item" />
+            {savedProjects.length > 0
+              ? <Fragment>
+                  {savedProjects.map((project) => <ProjectItem name={project.data.name} slug={project.slug} />)}
+                </Fragment>
+              : <div className="flex flex-col h-full items-center justify-center px-4 gap-8">
+                  <p className="font-medium text-lg">
+                    Nothing to play here...
+                  </p>
+                  <div className="flex flex-col gap-4 justify-center items-center">
+                    <button
+                      className="font-medium px-4 py-2 border-2 border-pink-600 bg-pink-600 bg-opacity-20 rounded"
+                      onClick={handleCreateCover}
+                      >
+                      Create a new cover !
+                    </button>
+                    <span>OR</span>
+                    <button
+                      className="font-medium px-4 py-2 border-2 border-blue-600 bg-blue-600 bg-opacity-20 rounded"
+                      onClick={handleImportCover}
+                    >
+                      Import a lpadder cover
+                    </button>
+                  </div>
+                </div>
+              }
           </div>
         </nav>
 

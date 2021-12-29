@@ -1,3 +1,4 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
 const colors = require("tailwindcss/colors");
 
 module.exports = {
@@ -17,10 +18,11 @@ module.exports = {
       pink: colors.fuchsia,
       gray: colors.blueGray,
       blue: colors.sky
+    },
+    fontFamily: {
+      sans: ["Poppins", ...defaultTheme.fontFamily.sans]
     }
   },
-  variants: {
-    extend: {}
-  },
+  variants: {},
   plugins: []
 };

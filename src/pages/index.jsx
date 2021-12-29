@@ -10,8 +10,8 @@ const SubMenu = ({ title, description, to }) => {
         hover:bg-opacity-60 transition-colors
         backdrop-filter backdrop-blur
       ">
-        <h2 className="font-semibold text-xl text-blue-50">{title}</h2>
-        <p className="text-blue-100 opacity-80">{description}</p>
+        <h2 className="font-medium text-xl text-blue-50">{title}</h2>
+        <p className="font-thin text-blue-100 opacity-80">{description}</p>
       </div>
     </Link>
   );
