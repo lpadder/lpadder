@@ -5,6 +5,8 @@ import Informations from "./slug/informations";
 import Play from "./slug/play";
 import Edit from "./slug/edit";
 
+import CreateProjectModal from "../../components/CreateProjectModal";
+
 import stores from "../../stores";
 
 import { HiCog } from "react-icons/hi";
@@ -27,7 +29,7 @@ const ProjectItem = ({ name, slug }) => {
 
 const NavbarItem = ({ children, ...props }) => {
   return (
-    <button className={`font-medium w-full transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm backdrop-blur-md mx-4 py-1 rounded`} {...props}>
+    <button className="font-medium w-full transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm backdrop-blur-md mx-4 py-1 rounded" {...props}>
       {children}
     </button>
   );
@@ -42,32 +44,42 @@ const HeaderItem = ({ children }) => {
 }
 
 export default function Projects() {
-  const [savedProjects, setSavedProjects] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  /** Get the projects  */
-  useEffect (() => {
-    (async () => {
-      const projects = await stores.projects.getStoredProjects();
-      setSavedProjects(projects);
-    })();
-  }, []);
-
-  const handleCreateCover = async () => {
-    const newProj = await stores.projects.createEmptyProject({
-      name: "Un projet random !",
-      slug: "hey-thats-random"
-    });
-
-    console.log(newProj);
+  
+  /** Saved projects are fetched and stored into . */
+  const [savedProjects, setSavedProjects] = useState([]);
+  async function reloadSavedProjects () {
+    /** Debug */ console.info("Reloading saved projects in localforage.");
+    /** Debug */ console.info("[OldState: 'savedProjects']", savedProjects);
+    
+    const projects = await stores.projects.getStoredProjects();
+    setSavedProjects(projects);
+    
+    /** Debug */ console.info("[NewState: 'savedProjects']", projects);
   }
+  
+  useEffect(() => {
+    reloadSavedProjects();
+  }, []);
+  
+  /** Open CreateProjectModal when creating a new cover. */
+  const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false);
+  const handleCreateCover = () => setCreateProjectModalOpen(true);
 
   const handleImportCover = async () => {
-    console.log("Importing...")
+    console.log("Importing is currently not supported !");
   }
 
   return (
+    <Fragment>
+      {createProjectModalOpen
+        && <CreateProjectModal
+          reloadSavedProjects={reloadSavedProjects}
+          closeModal={() => setCreateProjectModalOpen(false)}
+        />
+      }
+
       <div className="w-screen h-screen">
         <header className="fixed top-0 w-full bg-gray-900 bg-opacity-60 h-20 shadow flex justify-between items-center px-8">
           <div className="flex gap-2">
@@ -105,11 +117,11 @@ export default function Projects() {
               ? <Fragment>
                   {savedProjects.map((project) =>
                     <ProjectItem
-                      name={project.data.name}
-                      slug={project.slug}
+                    name={project.data.name}
+                    slug={project.slug}
                       key={project.slug}
-                    />
-                  )}
+                      />
+                      )}
                 </Fragment>
               : <div className="flex flex-col h-full items-center justify-center px-4 gap-8">
                   <p className="font-medium text-lg">
@@ -119,7 +131,7 @@ export default function Projects() {
                     <button
                       className="font-medium px-4 py-2 border-2 border-pink-600 bg-pink-600 bg-opacity-20 rounded"
                       onClick={handleCreateCover}
-                      >
+                    >
                       Create a new cover !
                     </button>
                     <span>OR</span>
@@ -143,5 +155,6 @@ export default function Projects() {
           </Routes>
         </div>
       </div>
+    </Fragment>
   );
 }
