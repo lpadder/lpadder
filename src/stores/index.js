@@ -1,10 +1,6 @@
-import localforage from "localforage";
 import ProjectsStore from "./projects";
-
-const database = localforage.createInstance({
-  name: "lpadder"
-});
+const databaseName = "lpadder";
 
 export default {
-  projects: new ProjectsStore(database)
+  projects: new ProjectsStore(databaseName)
 }

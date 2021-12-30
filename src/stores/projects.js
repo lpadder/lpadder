@@ -1,9 +1,11 @@
+import localforage from "localforage";
+
 class ProjectsStore {
-  /** @param {import("localforage")} database */
-  constructor (database) {
-    /** @type {import("localforage")} */
-    this.store = database.createInstance({
-      storeName: "projects"
+  /** @param {string} databaseName */
+  constructor (databaseName) {
+    this.store = localforage.createInstance({
+      storeName: "projects",
+      name: databaseName
     });
   }
 
@@ -14,6 +16,20 @@ class ProjectsStore {
     })
   
     return projects;
+  }
+
+  async createEmptyProject ({ name, slug, authors = [], launchpadders = [] }) {
+    const project = {
+      name,
+      authors,
+      launchpadders
+    };
+
+    const alreadyExists = !! await this.store.getItem(slug);
+    if (alreadyExists) return [false, "Project already exists."];
+
+    await this.store.setItem(slug, project);
+    return [true, slug];
   }
 }
 

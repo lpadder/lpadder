@@ -19,11 +19,28 @@ There's lists of what I need to work on to make this app better !
 It can also help the contributors to know what they can work on.
 
 ### App Structure
-- [ ] Think about a way to store projects (structure of the .zip).
-- [ ] Import projects support.
+- [ ] Think about a way to store projects (structure of the `.zip`).
+- [ ] Support project imports.
 
 ### Design
 - [x] Responsive menus for `/projects`. 
+
+## lpadder - Project Structure
+
+Each covers is bundled into a `.zip` file that contains a single `cover.json` file.
+This file is the project's configuration.
+
+### Interface `cover.json`
+
+```typescript
+{
+  name: string;
+  authors: string[];
+
+  /** Launchpadders that made the cover */
+  launchpadders: string[];
+}
+```
 
 ## Contribute
 
