@@ -13,7 +13,8 @@ export default defineConfig(({ command }) => {
         includeAssets: [
           "robots.txt",
           "favicon.ico",
-          "apple-touch-icon.png"
+          "apple-touch-icon.png",
+          "assets/*.{png,svg}"
         ],
         manifest: {
           // Global informations.
