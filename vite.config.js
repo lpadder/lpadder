@@ -13,9 +13,14 @@ export default defineConfig(({ command }) => {
         includeAssets: [
           "robots.txt",
           "favicon.ico",
-          "apple-touch-icon.png",
-          "assets/*.{png,svg}"
+          "apple-touch-icon.png"
         ],
+        workbox: {
+          globPatterns: [
+            "**.{js,css,html}",
+            "assets/*.{png,svg}"
+          ]
+        },
         manifest: {
           // Global informations.
           name: "lpadder.",
