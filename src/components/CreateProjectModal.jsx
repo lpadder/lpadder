@@ -12,7 +12,7 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
   const [state, setState] = useState(defaultState);
 
   const handleCreation = async () => {
-    const [success, message] = await createEmptyProject({
+    const [success, message] = await stores.projects.createEmptyProject({
       name: state.name,
       slug: state.slug,
       authors: state.authors,
