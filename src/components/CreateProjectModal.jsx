@@ -67,13 +67,14 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
             <FormInput
               labelName="Cover's name"
               placeholder="Author - Title (Launchpad Cover)"
-              {...register("name")}
+              {...register("name", { required: true })}
             />
             <FormInput
               labelName="Personal slug"
               placeholder="my-first-cover"
               informationText="Slug used to identify the cover more easily from URL."
               {...register("slug", {
+                required: true,
                 pattern: /^[a-z0-9-]+$/,
                 onChange: ({ target }) => {
                   if (target.value.length > 0) {
