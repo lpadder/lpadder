@@ -1,38 +1,52 @@
+import { useForm } from "react-hook-form";
+import { forwardRef } from "react";
 import stores from "../stores";
-import { useState } from "react";
 
-const defaultState = {
-  name: "",
-  slug: "",
-  authors: [],
-  launchpadders: []
-};
+const FormInput = forwardRef(({
+  labelName,
+  informationText = "",
+  name,
+  ...props
+}, ref) => (
+  <div>
+    <label htmlFor={name} className="text-sm font-medium mb-1">
+      {labelName}
+    </label>
+    <input
+      ref={ref}
+      name={name}
+      className="p-2 w-full transition-colors sm:text-sm rounded bg-gray-900 border border-pink-400 focus:bg-gray-800 outline-none"
+      {...props}
+    />
+    {informationText.length > 0 &&
+      <p className="mt-2 text-sm text-gray-600 text-opacity-60">
+        {informationText}
+      </p>
+    }
+  </div>
+));
 
 export default function CreateProjectModal ({ reloadSavedProjects, closeModal }) {
-  const [state, setState] = useState(defaultState);
+  const { register, handleSubmit } = useForm({
+    name: "",
+    slug: ""
+  });
 
-  const handleCreation = async () => {
+  const handleCreation = async (data) => {
+    console.log(data);
     const [success, message] = await stores.projects.createEmptyProject({
-      name: state.name,
-      slug: state.slug,
-      authors: state.authors,
-      launchpadders: state.launchpadders
+      name: data.name,
+      slug: data.slug
     });
 
     if (success) {
       await reloadSavedProjects();
-
-      // Reset state to default values.
-      setState(defaultState);
       closeModal();
     }
     else {
       console.error(message);
     }
   }
-
-  // Short-hand to update state with text input.
-  const updateTextInput = (key) => ({ target: { value } }) => setState({ ...state, [key]: value });
 
   return (
     <div
@@ -42,19 +56,57 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
         bg-gray-900 bg-opacity-60
       "
     >
-      <div
-        className="
-          px-6 py-4 w-64 
-          bg-gray-800
-        "
-      >
-        <h2>Create a new cover</h2>
+      <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 bg-gray-900 px-8 py-4 rounded-lg">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-200">
+            Create a cover
+          </h2>
 
-        <input value={state.name} onChange={updateTextInput("name")} placeholder="Cover's name" />
-        <input value={state.slug} onChange={updateTextInput("slug")} placeholder="Personnal slug" />
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleCreation)}>
 
-        <button onClick={closeModal}>Cancel</button>
-        <button onClick={handleCreation}>Save</button>
+            <FormInput
+              labelName="Cover's name"
+              placeholder="Author - Title (Launchpad Cover)"
+              {...register("name")}
+            />
+            <FormInput
+              labelName="Personal slug"
+              placeholder="my-first-cover"
+              informationText="Slug used to identify the cover more easily from URL."
+              {...register("slug", {
+                pattern: /^[a-z0-9-]+$/
+              })}
+            />
+
+            <div className="flex gap-2 justify-between">
+              <button
+                className="
+                  w-full py-2 px-4 
+                  text-sm font-medium
+                  text-gray-400 text-opacity-60
+                  hover:text-opacity-80 transition-colors
+                "
+                onClick={closeModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="
+                  w-full py-2 px-4
+                  text-sm font-medium
+                  rounded-md
+                  text-pink-400
+                  bg-pink-800 bg-opacity-40
+                  hover:bg-opacity-60 transition-colors
+                  focus:bg-opacity-70
+                "
+              >
+                Create
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   )
