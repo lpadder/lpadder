@@ -67,17 +67,20 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
             <FormInput
               labelName="Cover's name"
               placeholder="Author - Title (Launchpad Cover)"
-              {...register("name", {
-                minLength: 1
-              })}
+              {...register("name")}
             />
             <FormInput
               labelName="Personal slug"
               placeholder="my-first-cover"
               informationText="Slug used to identify the cover more easily from URL."
               {...register("slug", {
-                minLength: 1,
-                pattern: /^[a-z0-9-]+$/
+                pattern: /^[a-z0-9-]+$/,
+                onChange: ({ target }) => {
+                  if (target.value.length > 0) {
+                    // Rewrite value to make it match slug pattern.
+                    target.value = target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+                  }
+                }
               })}
             />
 
