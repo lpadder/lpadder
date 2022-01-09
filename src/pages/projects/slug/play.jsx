@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import stores from "../../../stores";
 
-export default function ProjectPlay() {
+export default function ProjectPlay({ updateMenuComponents }) {
   const [projectState, setProjectState] = useState(null);
   const navigate = useNavigate();
   const params = useParams();
@@ -10,12 +10,19 @@ export default function ProjectPlay() {
   useEffect(() => {
     (async () => {
       const project = await stores.projects.getProjectFromSlug(params.slug);
-
+      
       // Check if project exists.
       if (!! project) {
         setProjectState(project);
+        
+        if (typeof updateMenuComponents === "function") {
+          updateMenuComponents([
+            <Link to={`${params.slug}/edit`}>Switch Edit mode</Link>
+          ])
+        }
       }
       else {
+        updateMenuComponents([]);
         navigate("/projects");
       }
     })();

@@ -38,6 +38,10 @@ class ProjectsStore {
     }
   }
 
+  async deleteProject (slug) {
+    return await this.store.removeItem(slug);
+  }
+
   async createEmptyProject ({ name, slug, authors = [], launchpadders = [] }) {
     if (!name || !slug) return [false, "Project name and slug are required."];
 

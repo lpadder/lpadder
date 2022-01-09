@@ -1,14 +1,13 @@
-import { Link, Routes, Route, useNavigate } from "react-router-dom";
+import { Link, Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { Fragment, useState, useEffect } from "react";
+import stores from "../../stores";
 
+// Pages.
 import Play from "./slug/play";
 import Edit from "./slug/edit";
 
+// Components in the layout.
 import CreateProjectModal from "../../components/CreateProjectModal";
-
-import stores from "../../stores";
-
-import { HiCog } from "react-icons/hi";
 
 const ProjectItem = ({ name, slug }) => {
   const navigate = useNavigate();
@@ -44,8 +43,7 @@ const HeaderItem = ({ children }) => {
   )
 }
 
-export default function Projects() {
-  const [settingsOpen, setSettingsOpen] = useState(false);
+export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
   
   /** Saved projects are fetched and stored into . */
@@ -72,6 +70,13 @@ export default function Projects() {
     console.log("Importing is currently not supported !");
   }
 
+  // Check if we are currently inside a project.
+  const [menuComponents, setMenuComponents] = useState([]);
+  const updateMenuComponents = (components) => {
+    setMenuComponents(components);
+    /** Debug */ console.info("[NewState: 'menuComponents']", components);
+  }
+
   return (
     <Fragment>
       {createProjectModalOpen
@@ -92,11 +97,13 @@ export default function Projects() {
             </button>
           </div>
           <ul className="flex gap-4 flex-row-reverse">
-            <HeaderItem>
-              <button title="Settings" onClick={() => setSettingsOpen(!settingsOpen)}>
-                <HiCog size={32} />
-              </button>
-            </HeaderItem>
+            {menuComponents.length > 0
+              && menuComponents.map((component, key) =>
+                <HeaderItem key={key}>
+                  {component}
+                </HeaderItem>
+              )
+            }
           </ul>
         </header>
 
@@ -118,11 +125,11 @@ export default function Projects() {
               ? <Fragment>
                   {savedProjects.map((project) =>
                     <ProjectItem
-                    name={project.data.name}
-                    slug={project.slug}
+                      name={project.data.name}
+                      slug={project.slug}
                       key={project.slug}
-                      />
-                      )}
+                    />
+                  )}
                 </Fragment>
               : <div className="flex flex-col h-full items-center justify-center px-4 gap-8">
                   <p className="font-medium text-lg">
@@ -150,8 +157,8 @@ export default function Projects() {
 
         <div className="w-full h-full pl-72 pt-20">
           <Routes>
-            <Route path=":slug/play" element={<Play />} />
-            <Route path=":slug/edit" element={<Edit />} />
+            <Route path=":slug/play" element={<Play updateMenuComponents={updateMenuComponents} />} />
+            <Route path=":slug/edit" element={<Edit updateMenuComponents={updateMenuComponents} />} />
           </Routes>
         </div>
       </div>
