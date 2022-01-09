@@ -18,18 +18,43 @@ class ProjectsStore {
     return projects;
   }
 
+  async getProjectFromSlug (slug) {
+    const project = await this.store.getItem(slug);
+    return project;
+  }
+
+  /**
+   * @param {string} slug
+   * @param {object} project
+   * @returns {Promise<[boolean, string, object | undefined]>}
+   */
+  async updateProject (slug, data) {
+    try {
+      const savedData = await this.store.setItem(slug, data);
+      return [true, slug, savedData];
+    }
+    catch (e) {
+      return [false, e];
+    }
+  }
+
   async createEmptyProject ({ name, slug, authors = [], launchpadders = [] }) {
+    if (!name || !slug) return [false, "Project name and slug are required."];
+
+    // Define a new empty project.
     const project = {
       name,
       authors,
       launchpadders
     };
 
-    const alreadyExists = !! await this.store.getItem(slug);
+    // Check if the slug already exists.
+    const alreadyExists = !! await this.getProjectFromSlug(slug);
     if (alreadyExists) return [false, "Project already exists."];
 
-    await this.store.setItem(slug, project);
-    return [true, slug];
+    // Store the new project.
+    const status = await this.updateProject(slug, project);
+    return status;
   }
 }
 

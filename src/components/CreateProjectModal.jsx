@@ -71,7 +71,7 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
             />
             <FormInput
               labelName="Personal slug"
-              placeholder="my-first-cover"
+              placeholder="some-amazing-cover"
               informationText="Slug used to identify the cover more easily from URL."
               {...register("slug", {
                 required: true,

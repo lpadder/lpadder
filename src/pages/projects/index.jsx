@@ -1,7 +1,6 @@
-import { Link, Routes, Route } from "react-router-dom";
+import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import { Fragment, useState, useEffect } from "react";
 
-import Informations from "./slug/informations";
 import Play from "./slug/play";
 import Edit from "./slug/edit";
 
@@ -12,8 +11,10 @@ import stores from "../../stores";
 import { HiCog } from "react-icons/hi";
 
 const ProjectItem = ({ name, slug }) => {
+  const navigate = useNavigate();
+
   const handleProjectUpdate = () => {
-    console.log(slug);
+    navigate(`${slug}/play`);
   };
 
   return (
@@ -149,7 +150,6 @@ export default function Projects() {
 
         <div className="w-full h-full pl-72 pt-20">
           <Routes>
-            <Route path=":slug" element={<Informations />} />
             <Route path=":slug/play" element={<Play />} />
             <Route path=":slug/edit" element={<Edit />} />
           </Routes>
