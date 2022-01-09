@@ -2,7 +2,7 @@
 
 <img align="right" src="https://raw.githubusercontent.com/Vexcited/lpadder/main/public/icon-default.png" />
 
-> Still in development ! (Really in development, I mean, there's no UI actually, it's juste basic HTML...)
+> Still in development ! (Really in development, I mean, there's no UI actually, it's just basic HTML...)
 
 `lpadder` (pronounced `el padder` or `launchpadder`) is a web application that
 lets you play Launchpad covers directly from your browser.
