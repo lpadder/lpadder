@@ -8,7 +8,7 @@ export default function ReloadPrompt () {
     updateServiceWorker
   } = useRegisterSW({
     onRegistered (registration) {
-        console.log("[service-worker] Registered !", registration);
+      console.log("[service-worker] Registered !", registration);
     },
     onRegisterError (error) {
       console.error("[service-worker] Error.", error);
@@ -40,7 +40,7 @@ export default function ReloadPrompt () {
             "> {/** Message */}
               { offlineReady
                 ? <span>App ready to work offline !</span>
-                : <span>New content available, click on <span className="font-bold">"Reload"</span> button to update.</span>
+                : <span>New content available, click on <span className="font-bold">Reload</span> button to update.</span>
               }
             </div>
 
@@ -72,5 +72,5 @@ export default function ReloadPrompt () {
         </div>
       }
     </Fragment>
-  )
+  );
 }

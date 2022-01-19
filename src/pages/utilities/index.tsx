@@ -9,8 +9,8 @@ const ConvertMidi = lazy(() => import("./convert-midi"));
 const UtilitiesHome = () => {
   return (
     <div>
-      <h1>lpadder's Utilities</h1>
-      <p>Here you'll find a lot of utilities around the Launchpad.</p>
+      <h1>lpadder&apos;s Utilities</h1>
+      <p>Here you&apos;ll find a lot of utilities around the Launchpad.</p>
 
       <ul>
         <li>
@@ -20,13 +20,13 @@ const UtilitiesHome = () => {
         </li>
         <li>
           <Link to="convert-midi">
-            Convert your MIDI files to Launchpad's programmer or live layout.
+            Convert your MIDI files to Launchpad&apos;s programmer or live layout.
           </Link>
         </li>
       </ul>
     </div>
   );
-}
+};
 
 // Routes for `/utilities`.
 export default function Utilities () {

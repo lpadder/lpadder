@@ -1,13 +1,26 @@
 import { useForm } from "react-hook-form";
-import { forwardRef } from "react";
+import { RefCallBack, ChangeHandler } from "react-hook-form";
 import stores from "../stores";
 
-const FormInput = forwardRef(({
+type FormInputProps = {
+  labelName: string;
+  ref: RefCallBack;
+  onChange: ChangeHandler;
+  onBlur: ChangeHandler;
+  placeholder: string;
+  name: string;
+  informationText?: string;
+};
+
+const FormInput = ({
   labelName,
-  informationText = "",
+  ref,
+  onChange,
+  onBlur,
+  placeholder,
   name,
-  ...props
-}, ref) => (
+  informationText = ""
+}: FormInputProps) => (
   <div>
     <label htmlFor={name} className="text-sm font-medium mb-1">
       {labelName}
@@ -15,8 +28,16 @@ const FormInput = forwardRef(({
     <input
       ref={ref}
       name={name}
-      className="p-2 w-full transition-colors sm:text-sm rounded bg-gray-900 border border-pink-400 focus:bg-gray-800 outline-none"
-      {...props}
+      onBlur={onBlur}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="
+        p-2 w-full rounded outline-none
+        m:text-sm
+        bg-gray-900
+        transition-colors  focus:bg-gray-800
+        border border-pink-400
+      "
     />
     {informationText.length > 0 &&
       <p className="mt-2 text-sm text-gray-600 text-opacity-60">
@@ -24,15 +45,25 @@ const FormInput = forwardRef(({
       </p>
     }
   </div>
-));
+);
 
-export default function CreateProjectModal ({ reloadSavedProjects, closeModal }) {
-  const { register, handleSubmit } = useForm({
-    name: "",
-    slug: ""
-  });
+type CreateProjectModalProps = {
+  reloadSavedProjects: () => Promise<void>;
+  closeModal: () => void;
+};
 
-  const handleCreation = async (data) => {
+type CreateProjectModalFormValues = {
+  name: string;
+  slug: string;
+};
+
+export default function CreateProjectModal ({
+  reloadSavedProjects,
+  closeModal
+}: CreateProjectModalProps) {
+  const { register, handleSubmit } = useForm<CreateProjectModalFormValues>();
+
+  const handleCreation = handleSubmit(async (data) => {
     console.log(data);
     const [success, message] = await stores.projects.createEmptyProject({
       name: data.name,
@@ -44,9 +75,9 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
       closeModal();
     }
     else {
-      console.error(message);
+      console.error(`[CreateProjectModal] ${message}`);
     }
-  }
+  });
 
   return (
     <div
@@ -62,8 +93,7 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
             Create a cover
           </h2>
 
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleCreation)}>
-
+          <form className="mt-8 space-y-6" onSubmit={handleCreation}>
             <FormInput
               labelName="Cover's name"
               placeholder="Author - Title (Launchpad Cover)"
@@ -116,5 +146,5 @@ export default function CreateProjectModal ({ reloadSavedProjects, closeModal })
         </div>
       </div>
     </div>
-  )
+  );
 }

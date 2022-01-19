@@ -1,10 +1,6 @@
-/**
- * Parse an .als (Ableton Live Set) project.
- * @param {Document} project 
- */
-export default function parseAbletonData (project) {
-  /** @param {string} tag */
-  const getFirstElementByTag = (tag) => {
+/** Parse an .als (Ableton Live Set) project. */
+export default function parseAbletonData (project: Document) {
+  const getFirstElementByTag = (tag: string) => {
     const element = project.getElementsByTagName(tag)[0];
     if (!element) {
       throw new Error(`${tag} not found !`);
@@ -14,7 +10,7 @@ export default function parseAbletonData (project) {
   };
 
   // Get Ableton version (ex.: "Ableton Live 11.0.11").
-  const abletonVersion = getFirstElementByTag("Ableton").getAttribute("Creator");
+  const abletonVersion = getFirstElementByTag("Ableton").getAttribute("Creator") as string;
 
   // Get tracks data (in JSON).
   const tracksData = getTracksData(getFirstElementByTag("Tracks"));
@@ -31,16 +27,12 @@ export default function parseAbletonData (project) {
  * (so we don't need to check EVERY values :D)
  */
 
-/**
- * @param {Element} tracks 
- */
-function getTracksData (tracks) {
+function getTracksData (tracks: Element) {
   const tracksData = [];  // Initialize the output array.
 
-  /** @param {Element} track */
-  const getTrackName = (track) => {
+  const getTrackName = (track: Element) => {
     return track.getElementsByTagName("EffectiveName")[0].getAttribute("Value");
-  }
+  };
   
   for (const track of tracks.children) {
     // We check the track type as we

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Midi } from "@tonejs/midi";
 
@@ -6,11 +6,10 @@ export default function UtilitiesConvertMidiFile () {
   const [fromLayout, setFromLayout] = useState("live");
   const [toLayout, setToLayout] = useState("programmer");
 
-  const [uploadedFiles, setUploadedFiles] = useState(null);
-  const [convertedFiles, setConvertedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState<FileList | null>(null);
+  // const [convertedFiles, setConvertedFiles] = useState([]);
 
-  /** @param {React.ChangeEvent<HTMLInputElement>} evt */
-  const handleMidiUpload = (evt) => {
+  const handleMidiUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const files = evt.target.files;
 
     if (files) {
@@ -18,32 +17,28 @@ export default function UtilitiesConvertMidiFile () {
     }
   };
   
-  /**
-   * @param {Uint8Array} data 
-   * @param {string} fileName 
-   */
-  const downloadBlob = (data, fileName = "converted") => {
+  const downloadBlob = (data: Uint8Array, fileName = "converted") => {
     const blob = new Blob([data], {
       type: "audio/midi"
-    })
+    });
   
     // Creating an element to auto-download the file.
     const url = window.URL.createObjectURL(blob);
     const aInput = document.createElement("a");
 
-    aInput.setAttribute("href", data);
+    aInput.setAttribute("href", url);
     aInput.setAttribute("download", fileName);
     
     // Append it to the DOM.
-    document.body.appendChild(a);
+    document.body.appendChild(aInput);
     aInput.style.display = "none";
 
     // Download href and remove the element.
-    a.click();
-    a.remove();
+    aInput.click();
+    aInput.remove();
   
     setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-  }
+  };
 
   const startConvert = () => {
     if (uploadedFiles && uploadedFiles.length > 0) {
@@ -52,18 +47,19 @@ export default function UtilitiesConvertMidiFile () {
         const reader = new FileReader();
 
         reader.onload = () => {
-          const buffer = reader.result;
+          const buffer = reader.result as ArrayBuffer;
           const midi = new Midi(buffer);
-          console.log(midi);
           
+          // Convert midi object to array and download it.
           const output = midi.toArray();
           downloadBlob(output, file.name);
-        }
+        };
         
+        // Read MIDI file as ArrayBuffer.
         reader.readAsArrayBuffer(file);
       }
     }
-  }
+  };
 
   return (
     <div>
@@ -71,10 +67,10 @@ export default function UtilitiesConvertMidiFile () {
       <h1>Convert layout of MIDI files</h1>
       <p>
         Imagine you have a MIDI file for a Launchpad Live layout and
-        (you don't know why) you want to convert it to a Launchpad Programmer layout,
-        then you're at the right place ! <br /> <br />
+        you want to convert it to a Launchpad Programmer layout,
+        then you&apos;re at the right place ! <br /> <br />
 
-        You'll be able to upload multiple files at once, and the conversion will be done.
+        You&apos;ll be able to upload multiple files at once, and the conversion will be done.
       </p>
 
       <input
@@ -110,5 +106,5 @@ export default function UtilitiesConvertMidiFile () {
         </button>
       }
     </div>
-  )
+  );
 }

@@ -1,19 +1,32 @@
+type AvailableLayouts = 
+  | "programmer"
+  | "live";
+
+type LayoutValueType = number[][];
+
 export class LaunchpadLayout {
+  public layouts: {
+    live: LayoutValueType;
+    programmer: LayoutValueType;
+  };
+
   constructor () {
     const liveLayout = this.buildLiveLayout();
     const programmerLayout = this.buildProgrammerLayout();
 
+    // Build layouts and store them in `this.layouts`.
     this.layouts = {
       live: liveLayout,
       programmer: programmerLayout
     };
   }
 
-  buildLiveLayout() {
+  /** Build the layout for the Live mode. */
+  private buildLiveLayout(): LayoutValueType {
     const layout = [];
 
     for (let columns = 64; columns >= 36; columns -= 4) {
-      let column = [];
+      const column = [];
 
       for (let rows = 0; rows <= 7; rows++) {
         let id = columns + rows;
@@ -34,14 +47,15 @@ export class LaunchpadLayout {
     return layout;
   }
 
-  buildProgrammerLayout() {
+  /** Build the layout for the Programmer mode. */
+  private buildProgrammerLayout(): LayoutValueType {
     const layout = [];
 
     for (let columns = 8; columns >= 1; columns--) {
-      let column = [];
+      const column = [];
 
       for (let rows = 1; rows <= 8; rows++) {
-        let id = `${columns}${rows}`;
+        const id = `${columns}${rows}`;
         column.push(parseInt(id));
       }
 
@@ -51,17 +65,15 @@ export class LaunchpadLayout {
     return layout;
   }
 
-  /**
-   * Convert a midi note ex: MIDI note 88 from Live to Programmer mode. 
-   * @param {number} note
-   * @param {"live" | "programmer"} from
-   * @param {"live" | "programmer"} to
-   * @returns {[boolean, number | null]}
-   */
-  convertLayout (note, from, to) {
+  /** Convert a midi note ex: MIDI note 88 from Live to Programmer mode. */
+  public convertNoteLayout (
+    note: number,
+    from: AvailableLayouts,
+    to: AvailableLayouts
+  ): [boolean, number | null] {
     // Search in the `from` layout the note.
     this.layouts[from].map((rows, indexRows) => {
-      let index = rows.indexOf(note);
+      const index = rows.indexOf(note);
       if (index !== -1) {
         const result = this.layouts[to][indexRows][index];
         return [true, result];

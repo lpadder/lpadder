@@ -1,11 +1,27 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function DropdownButton ({ items, children, buttonClassName, menuClassName, itemClassName, itemActiveClassName }) {
+type DropdownButtonProps = {
+  children: React.ReactNode;
+  items: { name: string; action: () => void; }[];
+  buttonClassName: string;
+  menuClassName: string;
+  itemClassName: string;
+  itemActiveClassName: string;
+};
+
+export default function DropdownButton ({
+  items,
+  children,
+  buttonClassName,
+  menuClassName,
+  itemClassName,
+  itemActiveClassName
+}: DropdownButtonProps) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>

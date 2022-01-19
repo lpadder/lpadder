@@ -1,14 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import pako from "pako";
 
 import parseAbletonData from "@/utils/parseAbletonData";
+type ReturnTypeParseAbletonData = ReturnType<typeof parseAbletonData>;
 
 export default function UtilitiesAbletonParse () {
-  const [cleanedData, setCleanedData] = useState();
+  const [cleanedData, setCleanedData] = useState<ReturnTypeParseAbletonData | null>(null);
   const [isError, setIsError] = useState(false);
 
-  /** @param {React.ChangeEvent<HTMLInputElement>} evt */
-  const alsImportHandler = (evt) => {
+  const alsImportHandler = (evt: React.ChangeEvent<HTMLInputElement>) => {
     evt.preventDefault();
 
     // Check if a file has been uploaded.
@@ -19,7 +19,7 @@ export default function UtilitiesAbletonParse () {
       // Read the ".als" file as a binary string.
       const reader = new FileReader();
       reader.onload = () => {
-        const buffer = reader.result;
+        const buffer = reader.result as ArrayBuffer;
         const array = new Uint8Array(buffer);
 
         // Decompress the binary string into a string.
@@ -33,12 +33,11 @@ export default function UtilitiesAbletonParse () {
         // Save the parsed Ableton file in state.
         const cleanedData = parseAbletonData(xmlParsed);
         setCleanedData(cleanedData);
-
         console.log(cleanedData);
 
         // Reset every other state.
         setIsError(false);
-      }
+      };
 
       // Load the file.
       reader.readAsArrayBuffer(file);
@@ -65,18 +64,18 @@ export default function UtilitiesAbletonParse () {
 
       {cleanedData
         ? <div>
-            <h2>Loaded !</h2>
-            <p>
-              <strong>Ableton Used: </strong> {cleanedData.abletonVersion}
-            </p>
-          </div>
+          <h2>Loaded !</h2>
+          <p>
+            <strong>Ableton Used: </strong> {cleanedData.abletonVersion}
+          </p>
+        </div>
         : <h2>Not loaded.</h2>
       }
 
       {isError
         && <p>
           Sorry, but something went wrong. Please try again.
-          Don't forget to select a <strong>.als</strong> file.
+          Don&apos;t forget to select a <strong>.als</strong> file.
         </p>
       }
     </div>

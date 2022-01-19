@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 import LpadderLogo from "@/assets/icon.png";
 
-const SubMenu = ({ title, description, to }) => {
+type SubMenuProps = {
+  title: string;
+  description: string;
+  to: string;
+};
+
+const SubMenu = ({ title, description, to }: SubMenuProps) => {
   return (
     <Link to={to} className="flex-1">
       <div className="
@@ -66,5 +72,5 @@ export default function Home () {
         </p>
       </footer>
     </div>
-  )
+  );
 }
