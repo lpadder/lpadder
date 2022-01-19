@@ -11,9 +11,11 @@ export default function ProjectOverview ({ updateMenuComponents }) {
   const navigate = useNavigate();
   const params = useParams();
 
+  // Update on project slug change.
+  const projectSlug = params.slug;
   useEffect(() => {
     (async () => {
-      console.log(params);
+      console.log("Re-rendered projectSlug.");
       const project = await stores.projects.getProjectFromSlug(params.slug);
       const currentMode = params["*"];
 
@@ -33,9 +35,7 @@ export default function ProjectOverview ({ updateMenuComponents }) {
         navigate("/projects");
       }
     })();
-  }, []);
-
-  console.log(projectState);
+  }, [projectSlug]);
 
   // Show a loader while loading
   // and checking the project. 

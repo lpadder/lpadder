@@ -76,8 +76,8 @@ export default function Projects () {
 
     // Check if the project exists.
     const foundProject = projects.find(project => project.slug === urlProjectSlug);
-    console.info("Found a matching project from slug in URL. Loading it...", foundProject);
     if (foundProject) {
+      console.info("Found a matching project from slug in URL. Loading it...", foundProject);
       setCurrentProject(foundProject.slug);
     }
   }
@@ -122,11 +122,10 @@ export default function Projects () {
   }
 
   // State for components in header that can be updated from
-  // children pages.
+  // children pages. Using useEffect to debug the state.
   const [menuComponents, setMenuComponents] = useState([]);
   useEffect(() => {
     /** Debug */ console.info("[useEffect: 'menuComponents']", menuComponents);
-    console.info("Re-render components menu.");
   }, [menuComponents])
 
   return (
@@ -239,7 +238,7 @@ export default function Projects () {
         <div className="w-full h-full md:pl-72 pt-20">
           <Routes>
             <Route
-              path=":slug"
+              path=":slug/*"
               element={
                 <ProjectOverview
                   updateMenuComponents={setMenuComponents}

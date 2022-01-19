@@ -1,4 +1,11 @@
+# Dependencies.
 node_modules
+
+# Miscallaneous.
 .DS_Store
-*.local
+
+# Production build.
 dist
+
+# Used to specify 'CLIENT_PORT' for Vite HMR.
+.env.local
