@@ -13,6 +13,7 @@ export default function ProjectOverview ({ updateMenuComponents }) {
 
   useEffect(() => {
     (async () => {
+      console.log(params);
       const project = await stores.projects.getProjectFromSlug(params.slug);
       const currentMode = params["*"];
 
@@ -32,7 +33,9 @@ export default function ProjectOverview ({ updateMenuComponents }) {
         navigate("/projects");
       }
     })();
-  }, [])
+  }, []);
+
+  console.log(projectState);
 
   // Show a loader while loading
   // and checking the project. 

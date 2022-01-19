@@ -238,10 +238,13 @@ export default function Projects () {
 
         <div className="w-full h-full md:pl-72 pt-20">
           <Routes>
-            <Route path=":slug/*" element={
-              <ProjectOverview
-                updateMenuComponents={setMenuComponents}
-              />}
+            <Route
+              path=":slug"
+              element={
+                <ProjectOverview
+                  updateMenuComponents={setMenuComponents}
+                />
+              }
             />
           </Routes>
         </div>
