@@ -2,7 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 // Fonts
-import "@fontsource/poppins";
+import "@fontsource/poppins/300.css";
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/poppins/600.css";
 
 // TailwindCSS
 import "tailwindcss/tailwind.css";
@@ -25,7 +28,7 @@ import ReloadPrompt from "@/components/ReloadPrompt";
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.DEV ? "/absproxy/3000" : "/"}>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/projects/*" element={<Projects />} />

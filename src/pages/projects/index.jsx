@@ -2,12 +2,12 @@ import { Link, Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { Fragment, useState, useEffect } from "react";
 import stores from "../../stores";
 
-// Pages.
-import Play from "./slug/play";
-import Edit from "./slug/edit";
-
 // Components in the layout.
+import ProjectOverview from "./slug/index";
 import CreateProjectModal from "../../components/CreateProjectModal";
+
+// Icons
+import { HiCog, HiShare } from "react-icons/hi";
 
 const ProjectItem = ({ name, slug }) => {
   const navigate = useNavigate();
@@ -97,6 +97,22 @@ export default function Projects () {
             </button>
           </div>
           <ul className="flex gap-4 flex-row-reverse">
+            <HeaderItem>
+              <a
+                onClick={() => console.info("Settings")}
+                className="p-2 transition-colors hover:bg-gray-800 rounded cursor-pointer"
+              >
+                <HiCog size={28} />
+              </a>
+            </HeaderItem>
+            <HeaderItem>
+              <a
+                onClick={() => console.info("Share")}
+                className="p-2 transition-colors hover:bg-gray-800 rounded cursor-pointer"
+              >
+                <HiShare size={28} />
+              </a>
+            </HeaderItem>
             {menuComponents.length > 0
               && menuComponents.map((component, key) =>
                 <HeaderItem key={key}>
@@ -155,10 +171,9 @@ export default function Projects () {
           </div>
         </nav>
 
-        <div className="w-full h-full pl-72 pt-20">
+        <div className="w-full h-full md:pl-72 pt-20">
           <Routes>
-            <Route path=":slug/play" element={<Play updateMenuComponents={updateMenuComponents} />} />
-            <Route path=":slug/edit" element={<Edit updateMenuComponents={updateMenuComponents} />} />
+            <Route path=":slug/*" element={<ProjectOverview updateMenuComponents={updateMenuComponents}/>} />
           </Routes>
         </div>
       </div>
