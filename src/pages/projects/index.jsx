@@ -5,6 +5,7 @@ import stores from "../../stores";
 // Components in the layout.
 import ProjectOverview from "./slug/index";
 import CreateProjectModal from "../../components/CreateProjectModal";
+import DropdownButton from "../../components/DropdownButton";
 
 // Icons
 import { HiCog, HiShare } from "react-icons/hi";
@@ -100,18 +101,30 @@ export default function Projects () {
             <HeaderItem>
               <a
                 onClick={() => console.info("Settings")}
-                className="p-2 transition-colors hover:bg-gray-800 rounded cursor-pointer"
+                className="p-2 hover:bg-blue-800 hover:bg-opacity-20 rounded cursor-pointer text-gray-400 hover:text-blue-400 transition-colors"
               >
                 <HiCog size={28} />
               </a>
             </HeaderItem>
             <HeaderItem>
-              <a
-                onClick={() => console.info("Share")}
-                className="p-2 transition-colors hover:bg-gray-800 rounded cursor-pointer"
+              <DropdownButton
+                buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
+                itemActiveClassName="bg-gray-600 bg-opacity-60"
+                itemClassName="bg-gray-600 bg-opacity-40"
+                items={[
+                  {
+                    name: "Export to .zip",
+                    action: () => console.info("Export to .zip")
+                  },
+                  {
+                    name: "Collaborate online",
+                    action: () => console.info("Collaborate")
+                  },
+                ]}
               >
                 <HiShare size={28} />
-              </a>
+              </DropdownButton>
             </HeaderItem>
             {menuComponents.length > 0
               && menuComponents.map((component, key) =>

@@ -2,7 +2,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
   darkMode: "class",
   mode: "jit",
   theme: {
@@ -16,13 +16,11 @@ module.exports = {
       transparent: "transparent",
       current: "currentColor",
       pink: colors.fuchsia,
-      gray: colors.blueGray,
+      gray: colors.slate,
       blue: colors.sky
     },
     fontFamily: {
       sans: ["Poppins", ...defaultTheme.fontFamily.sans]
     }
-  },
-  variants: {},
-  plugins: []
+  }
 };
