@@ -42,7 +42,7 @@ class ProjectsStore {
 
   async getProjectFromSlug (slug: string): Promise<[boolean, ProjectStructure | string]> {
     try {
-      const project: ProjectStructure = await this.store.getItem(slug);
+      const project: ProjectStructure | null = await this.store.getItem(slug);
       if (project) {
         return [true, project];
       }

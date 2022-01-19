@@ -1260,7 +1260,7 @@
 
 "@tonejs/midi@^2.0.27":
   version "2.0.27"
-  resolved "https://registry.npmjs.org/@tonejs/midi/-/midi-2.0.27.tgz"
+  resolved "https://registry.yarnpkg.com/@tonejs/midi/-/midi-2.0.27.tgz#15ebedf570ce9e3c6f5e0d25e4f4c4d47398a222"
   integrity sha512-JYiGA8k37rTWKPoiPhbJfWLotnZFCKw0G0rqijHD+u+LdjewTgt/Ubhn2JnD2yR+6+eLXTqHLJRS2a+tNLla3w==
   dependencies:
     array-flatten "^2.1.2"
