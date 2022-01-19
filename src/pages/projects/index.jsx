@@ -1,4 +1,4 @@
-import { Link, Routes, Route, useNavigate, useParams } from "react-router-dom";
+import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Fragment, useState, useEffect } from "react";
 import stores from "../../stores";
 
@@ -10,43 +10,53 @@ import DropdownButton from "../../components/DropdownButton";
 // Icons
 import { HiCog, HiShare } from "react-icons/hi";
 
-const ProjectItem = ({ name, slug }) => {
-  const navigate = useNavigate();
-
-  const handleProjectUpdate = () => {
-    navigate(`${slug}/play`);
-  };
-
-  return (
-    <div
-      onClick={handleProjectUpdate}
-      className="w-full px-4 py-6 cursor-pointer bg-gray-700 hover:bg-gray-800 hover:bg-opacity-40 border-solid border-t-2 border-gray-800"
-    >
-      <h3 className="font-medium text-lg">{name}</h3>
-      <span className="font-light text-md">{slug}</span>
-    </div>
-  );
-};
-
-const NavbarItem = ({ children, ...props }) => {
-  return (
-    <button className="font-medium w-full transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm backdrop-blur-md mx-4 py-1 rounded" {...props}>
-      {children}
-    </button>
-  );
-};
-
-const HeaderItem = ({ children }) => {
-  return (
-    <li className="flex justify-center items-center">
-      {children}
-    </li>
-  )
-}
-
 export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Used to style the currently selected cover.
+  const [currentProject, setCurrentProject] = useState(null);
+
+  const ProjectItem = ({ name, slug, selected = false }) => {
+    const navigate = useNavigate();
   
+    const handleProjectUpdate = () => {
+      setCurrentProject(slug);
+      navigate(`${slug}/play`);
+    };
+  
+    return (
+      <div
+        onClick={handleProjectUpdate}
+        className={`
+          w-full px-4 py-6 cursor-pointer
+          ${selected ? "bg-gray-600" : "bg-gray-700"}
+          hover:bg-gray-800 hover:bg-opacity-40
+          border-solid border-t-2 border-gray-800
+        `}
+      >
+        <h3 className="font-medium text-lg">{name}</h3>
+        <span className="font-light text-md">{slug}</span>
+      </div>
+    );
+  };
+  
+  const NavbarItem = ({ children, ...props }) => {
+    return (
+      <button className="font-medium w-full transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm backdrop-blur-md mx-4 py-1 rounded" {...props}>
+        {children}
+      </button>
+    );
+  };
+  
+  const HeaderItem = ({ children }) => {
+    return (
+      <li className="flex justify-center items-center">
+        {children}
+      </li>
+    )
+  }
+
   /** Saved projects are fetched and stored into . */
   const [savedProjects, setSavedProjects] = useState([]);
   async function reloadSavedProjects () {
@@ -57,26 +67,67 @@ export default function Projects () {
     setSavedProjects(projects);
     
     /** Debug */ console.info("[NewState: 'savedProjects']", projects);
+
+    // Check if we have selected a project from URL.
+    const urlProjectSlug = location.pathname
+    .replace("/projects/", "")
+    .replace(/(\/edit|\/play)/, "")
+    .replace(/\//g, "");
+
+    // Check if the project exists.
+    const foundProject = projects.find(project => project.slug === urlProjectSlug);
+    console.info("Found a matching project from slug in URL. Loading it...", foundProject);
+    if (foundProject) {
+      setCurrentProject(foundProject.slug);
+    }
   }
-  
-  useEffect(() => {
-    reloadSavedProjects();
-  }, []);
+
+  // Reload projects and check for URL project on load.
+  useEffect(() =>  reloadSavedProjects(), []);
   
   /** Open CreateProjectModal when creating a new cover. */
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false);
   const handleCreateCover = () => setCreateProjectModalOpen(true);
 
-  const handleImportCover = async () => {
-    console.log("Importing is currently not supported !");
+  const handleImportCover = () => {
+    const fileInput = document.createElement("input");
+    fileInput.setAttribute("type", "file");
+    fileInput.setAttribute("hidden", "");
+    
+    // Only accept ".zip" files.
+    fileInput.setAttribute("accept", ".zip");
+    
+    fileInput.addEventListener("change", (evt) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const arrayBuffer = evt.target.result;
+        console.log("Imported file content.", arrayBuffer);
+      }
+      
+      const files = evt.target.files;
+      if (files.length > 0) {
+        reader.readAsArrayBuffer(files[0]);
+      }
+      else {
+        console.info("Import project file aborted.")
+      }
+    })
+
+    // Add the input to the DOM.
+    document.body.append(fileInput);
+    
+    // Click the input to import a file.
+    fileInput.click();
+    fileInput.remove();
   }
 
-  // Check if we are currently inside a project.
+  // State for components in header that can be updated from
+  // children pages.
   const [menuComponents, setMenuComponents] = useState([]);
-  const updateMenuComponents = (components) => {
-    setMenuComponents(components);
-    /** Debug */ console.info("[NewState: 'menuComponents']", components);
-  }
+  useEffect(() => {
+    /** Debug */ console.info("[useEffect: 'menuComponents']", menuComponents);
+    console.info("Re-render components menu.");
+  }, [menuComponents])
 
   return (
     <Fragment>
@@ -156,6 +207,7 @@ export default function Projects () {
                     <ProjectItem
                       name={project.data.name}
                       slug={project.slug}
+                      selected={project.slug === currentProject}
                       key={project.slug}
                     />
                   )}
@@ -186,7 +238,11 @@ export default function Projects () {
 
         <div className="w-full h-full md:pl-72 pt-20">
           <Routes>
-            <Route path=":slug/*" element={<ProjectOverview updateMenuComponents={updateMenuComponents}/>} />
+            <Route path=":slug/*" element={
+              <ProjectOverview
+                updateMenuComponents={setMenuComponents}
+              />}
+            />
           </Routes>
         </div>
       </div>
