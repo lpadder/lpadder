@@ -8,7 +8,7 @@ import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
 
 // TailwindCSS
-import "tailwindcss/tailwind.css";
+import "@/styles/globals.css";
 
 // Routing
 import {
