@@ -14,18 +14,10 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
   console.info("[ProjectPlay] 'data' from render:", data);
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
-    /** Debug. */ console.info(
-      "[handlePadMouseDown] + (down) on pad", padId, "from launchpad", launchpadId
-    );
-
     padElement.style.backgroundColor = getHexFromVelocity(3);
   };
   
   const handlePadUp: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
-    /** Debug. */ console.info(
-      "[handlePadMouseUp] - (up) on pad", padId, "from launchpad", launchpadId
-    );
-
     // Remove every styling applied to the pad.
     padElement.removeAttribute("style");
   };

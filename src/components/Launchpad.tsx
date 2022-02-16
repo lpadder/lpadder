@@ -68,7 +68,14 @@ export default function Launchpad ({
                 return onContextMenu(padId, launchpadId, event);
               }}
               onTouchStart={(event) => {
+                // By stopping propagation, we suppress
+                // the 'onMouseDown' event.
                 event.stopPropagation();
+
+                /** Debug. */ console.info(
+                  "[Launchpad][onTouchStart] (DOWN ↓): Pad", padId,
+                  "from Launchpad", launchpadId + "."
+                );
 
                 // We save the target pad HTML element.
                 const padElement = event.currentTarget;
@@ -76,21 +83,36 @@ export default function Launchpad ({
                 const handleTouchEnd = (up_event: TouchEvent) => {
                   up_event.preventDefault();
 
+                  /** Debug. */ console.info(
+                    "[Launchpad][handleTouchEnd] (UP ↑): Pad", padId,
+                    "from Launchpad", launchpadId + "."
+                  );
+
                   onPadUp(padId, launchpadId, padElement);
                   document.removeEventListener("touchend", handleTouchEnd);
                 };
 
                 onPadDown(padId, launchpadId, padElement);
-                document.addEventListener("touchend", handleTouchEnd, { passive: false });
+                document.addEventListener("touchend", handleTouchEnd);
               }}
               onMouseDown={(event) => {
                 if (event.button === 2) return;
+
+                /** Debug. */ console.info(
+                  "[Launchpad][onMouseDown] (DOWN ↓): Pad", padId,
+                  "from Launchpad", launchpadId + "."
+                );
 
                 // We save the target pad HTML element.
                 const padElement = event.currentTarget;
 
                 const handleMouseUp = (up_event: MouseEvent) => {
                   if (up_event.button === 2) return;
+
+                  /** Debug. */ console.info(
+                    "[Launchpad][handleMouseUp] (UP ↑): Pad", padId,
+                    "from Launchpad", launchpadId + "."
+                  );
 
                   onPadUp(padId, launchpadId, padElement);
                   document.removeEventListener("mouseup", handleMouseUp);
