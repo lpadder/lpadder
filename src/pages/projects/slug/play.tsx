@@ -2,24 +2,35 @@ import type {
   ProjectStructure
 } from "@/types/Project";
 
-import Launchpad from "@/components/Launchpad";
+import type {
+  ClickEventFunctionProps
+} from "@/components/Launchpad";
+
+import Launchpad, {
+  getPadElementId
+} from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 
 type ProjectPlayProps = { data: ProjectStructure };
 export default function ProjectPlay({ data }: ProjectPlayProps) {
+  console.info("[ProjectPlay] 'data' from render:", data);
 
-  const padClickHandler = (padId: number, launchpadId: number) => {
-    const padHtmlId = `launchpad-${launchpadId}-pad-${padId}`;
-    const padHtmlElement = document.getElementById(padHtmlId);
+  const handlePadMouseDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+    /** Debug. */ console.info(
+      "[handlePadMouseDown] + (down) on pad", padId, "from launchpad", launchpadId
+    );
 
-    if (!padHtmlElement) return;
-
-    padHtmlElement.style.backgroundColor = getHexFromVelocity(3);
-    setTimeout(() => {
-      padHtmlElement.style.backgroundColor = "";
-    }, 500);
-
+    padElement.style.backgroundColor = getHexFromVelocity(3);
   };
+  
+  const handlePadMouseUp: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+    /** Debug. */ console.info(
+      "[handlePadMouseUp] - (up) on pad", padId, "from launchpad", launchpadId
+    );
+
+    // Remove every styling applied to the pad.
+    padElement.removeAttribute("style");
+  }
 
   return (
     <div>
@@ -33,7 +44,8 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
         >
           <Launchpad
             layout="programmer"
-            onClick={padClickHandler}
+            onMouseUp={handlePadMouseUp}
+            onMouseDown={handlePadMouseDown}
           />
         </div>
         <div
@@ -42,7 +54,8 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
           <Launchpad
             launchpadId={1}
             layout="programmer"
-            onClick={padClickHandler}
+            onMouseUp={handlePadMouseUp}
+            onMouseDown={handlePadMouseDown}
           />
         </div>
       </div>
