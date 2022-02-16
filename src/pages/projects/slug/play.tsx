@@ -13,7 +13,7 @@ type ProjectPlayProps = { data: ProjectStructure };
 export default function ProjectPlay({ data }: ProjectPlayProps) {
   console.info("[ProjectPlay] 'data' from render:", data);
 
-  const handlePadMouseDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+  const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     /** Debug. */ console.info(
       "[handlePadMouseDown] + (down) on pad", padId, "from launchpad", launchpadId
     );
@@ -21,7 +21,7 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
     padElement.style.backgroundColor = getHexFromVelocity(3);
   };
   
-  const handlePadMouseUp: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+  const handlePadUp: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     /** Debug. */ console.info(
       "[handlePadMouseUp] - (up) on pad", padId, "from launchpad", launchpadId
     );
@@ -42,8 +42,8 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
         >
           <Launchpad
             layout="programmer"
-            onMouseUp={handlePadMouseUp}
-            onMouseDown={handlePadMouseDown}
+            onPadDown={handlePadDown}
+            onPadUp={handlePadUp}
           />
         </div>
         <div
@@ -52,8 +52,8 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
           <Launchpad
             launchpadId={1}
             layout="programmer"
-            onMouseUp={handlePadMouseUp}
-            onMouseDown={handlePadMouseDown}
+            onPadDown={handlePadDown}
+            onPadUp={handlePadUp}
           />
         </div>
       </div>

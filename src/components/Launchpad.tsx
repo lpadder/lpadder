@@ -23,8 +23,8 @@ type LaunchpadProps = {
   layout?: AvailableLayouts;
 
   /** Events that can be triggered. */
-  onMouseDown: ClickEventFunctionProps;
-  onMouseUp: ClickEventFunctionProps;
+  onPadDown: ClickEventFunctionProps;
+  onPadUp: ClickEventFunctionProps;
 
   /** Optional ustom behaviour on right click. */
   onContextMenu?: ContextEventFunctionProps;
@@ -39,8 +39,8 @@ type LaunchpadProps = {
 export default function Launchpad ({
   launchpadId = 0,
   layout = "live",
-  onMouseDown,
-  onMouseUp,
+  onPadDown,
+  onPadUp,
   onContextMenu
 }: LaunchpadProps) {
   const launchpadLayouts = new LaunchpadLayout();
@@ -67,6 +67,22 @@ export default function Launchpad ({
                 if (!onContextMenu) return;
                 return onContextMenu(padId, launchpadId, event);
               }}
+              onTouchStart={(event) => {
+                event.stopPropagation();
+
+                // We save the target pad HTML element.
+                const padElement = event.currentTarget;
+
+                const handleTouchEnd = (up_event: TouchEvent) => {
+                  up_event.preventDefault();
+
+                  onPadUp(padId, launchpadId, padElement);
+                  document.removeEventListener("touchend", handleTouchEnd);
+                };
+
+                onPadDown(padId, launchpadId, padElement);
+                document.addEventListener("touchend", handleTouchEnd, { passive: false });
+              }}
               onMouseDown={(event) => {
                 if (event.button === 2) return;
 
@@ -76,11 +92,11 @@ export default function Launchpad ({
                 const handleMouseUp = (up_event: MouseEvent) => {
                   if (up_event.button === 2) return;
 
-                  onMouseUp(padId, launchpadId, padElement);
+                  onPadUp(padId, launchpadId, padElement);
                   document.removeEventListener("mouseup", handleMouseUp);
                 };
 
-                onMouseDown(padId, launchpadId, padElement);
+                onPadDown(padId, launchpadId, padElement);
                 document.addEventListener("mouseup", handleMouseUp);
               }}
               className="w-full bg-gray-400 rounded-sm select-none aspect-square"
