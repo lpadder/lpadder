@@ -132,4 +132,4 @@ export const defaultRgbPalette = [
 
 export const getHexFromVelocity = (velocity: number) => {
   return "#" + defaultRgbPalette[velocity];
-} 
+}; 
