@@ -11,6 +11,7 @@ import DropdownButton from "@/components/DropdownButton";
 
 // Icons
 import { HiCog, HiShare } from "react-icons/hi";
+import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
 export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -155,13 +156,17 @@ export default function Projects () {
           className="flex fixed top-0 justify-between items-center px-8 w-full h-20 bg-gray-900 bg-opacity-60 shadow backdrop-blur"
         >
           <div className="flex gap-2">
-            <Link className="px-4 py-2 bg-blue-800 bg-opacity-40 rounded transition-colors hover:bg-opacity-80" to="/">
-              Go Back
+            <Link className="p-2 text-gray-400 bg-blue-800 bg-opacity-20 rounded transition-colors hover:text-gray-200 hover:bg-opacity-60" to="/">
+              <IoMdArrowBack size={28} />
             </Link>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="px-4 py-2 md:hidden">
-              Menu
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 md:hidden hover:bg-opacity-20 focus:bg-opacity-40"
+            >
+              <IoMdMenu size={28} />
             </button>
           </div>
+
           <ul className="flex flex-row-reverse gap-4">
             <HeaderItem>
               <a
