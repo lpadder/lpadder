@@ -1,73 +1,30 @@
-import { useForm } from "react-hook-form";
-import { RefCallBack, ChangeHandler } from "react-hook-form";
+import { FormEvent, useState } from "react";
+
 import stores from "../stores";
-
-type FormInputProps = {
-  labelName: string;
-  ref: RefCallBack;
-  onChange: ChangeHandler;
-  onBlur: ChangeHandler;
-  placeholder: string;
-  name: string;
-  informationText?: string;
-};
-
-const FormInput = ({
-  labelName,
-  ref,
-  onChange,
-  onBlur,
-  placeholder,
-  name,
-  informationText = ""
-}: FormInputProps) => (
-  <div>
-    <label htmlFor={name} className="text-sm font-medium mb-1">
-      {labelName}
-    </label>
-    <input
-      ref={ref}
-      name={name}
-      onBlur={onBlur}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="
-        p-2 w-full rounded outline-none
-        m:text-sm
-        bg-gray-900
-        transition-colors  focus:bg-gray-800
-        border border-pink-400
-      "
-    />
-    {informationText.length > 0 &&
-      <p className="mt-2 text-sm text-gray-600 text-opacity-60">
-        {informationText}
-      </p>
-    }
-  </div>
-);
+import Input from "./Input";
 
 type CreateProjectModalProps = {
   reloadSavedProjects: () => Promise<void>;
   closeModal: () => void;
 };
 
-type CreateProjectModalFormValues = {
-  name: string;
-  slug: string;
-};
-
 export default function CreateProjectModal ({
   reloadSavedProjects,
   closeModal
 }: CreateProjectModalProps) {
-  const { register, handleSubmit } = useForm<CreateProjectModalFormValues>();
+  const [state, setState] = useState({
+    name: "",
+    slug: ""
+  });
 
-  const handleCreation = handleSubmit(async (data) => {
-    console.log(data);
+  const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!state.name || !state.slug) return;
+    
     const [success, message] = await stores.projects.createEmptyProject({
-      name: data.name,
-      slug: data.slug
+      name: state.name,
+      slug: state.slug
     });
 
     if (success) {
@@ -77,7 +34,7 @@ export default function CreateProjectModal ({
     else {
       console.error(`[CreateProjectModal] ${message}`);
     }
-  });
+  };
 
   return (
     <div
@@ -94,25 +51,21 @@ export default function CreateProjectModal ({
           </h2>
 
           <form className="mt-8 space-y-6" onSubmit={handleCreation}>
-            <FormInput
+            <Input
               labelName="Cover's name"
               placeholder="Author - Title (Launchpad Cover)"
-              {...register("name", { required: true })}
+              onChange={(e) => setState({ ...state, name: e.target.value })}
+              value={state.name}
             />
-            <FormInput
+            <Input
               labelName="Personal slug"
               placeholder="some-amazing-cover"
-              informationText="Slug used to identify the cover more easily from URL."
-              {...register("slug", {
-                required: true,
-                pattern: /^[a-z0-9-]+$/,
-                onChange: ({ target }) => {
-                  if (target.value.length > 0) {
-                    // Rewrite value to make it match slug pattern.
-                    target.value = target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-                  }
-                }
-              })}
+              smallTipText="Slug used to identify the cover more easily from URL."
+              onChange={(e) => {
+                const cleanedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+                return setState({ ...state, slug: cleanedValue });
+              }}
+              value={state.slug}
             />
 
             <div className="flex gap-2 justify-between">
