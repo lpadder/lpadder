@@ -6,9 +6,7 @@ import type {
   ClickEventFunctionProps
 } from "@/components/Launchpad";
 
-import Launchpad, {
-  getPadElementId
-} from "@/components/Launchpad";
+import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 
 type ProjectPlayProps = { data: ProjectStructure };
@@ -30,7 +28,7 @@ export default function ProjectPlay({ data }: ProjectPlayProps) {
 
     // Remove every styling applied to the pad.
     padElement.removeAttribute("style");
-  }
+  };
 
   return (
     <div>
