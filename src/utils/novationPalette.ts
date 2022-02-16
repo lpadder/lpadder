@@ -1,5 +1,5 @@
 /** Exported from Kaskobi's Novation RGB Palette. */
-export const novationPalette = [
+export const defaultRgbPalette = [
   "030303",
   "1f1f1f",
   "7f7f7f",
@@ -129,3 +129,7 @@ export const novationPalette = [
   "b35f03",
   "4b1703"
 ];
+
+export const getHexFromVelocity = (velocity: number) => {
+  return "#" + defaultRgbPalette[velocity];
+} 

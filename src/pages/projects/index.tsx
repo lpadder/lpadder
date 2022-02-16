@@ -38,7 +38,7 @@ export default function Projects () {
           border-solid border-t-2 border-gray-800
         `}
       >
-        <h3 className="font-medium text-lg">{name}</h3>
+        <h3 className="text-lg font-medium">{name}</h3>
         <span className="font-light text-md">{slug}</span>
       </div>
     );
@@ -49,11 +49,7 @@ export default function Projects () {
     return (
       <button
         onClick={onClick}
-        className="
-          font-medium w-full mx-4 py-1
-          transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm
-          backdrop-blur-md rounded
-        "
+        className="py-1 mx-4 w-full font-medium rounded backdrop-blur-md transition-colors hover:bg-gray-100 hover:bg-opacity-10 hover:shadow-sm"
       >
         {children}
       </button>
@@ -151,21 +147,26 @@ export default function Projects () {
         />
       }
 
-      <div className="w-screen h-screen">
-        <header className="fixed top-0 w-full bg-gray-900 bg-opacity-60 h-20 shadow flex justify-between items-center px-8">
+      <div
+        className="w-screen h-screen"
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        <header
+          className="flex fixed top-0 justify-between items-center px-8 w-full h-20 bg-gray-900 bg-opacity-60 shadow backdrop-blur"
+        >
           <div className="flex gap-2">
-            <Link className="px-4 py-2 bg-blue-800 bg-opacity-40 hover:bg-opacity-80 transition-colors rounded" to="/">
+            <Link className="px-4 py-2 bg-blue-800 bg-opacity-40 rounded transition-colors hover:bg-opacity-80" to="/">
               Go Back
             </Link>
             <button onClick={() => setMenuOpen(!menuOpen)} className="px-4 py-2 md:hidden">
               Menu
             </button>
           </div>
-          <ul className="flex gap-4 flex-row-reverse">
+          <ul className="flex flex-row-reverse gap-4">
             <HeaderItem>
               <a
                 onClick={() => console.info("Settings")}
-                className="p-2 hover:bg-blue-800 hover:bg-opacity-20 rounded cursor-pointer text-gray-400 hover:text-blue-400 transition-colors"
+                className="p-2 text-gray-400 rounded transition-colors cursor-pointer hover:bg-blue-800 hover:bg-opacity-20 hover:text-blue-400"
               >
                 <HiCog size={28} />
               </a>
@@ -203,7 +204,7 @@ export default function Projects () {
         {/** Projects Navigation */}
         <nav className={`${menuOpen ? "block" : "hidden"} md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700`}>
           {/** Import / Create */}
-          <div className="w-auto h-12 flex justify-around items-center bg-gradient-to-r from-blue-600 to-pink-600">
+          <div className="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
             <NavbarItem onClick={handleImportCover}>
               Import
             </NavbarItem>
@@ -213,7 +214,7 @@ export default function Projects () {
           </div>
 
           {/** Projects List */}
-          <div className="fixed bottom-0 top-32 md:w-72 w-full overflow-auto">
+          <div className="overflow-auto fixed bottom-0 top-32 w-full md:w-72">
             {savedProjects.length > 0
               ? <Fragment>
                 {savedProjects.map((project) =>
@@ -225,20 +226,20 @@ export default function Projects () {
                   />
                 )}
               </Fragment>
-              : <div className="flex flex-col h-full items-center justify-center px-4 gap-8">
-                <p className="font-medium text-lg">
+              : <div className="flex flex-col gap-8 justify-center items-center px-4 h-full">
+                <p className="text-lg font-medium">
                     Nothing to play here...
                 </p>
                 <div className="flex flex-col gap-4 justify-center items-center">
                   <button
-                    className="font-medium px-4 py-2 border-2 border-pink-600 bg-pink-600 bg-opacity-20 rounded"
+                    className="px-4 py-2 font-medium bg-pink-600 bg-opacity-20 rounded border-2 border-pink-600"
                     onClick={handleCreateCover}
                   >
                       Create a new cover !
                   </button>
                   <span>OR</span>
                   <button
-                    className="font-medium px-4 py-2 border-2 border-blue-600 bg-blue-600 bg-opacity-20 rounded"
+                    className="px-4 py-2 font-medium bg-blue-600 bg-opacity-20 rounded border-2 border-blue-600"
                     onClick={handleImportCover}
                   >
                       Import a lpadder cover
@@ -249,7 +250,7 @@ export default function Projects () {
           </div>
         </nav>
 
-        <div className="w-full h-full md:pl-72 pt-20">
+        <div className="pt-20 w-full h-full md:pl-72">
           <Routes>
             <Route
               path=":slug/*"

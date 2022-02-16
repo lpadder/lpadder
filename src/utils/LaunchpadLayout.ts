@@ -1,10 +1,10 @@
-type AvailableLayouts = 
+export type AvailableLayouts = 
   | "programmer"
   | "live";
 
 type LayoutValueType = number[][];
 
-export class LaunchpadLayout {
+export default class LaunchpadLayout {
   public layouts: {
     live: LayoutValueType;
     programmer: LayoutValueType;
