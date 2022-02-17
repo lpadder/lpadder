@@ -9,8 +9,19 @@ import type {
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 
-type ProjectPlayProps = { data: ProjectStructure };
-export default function ProjectPlay({ data }: ProjectPlayProps) {
+type ProjectPlayProps = {
+  data: ProjectStructure;
+  saveProjectLocally: (data: ProjectStructure) => Promise<{
+    slug: string;
+    project: ProjectStructure;
+  } | undefined>;
+  saveProjectGlobally: (data: ProjectStructure) => Promise<void>;
+};
+
+export default function ProjectPlay ({
+  data, 
+  saveProjectLocally, saveProjectGlobally
+}: ProjectPlayProps) {
   console.info("[ProjectPlay] 'data' from render:", data);
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {

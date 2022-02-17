@@ -67,32 +67,45 @@ export default function Projects () {
   };
 
   /** Saved projects are fetched and stored into . */
-  const [savedProjects, setSavedProjects] = useState<ProjectStoredStructure[]>([]);
-  async function reloadSavedProjects () {
-    /** Debug */ console.info("[OldState: 'savedProjects']", savedProjects);
-    
-    const projects = await stores.projects.getStoredProjects();
-    setSavedProjects(projects);
-    
-    /** Debug */ console.info("[NewState: 'savedProjects']", projects);
+  const [allLocalProjects, setAllLocalProjects] = useState<ProjectStoredStructure[] | null>(null);
 
-    // Check if we have selected a project from URL.
-    const urlProjectSlug = location.pathname
-      .replace("/projects/", "")
-      .replace(/(\/edit|\/play)/, "")
-      .replace(/\//g, "");
-
-    // Check if the project exists.
-    const foundProject = projects.find(project => project.slug === urlProjectSlug);
-    if (foundProject) {
-      console.info("Found a matching project from slug in URL. Loading it...", foundProject);
-      setCurrentProject(foundProject.slug);
-    }
-  }
-
-  // Reload projects and check for URL project on load.
+  /**
+   * On page load, we take every cover in the localForage
+   * and we store it in a global state that'll be shared
+   * with children components.
+   * 
+   * We also check if a project slug was specified.
+   */
   useEffect(() => {
-    reloadSavedProjects(); 
+    (async () => {
+      const allStorageProjects = await stores.projects.getStoredProjects();
+      setAllLocalProjects(allStorageProjects);
+    
+
+      // Check if we have selected a project from URL.
+      // For showing it in navigation bar.
+      const urlProjectSlug = location.pathname
+        .replace("/projects/", "")
+        .replace(/(\/settings|\/play)/, "")
+        .replace(/\//g, "");
+
+      // Check if the project's slug exists.
+      const urlProjectSlugFound = allStorageProjects.find(
+        project => project.slug === urlProjectSlug
+      );
+
+      // If the project is found from slug,
+      // save slug in state.
+      if (urlProjectSlugFound) {
+        const accourateProjectSlug = urlProjectSlugFound.slug;
+
+        console.info(
+          "[/][useEffect] Found a matching project from slug in URL: ", accourateProjectSlug
+        );
+
+        setCurrentProject(accourateProjectSlug);
+      }
+    })();
   }, []);
   
   /** Open CreateProjectModal when creating a new cover. */
@@ -139,11 +152,15 @@ export default function Projects () {
     /** Debug */ console.info("[useEffect: 'menuComponents']", menuComponents);
   }, [menuComponents]);
 
+  if (!allLocalProjects) return <p>Loading</p>;
+
   return (
     <Fragment>
       {createProjectModalOpen
         && <CreateProjectModal
-          reloadSavedProjects={reloadSavedProjects}
+          allLocalProjects={allLocalProjects}
+          setAllLocalProjects={setAllLocalProjects}
+
           closeModal={() => setCreateProjectModalOpen(false)}
         />
       }
@@ -220,34 +237,34 @@ export default function Projects () {
 
           {/** Projects List */}
           <div className="overflow-auto fixed bottom-0 top-32 w-full md:w-72">
-            {savedProjects.length > 0
+            {allLocalProjects.length > 0
               ? <Fragment>
-                {savedProjects.map((project) =>
+                {allLocalProjects.map(project =>
                   <ProjectItem
-                    name={project.data.name}
-                    slug={project.slug}
-                    selected={project.slug === currentProject}
                     key={project.slug}
+                    slug={project.slug}
+                    name={project.data.name}
+                    selected={project.slug === currentProject}
                   />
                 )}
               </Fragment>
               : <div className="flex flex-col gap-8 justify-center items-center px-4 h-full">
                 <p className="text-lg font-medium">
-                    Nothing to play here...
+                  Nothing to play here...
                 </p>
                 <div className="flex flex-col gap-4 justify-center items-center">
                   <button
                     className="px-4 py-2 font-medium bg-pink-600 bg-opacity-20 rounded border-2 border-pink-600"
                     onClick={handleCreateCover}
                   >
-                      Create a new cover !
+                    Create a new cover !
                   </button>
                   <span>OR</span>
                   <button
                     className="px-4 py-2 font-medium bg-blue-600 bg-opacity-20 rounded border-2 border-blue-600"
                     onClick={handleImportCover}
                   >
-                      Import a lpadder cover
+                    Import a lpadder cover
                   </button>
                 </div>
               </div>
@@ -261,6 +278,9 @@ export default function Projects () {
               path=":slug/*"
               element={
                 <ProjectOverview
+                  allLocalProjects={allLocalProjects}
+                  setAllLocalProjects={setAllLocalProjects}
+
                   updateMenuComponents={setMenuComponents}
                 />
               }

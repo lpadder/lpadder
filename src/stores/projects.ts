@@ -65,14 +65,14 @@ class ProjectsStore {
   async updateProject (
     slug: string,
     data: ProjectStructure
-  ): Promise<[boolean, string, ProjectStructure?]> {
+  ): Promise<[boolean, string, (ProjectStructure | null)]> {
     try {
       const savedData: ProjectStructure = await this.store.setItem(slug, data);
       return [true, slug, savedData];
     }
     catch (e) {
       /** Debug */ console.error("[stores->projects->updateProject]", e);
-      return [false, e as string];
+      return [false, e as string, null];
     }
   }
 
@@ -92,8 +92,10 @@ class ProjectsStore {
     slug,
     authors = [],
     launchpadders = []
-  }: CreateEmptyProjectProps): Promise<[boolean, string]> {
-    if (!name || !slug) return [false, "Project name and slug are required."];
+  }: CreateEmptyProjectProps): Promise<[
+    boolean, string, (ProjectStructure | null)
+  ]> {
+    if (!name || !slug) return [false, "Project name and slug are required.", null];
 
     const project: ProjectStructure = {
       name,
@@ -103,11 +105,11 @@ class ProjectsStore {
 
     // Check if the slug already exists.
     const [alreadyExists] = await this.getProjectFromSlug(slug);
-    if (alreadyExists) return [false, "Project already exists."];
+    if (alreadyExists) return [false, "Project already exists.", null];
 
     // Store the new project.
     const [status] = await this.updateProject(slug, project);
-    return [status, slug];
+    return [status, slug, project];
   }
 }
 

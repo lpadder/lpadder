@@ -1,15 +1,23 @@
+import type {
+  ProjectStoredStructure
+} from "@/types/Project";
 import { FormEvent, useState } from "react";
 
 import stores from "../stores";
 import Input from "./Input";
 
 type CreateProjectModalProps = {
-  reloadSavedProjects: () => Promise<void>;
+  allLocalProjects: ProjectStoredStructure[];
+  setAllLocalProjects: React.Dispatch<
+    React.SetStateAction<ProjectStoredStructure[] | null>
+  >;
+
   closeModal: () => void;
 };
 
 export default function CreateProjectModal ({
-  reloadSavedProjects,
+  allLocalProjects,
+  setAllLocalProjects,
   closeModal
 }: CreateProjectModalProps) {
   const [state, setState] = useState({
@@ -20,15 +28,23 @@ export default function CreateProjectModal ({
   const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Verify states.
     if (!state.name || !state.slug) return;
     
-    const [success, message] = await stores.projects.createEmptyProject({
+    const [success, message, project] = await stores.projects.createEmptyProject({
       name: state.name,
       slug: state.slug
     });
 
-    if (success) {
-      await reloadSavedProjects();
+    if (success && project) {
+      setAllLocalProjects([
+        ...allLocalProjects,
+        {
+          slug: state.slug,
+          data: project
+        }
+      ])
+      
       closeModal();
     }
     else {
@@ -38,15 +54,11 @@ export default function CreateProjectModal ({
 
   return (
     <div
-      className="
-        z-50 fixed h-screen w-screen top-0 left-0
-        flex justify-center items-center
-        bg-gray-900 bg-opacity-60
-      "
+      className="flex fixed top-0 left-0 z-50 justify-center items-center w-screen h-screen bg-gray-900 bg-opacity-60"
     >
-      <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 bg-gray-900 px-8 py-4 rounded-lg">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-200">
+      <div className="flex justify-center items-center px-4 py-12 min-h-full sm:px-6 lg:px-8">
+        <div className="px-8 py-4 space-y-8 w-full max-w-md bg-gray-900 rounded-lg">
+          <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-200">
             Create a cover
           </h2>
 
@@ -70,27 +82,14 @@ export default function CreateProjectModal ({
 
             <div className="flex gap-2 justify-between">
               <button
-                className="
-                  w-full py-2 px-4 
-                  text-sm font-medium
-                  text-gray-400 text-opacity-60
-                  hover:text-opacity-80 transition-colors
-                "
+                className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="
-                  w-full py-2 px-4
-                  text-sm font-medium
-                  rounded-md
-                  text-pink-400
-                  bg-pink-800 bg-opacity-40
-                  hover:bg-opacity-60 transition-colors
-                  focus:bg-opacity-70
-                "
+                className="px-4 py-2 w-full text-sm font-medium text-pink-400 bg-pink-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
               >
                 Create
               </button>
