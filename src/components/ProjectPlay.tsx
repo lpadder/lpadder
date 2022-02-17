@@ -3,7 +3,8 @@ import type {
 } from "@/types/Project";
 
 import type {
-  ClickEventFunctionProps
+  ClickEventFunctionProps,
+  ContextEventFunctionProps
 } from "@/components/Launchpad";
 
 import Launchpad from "@/components/Launchpad";
@@ -33,6 +34,10 @@ export default function ProjectPlay ({
     padElement.removeAttribute("style");
   };
 
+  const handleContextMenu: ContextEventFunctionProps = (padId, launchpadId, event) => {
+    console.log(event.currentTarget);
+  }
+
   return (
     <div>
       <h1>Play</h1>
@@ -47,6 +52,8 @@ export default function ProjectPlay ({
             layout="programmer"
             onPadDown={handlePadDown}
             onPadUp={handlePadUp}
+
+            onContextMenu={handleContextMenu}
           />
         </div>
         <div

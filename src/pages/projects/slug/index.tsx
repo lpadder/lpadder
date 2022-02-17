@@ -19,8 +19,7 @@ import {
 import stores from "@/stores";
 
 // Pages
-import ProjectPlay from "./play";
-import ProjectSettings from "./settings";
+import ProjectPlay from "@/components/ProjectPlay";
 
 type ProjectOverviewProps = {
   allLocalProjects: ProjectStoredStructure[];
@@ -116,25 +115,11 @@ export default function ProjectOverview ({
   return (
     <div className="p-4">
       <h1 className="text-lg font-medium">{projectLocalData.name}</h1>
-
-      <Routes>
-        <Route path="play" element={
-          <ProjectPlay
-            data={projectLocalData}
-            saveProjectLocally={saveProjectLocally}
-            saveProjectGlobally={saveProjectGlobally}
-          />
-        } />
-        <Route path="settings" element={
-          <ProjectSettings
-            data={projectLocalData}
-            saveProjectLocally={saveProjectLocally}
-            saveProjectGlobally={saveProjectGlobally}
-          />}
+        <ProjectPlay
+          data={projectLocalData}
+          saveProjectLocally={saveProjectLocally}
+          saveProjectGlobally={saveProjectGlobally}
         />
-        
-        <Route path="*" element={<Navigate to="play" />} />
-      </Routes>
     </div>
   );
 }

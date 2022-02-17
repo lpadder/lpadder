@@ -1,4 +1,4 @@
-import type { ProjectStoredStructure } from "@/types/Project";
+import { ProjectStoredStructure, ProjectStructure } from "@/types/Project";
 
 import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import React, { Fragment, useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import exportCoverToZip from "@/utils/exportCoverToZip";
 
 // Components in the layout.
 import ProjectOverview from "@/pages/projects/slug/index";
+import ImportProjectModal from "@/components/ImportProjectModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import DropdownButton from "@/components/DropdownButton";
 
@@ -30,7 +31,7 @@ export default function Projects () {
   
     const handleProjectUpdate = () => {
       setCurrentProjectSlug(slug);
-      navigate(`${slug}/play`);
+      navigate(slug);
     };
   
     return (
@@ -95,9 +96,7 @@ export default function Projects () {
       // Check if we have selected a project from URL.
       // For showing it in navigation bar.
       const urlProjectSlug = location.pathname
-        .replace("/projects/", "")
-        .replace(/(\/settings|\/play)/, "")
-        .replace(/\//g, "");
+        .replace(/\/projects\//g, "");
 
       // Check if the project's slug exists.
       const urlProjectSlugFound = allStorageProjects.find(
@@ -112,10 +111,11 @@ export default function Projects () {
         console.info(
           "→ Found matching project from slug in URL: ", accourateProjectSlug
         );
+
         console.groupEnd();
 
         setCurrentProjectSlug(accourateProjectSlug);
-      }
+      } else console.groupEnd();
     })();
   }, []);
   
@@ -123,6 +123,8 @@ export default function Projects () {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false);
   const handleCreateCover = () => setCreateProjectModalOpen(true);
 
+  const [importProjectModalOpen, setImportProjectModalOpen] = useState(false);
+  const [projectToImport, setProjectToImport] = useState<ProjectStructure | null>(null);
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
@@ -143,9 +145,10 @@ export default function Projects () {
         );
 
         const coverData = await coverDataFile.async("string");
-        const parsedCoverData = JSON.parse(coverData);
+        const parsedCoverData: ProjectStructure = JSON.parse(coverData);
 
-        console.info(parsedCoverData);
+        setProjectToImport(parsedCoverData);
+        setImportProjectModalOpen(true);
       };
       
       const files = fileInput.files;
@@ -166,6 +169,7 @@ export default function Projects () {
   // children pages.
   const [menuComponents, setMenuComponents] = useState<JSX.Element[]>([]);
 
+  /** Show a loader while the projects are loading. */
   if (!allLocalProjects) return (
     <div
       className="flex flex-col gap-6 justify-center items-center w-screen h-screen"
@@ -179,10 +183,12 @@ export default function Projects () {
         />
         <span
           className="font-medium text-gray-400 text-opacity-80"
-        >lpadder.</span>
+        >
+          lpadder.
+        </span>
       </div>
       <h2
-        className="px-6 py-2 text-lg bg-gradient-to-r from-blue-600 to-pink-600 rounded-full"
+        className="px-6 py-2 text-lg bg-gradient-to-r from-blue-500 to-pink-500 rounded-full"
       >
         Loading your saved projects...
       </h2>
@@ -197,6 +203,18 @@ export default function Projects () {
           setAllLocalProjects={setAllLocalProjects}
 
           closeModal={() => setCreateProjectModalOpen(false)}
+        />
+      }
+
+      {(projectToImport && importProjectModalOpen)
+        && <ImportProjectModal
+          projectToImport={projectToImport}
+          setProjectToImport={setProjectToImport}
+          
+          allLocalProjects={allLocalProjects}
+          setAllLocalProjects={setAllLocalProjects}
+
+          closeModal={() => setImportProjectModalOpen(false)}
         />
       }
 

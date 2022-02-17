@@ -3,6 +3,8 @@ import type {
 } from "@/types/Project";
 
 import { FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
+
 import Input from "@/components/Input";
 
 type ProjectSettingsProps = {
@@ -31,6 +33,11 @@ export default function ProjectSettings ({
   
   return (
     <div>
+      <Link
+        to="play"
+      >
+        Return to player
+      </Link>
       <h1>Current settings</h1>
       <form onSubmit={handleSave}>
         <Input
