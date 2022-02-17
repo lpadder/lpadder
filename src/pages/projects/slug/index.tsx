@@ -48,19 +48,28 @@ export default function ProjectOverview ({
   // Update project to use when slug change.
   const projectSlug = params.slug;
   useEffect(() => {
-    /** Debug */ console.info(
-      "[useEffect: 'projectSlug']", projectSlug
-    );
+    console.group("[/:slug][useEffect]");
+    console.info("⌛ Loading", projectSlug, "project from 'allLocalProjects' state.");
 
     // Check if 'projectSlug' exists on router.
     if (!projectSlug) return;
 
+    // Get the project data and save it to local state.
     const projectStructureData = allLocalProjects.find(e => e.slug === projectSlug);
-    console.log()
     if (projectStructureData) {
       setProjectLocalData(projectStructureData.data);
+
+      // Reset components in header.
+      updateMenuComponents([]);
+
+      console.info("✔️ Finished load of", projectSlug, "project.");
+      console.groupEnd();
     }
+    // Project wasn't found (can happen when URL slug doesn't exist).
     else {
+      console.error("Project", projectSlug, "not found ! Redirecting to '/projects'.");
+      console.groupEnd();
+      
       navigate("/projects");
     }
   }, [projectSlug]);
@@ -77,7 +86,7 @@ export default function ProjectOverview ({
     if (!success || !project) return;
 
     return { slug, project };
-  }
+  };
 
   /** Update the local state AND the global state. */
   const saveProjectGlobally = async (data: ProjectStructure) => {
@@ -97,7 +106,7 @@ export default function ProjectOverview ({
 
       setAllLocalProjects([ ...updatedAllLocalProjects ]);
     }
-  }
+  };
 
   // Show a loader while loading
   // and checking the project. 

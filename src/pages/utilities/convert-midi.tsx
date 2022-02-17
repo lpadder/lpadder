@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Midi } from "@tonejs/midi";
 
+import downloadBlob from "@/utils/downloadBlob";
+
 export default function UtilitiesConvertMidiFile () {
   const [fromLayout, setFromLayout] = useState("live");
   const [toLayout, setToLayout] = useState("programmer");
@@ -16,29 +18,6 @@ export default function UtilitiesConvertMidiFile () {
       setUploadedFiles(files);
     }
   };
-  
-  const downloadBlob = (data: Uint8Array, fileName = "converted") => {
-    const blob = new Blob([data], {
-      type: "audio/midi"
-    });
-  
-    // Creating an element to auto-download the file.
-    const url = window.URL.createObjectURL(blob);
-    const aInput = document.createElement("a");
-
-    aInput.setAttribute("href", url);
-    aInput.setAttribute("download", fileName);
-    
-    // Append it to the DOM.
-    document.body.appendChild(aInput);
-    aInput.style.display = "none";
-
-    // Download href and remove the element.
-    aInput.click();
-    aInput.remove();
-  
-    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-  };
 
   const startConvert = () => {
     if (uploadedFiles && uploadedFiles.length > 0) {
@@ -52,7 +31,7 @@ export default function UtilitiesConvertMidiFile () {
           
           // Convert midi object to array and download it.
           const output = midi.toArray();
-          downloadBlob(output, file.name);
+          downloadBlob(output, file.name, "audio/midi");
         };
         
         // Read MIDI file as ArrayBuffer.

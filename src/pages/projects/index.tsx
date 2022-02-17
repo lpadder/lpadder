@@ -2,7 +2,10 @@ import type { ProjectStoredStructure } from "@/types/Project";
 
 import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import React, { Fragment, useState, useEffect } from "react";
+import JSZip from "jszip";
+
 import stores from "@/stores";
+import exportCoverToZip from "@/utils/exportCoverToZip";
 
 // Components in the layout.
 import ProjectOverview from "@/pages/projects/slug/index";
@@ -10,6 +13,7 @@ import CreateProjectModal from "@/components/CreateProjectModal";
 import DropdownButton from "@/components/DropdownButton";
 
 // Icons
+import LpadderLogo from "@/assets/icon.png";
 import { HiCog, HiShare } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
@@ -18,14 +22,14 @@ export default function Projects () {
   const location = useLocation();
 
   // Used to style the currently selected cover.
-  const [currentProject, setCurrentProject] = useState<string | null>(null);
+  const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
     const navigate = useNavigate();
   
     const handleProjectUpdate = () => {
-      setCurrentProject(slug);
+      setCurrentProjectSlug(slug);
       navigate(`${slug}/play`);
     };
   
@@ -78,9 +82,15 @@ export default function Projects () {
    */
   useEffect(() => {
     (async () => {
+      console.group("[/][useEffect]");
+      console.info("⌛ Fetching every stored projects...");
+
       const allStorageProjects = await stores.projects.getStoredProjects();
       setAllLocalProjects(allStorageProjects);
-    
+
+      console.info(
+        "✔️ Stored every projects in local state: 'allLocalProjects' !"
+      );
 
       // Check if we have selected a project from URL.
       // For showing it in navigation bar.
@@ -100,10 +110,11 @@ export default function Projects () {
         const accourateProjectSlug = urlProjectSlugFound.slug;
 
         console.info(
-          "[/][useEffect] Found a matching project from slug in URL: ", accourateProjectSlug
+          "→ Found matching project from slug in URL: ", accourateProjectSlug
         );
+        console.groupEnd();
 
-        setCurrentProject(accourateProjectSlug);
+        setCurrentProjectSlug(accourateProjectSlug);
       }
     })();
   }, []);
@@ -115,24 +126,31 @@ export default function Projects () {
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
-    fileInput.setAttribute("hidden", "");
+    fileInput.setAttribute("hidden", "true");
     
     // Only accept ".zip" files.
     fileInput.setAttribute("accept", ".zip");
     
     fileInput.addEventListener("change", () => {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const arrayBuffer = reader.result as ArrayBuffer;
-        console.log("Imported file content.", arrayBuffer);
+        const zip_content = await JSZip.loadAsync(arrayBuffer);
+
+        const coverDataFile = zip_content.file("cover.json");
+        if (!coverDataFile) return console.error(
+          "This ZIP file doesn't contains a 'cover.json' file. Indeed this file isn't a lpadder cover."
+        );
+
+        const coverData = await coverDataFile.async("string");
+        const parsedCoverData = JSON.parse(coverData);
+
+        console.info(parsedCoverData);
       };
       
       const files = fileInput.files;
       if (files && files.length > 0) {
         reader.readAsArrayBuffer(files[0]);
-      }
-      else {
-        console.info("Import project file aborted.");
       }
     });
 
@@ -145,14 +163,31 @@ export default function Projects () {
   };
 
   // State for components in header that can be updated from
-  // children pages. Using useEffect to debug the state.
+  // children pages.
   const [menuComponents, setMenuComponents] = useState<JSX.Element[]>([]);
 
-  useEffect(() => {
-    /** Debug */ console.info("[useEffect: 'menuComponents']", menuComponents);
-  }, [menuComponents]);
-
-  if (!allLocalProjects) return <p>Loading</p>;
+  if (!allLocalProjects) return (
+    <div
+      className="flex flex-col gap-6 justify-center items-center w-screen h-screen"
+    >
+      <div
+        className="flex flex-col gap-4 justify-center items-center"
+      >
+        <img
+          className="w-24 h-24" alt="lpadder's logo"
+          src={LpadderLogo}
+        />
+        <span
+          className="font-medium text-gray-400 text-opacity-80"
+        >lpadder.</span>
+      </div>
+      <h2
+        className="px-6 py-2 text-lg bg-gradient-to-r from-blue-600 to-pink-600 rounded-full"
+      >
+        Loading your saved projects...
+      </h2>
+    </div>
+  );
 
   return (
     <Fragment>
@@ -184,43 +219,45 @@ export default function Projects () {
             </button>
           </div>
 
-          <ul className="flex flex-row-reverse gap-4">
-            <HeaderItem>
-              <a
-                onClick={() => console.info("Settings")}
-                className="p-2 text-gray-400 rounded transition-colors cursor-pointer hover:bg-blue-800 hover:bg-opacity-20 hover:text-blue-400"
-              >
-                <HiCog size={28} />
-              </a>
-            </HeaderItem>
-            <HeaderItem>
-              <DropdownButton
-                buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
-                menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
-                itemActiveClassName="bg-gray-600 bg-opacity-60"
-                itemClassName="bg-gray-600 bg-opacity-40"
-                items={[
-                  {
-                    name: "Export to .zip",
-                    action: () => console.info("Export to .zip")
-                  },
-                  {
-                    name: "Collaborate online",
-                    action: () => console.info("Collaborate")
-                  },
-                ]}
-              >
-                <HiShare size={28} />
-              </DropdownButton>
-            </HeaderItem>
-            {menuComponents.length > 0
-              && menuComponents.map((component, key) =>
-                <HeaderItem key={key}>
-                  {component}
-                </HeaderItem>
-              )
-            }
-          </ul>
+          {currentProjectSlug &&
+            <ul className="flex flex-row-reverse gap-4">
+              <HeaderItem>
+                <Link
+                  className="p-2 text-gray-400 rounded transition-colors cursor-pointer hover:bg-blue-800 hover:bg-opacity-20 hover:text-blue-400"
+                  to={`${currentProjectSlug}/settings`}
+                >
+                  <HiCog size={28} />
+                </Link>
+              </HeaderItem>
+              <HeaderItem>
+                <DropdownButton
+                  buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                  menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
+                  itemActiveClassName="bg-gray-600 bg-opacity-60"
+                  itemClassName="bg-gray-600 bg-opacity-40"
+                  items={[
+                    {
+                      name: "Export to .zip",
+                      action: async () => await exportCoverToZip(currentProjectSlug)
+                    },
+                    {
+                      name: "Collaborate online",
+                      action: () => console.info("Collaborate")
+                    },
+                  ]}
+                >
+                  <HiShare size={28} />
+                </DropdownButton>
+              </HeaderItem>
+              {menuComponents.length > 0
+                && menuComponents.map((component, key) =>
+                  <HeaderItem key={key}>
+                    {component}
+                  </HeaderItem>
+                )
+              }
+            </ul>
+          }
         </header>
 
         {/** Projects Navigation */}
@@ -244,7 +281,7 @@ export default function Projects () {
                     key={project.slug}
                     slug={project.slug}
                     name={project.data.name}
-                    selected={project.slug === currentProject}
+                    selected={project.slug === currentProjectSlug}
                   />
                 )}
               </Fragment>

@@ -11,6 +11,7 @@
     "@fontsource/poppins": "^4.5.0",
     "@headlessui/react": "^1.4.3",
     "@tonejs/midi": "^2.0.28",
+    "jszip": "^3.7.1",
     "localforage": "^1.10.0",
     "pako": "^2.0.4",
     "react": "^17.0.2",

@@ -43,7 +43,7 @@ export default function CreateProjectModal ({
           slug: state.slug,
           data: project
         }
-      ])
+      ]);
       
       closeModal();
     }

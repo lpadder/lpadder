@@ -27,7 +27,7 @@ export default function ProjectSettings ({
       ...data,
       name: newName
     });
-  }
+  };
   
   return (
     <div>
