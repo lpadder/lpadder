@@ -2,10 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 // Fonts
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
+import "@fontsource/poppins/latin-300.css";
+import "@fontsource/poppins/latin-400.css";
+import "@fontsource/poppins/latin-500.css";
 
 // TailwindCSS
 import "@/styles/globals.css";
