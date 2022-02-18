@@ -42,7 +42,6 @@ export default function UtilitiesConvertMidiFile () {
 
   return (
     <div>
-      <Link to="../">Go back to utilities</Link>
       <h1>Convert layout of MIDI files</h1>
       <p>
         Imagine you have a MIDI file for a Launchpad Live layout and

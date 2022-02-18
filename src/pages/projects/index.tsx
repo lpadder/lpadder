@@ -13,9 +13,9 @@ import ProjectOverview from "@/pages/projects/slug/index";
 import ImportProjectModal from "@/components/ImportProjectModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import DropdownButton from "@/components/DropdownButton";
+import FullLoader from "@/components/FullLoader";
 
 // Icons
-import LpadderLogo from "@/assets/icon.png";
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
@@ -222,30 +222,9 @@ export default function Projects () {
   const [menuComponents, setMenuComponents] = useState<JSX.Element[]>([]);
 
   /** Show a loader while the projects are loading. */
-  if (!allLocalProjects) return (
-    <div
-      className="flex flex-col gap-6 justify-center items-center w-screen h-screen"
-    >
-      <div
-        className="flex flex-col gap-4 justify-center items-center"
-      >
-        <img
-          className="w-24 h-24" alt="lpadder's logo"
-          src={LpadderLogo}
-        />
-        <span
-          className="font-medium text-gray-400 text-opacity-80"
-        >
-          lpadder.
-        </span>
-      </div>
-      <h2
-        className="px-6 py-2 text-lg bg-gradient-to-r from-blue-500 to-pink-500 rounded-full"
-      >
-        Loading your saved projects...
-      </h2>
-    </div>
-  );
+  if (!allLocalProjects) return <FullLoader
+    loadingText="Loading your saved projects..."
+  />;
 
   return (
     <Fragment>
