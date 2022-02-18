@@ -9,18 +9,12 @@ type DropdownButtonProps = {
   children: React.ReactNode;
   items: { name: string; action: () => void; }[];
   buttonClassName: string;
-  menuClassName: string;
-  itemClassName: string;
-  itemActiveClassName: string;
 };
 
 export default function DropdownButton ({
   items,
   children,
-  buttonClassName,
-  menuClassName,
-  itemClassName,
-  itemActiveClassName
+  buttonClassName
 }: DropdownButtonProps) {
   return (
     <Menu
@@ -47,7 +41,7 @@ export default function DropdownButton ({
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className={`absolute right-0 mt-2 w-56 rounded-md shadow-md origin-top-right ${menuClassName}`}
+          className={"absolute right-0 mt-2 w-56 bg-gray-800 rounded-md shadow-md origin-top-right"}
         >
           <div className="py-1">
             {items.map(item =>
@@ -56,8 +50,8 @@ export default function DropdownButton ({
                   <a
                     onClick={item.action}
                     className={classNames(
-                      active ? itemActiveClassName : itemClassName,
-                      "block px-2 py-1 mx-2 my-1 text-sm rounded transition-colors cursor-pointer"
+                      active ? "bg-gray-600 bg-opacity-60" : "bg-gray-600 bg-opacity-40",
+                      "block px-2 py-2 mx-2 my-1 text-sm rounded transition-colors cursor-pointer"
                     )}
                   >
                     {item.name}

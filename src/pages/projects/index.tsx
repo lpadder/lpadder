@@ -54,9 +54,6 @@ export default function Projects () {
         </div>
         <DropdownButton
           buttonClassName="p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
-          menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
-          itemActiveClassName="bg-gray-600 bg-opacity-60"
-          itemClassName="bg-gray-600 bg-opacity-40"
           items={[
             {
               name: "Delete",
@@ -271,9 +268,6 @@ export default function Projects () {
               <HeaderItem>
                 <DropdownButton
                   buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
-                  menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
-                  itemActiveClassName="bg-gray-600 bg-opacity-60"
-                  itemClassName="bg-gray-600 bg-opacity-40"
                   items={[
                     {
                       name: "Export to .zip",
