@@ -12,10 +12,7 @@ import { getHexFromVelocity } from "@/utils/novationPalette";
 
 type ProjectPlayProps = {
   data: ProjectStructure;
-  saveProjectLocally: (data: ProjectStructure) => Promise<{
-    slug: string;
-    project: ProjectStructure;
-  } | undefined>;
+  saveProjectLocally: (data: ProjectStructure) => Promise<void>;
   saveProjectGlobally: (data: ProjectStructure) => Promise<void>;
 };
 
@@ -36,36 +33,43 @@ export default function ProjectPlay ({
 
   const handleContextMenu: ContextEventFunctionProps = (padId, launchpadId, event) => {
     console.log(event.currentTarget);
-  }
+  };
 
   return (
-    <div>
-      <h1>Play</h1>
-      
+    <div>      
       <div
         className="flex flex-row gap-2 justify-center items-center w-full"
       >
-        <div
-          className="w-64 h-64"
-        >
-          <Launchpad
-            layout="programmer"
-            onPadDown={handlePadDown}
-            onPadUp={handlePadUp}
+        {data.launchpads.length > 0
+          ? data.launchpads.map((_, id) =>
+            <div
+              key={id}
+              className="w-64 h-64"
+            >
+              <Launchpad
+                launchpadId={id}
+                layout="programmer"
+                onPadDown={handlePadDown}
+                onPadUp={handlePadUp}
 
-            onContextMenu={handleContextMenu}
-          />
-        </div>
-        <div
-          className="w-64 h-64"
-        >
-          <Launchpad
-            launchpadId={1}
-            layout="programmer"
-            onPadDown={handlePadDown}
-            onPadUp={handlePadUp}
-          />
-        </div>
+                onContextMenu={handleContextMenu}
+              />
+            </div>
+          )
+          : <button
+            onClick={async () => {
+              const newData = {
+                ...data,
+                launchpads: [...data.launchpads, []]
+              };
+
+              await saveProjectLocally({ ...newData });
+            }}
+            className="px-4 py-2 bg-blue-600 rounded-full"
+          >
+            Add a launchpad
+          </button>
+        }
       </div>
     </div>
   );

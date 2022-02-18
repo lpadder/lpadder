@@ -9,11 +9,8 @@ import React, {
 } from "react";
 
 import {
-  Routes,
-  Route,
   useParams,
-  useNavigate,
-  Navigate
+  useNavigate
 } from "react-router-dom";
 
 import stores from "@/stores";
@@ -73,53 +70,68 @@ export default function ProjectOverview ({
     }
   }, [projectSlug]);
 
+  const SaveButtonInMenu = ({ changesNotSaved }: { changesNotSaved: boolean }) => {
+    return (
+      <button
+        className={`py-2 px-4 ${changesNotSaved ? "bg-pink-600" : "bg-blue-600"} bg-opacity-60 rounded-full`}
+        onClick={() => saveProjectGlobally(projectLocalData as ProjectStructure)}
+      >
+        {changesNotSaved ? "Unsaved changes" : "Saved"}
+      </button>
+    );
+  };
+
+  // Set to 'true' when a local save has been made.
+  const [changesNotSaved, setChangesNotSaved] = useState(false);
+  useEffect(() => {
+    console.info("[changesNotSaved] New state:", changesNotSaved);
+
+    updateMenuComponents([<SaveButtonInMenu key={null} changesNotSaved={changesNotSaved} />]);
+  }, [changesNotSaved]);
+
   /** Update the local state of the current project. */
   const saveProjectLocally = async (data: ProjectStructure) => {
     if (!projectSlug) return;
 
     // Update local state data.
     setProjectLocalData(data);
-
-    // Also update the localForage.
-    const [success, slug, project] = await stores.projects.updateProject(projectSlug, data);
-    if (!success || !project) return;
-
-    return { slug, project };
+    setChangesNotSaved(true);
   };
 
   /** Update the local state AND the global state. */
   const saveProjectGlobally = async (data: ProjectStructure) => {
     if (!projectSlug) return;
 
-    const savedData = await saveProjectLocally(data);
-    if (savedData) {
-      const updatedAllLocalProjects =  [ ...allLocalProjects ];
-      const projectToUpdateIndex = updatedAllLocalProjects.findIndex(
-        e => e.slug === savedData.slug
-      );
+    // Also update the localForage.
+    const [success, slug, project] = await stores.projects.updateProject(projectSlug, data);
+    if (!success || !project) return;
 
-      updatedAllLocalProjects[projectToUpdateIndex] = {
-        slug: savedData.slug,
-        data: savedData.project
-      };
+    const updatedAllLocalProjects =  [ ...allLocalProjects ];
+    const projectToUpdateIndex = updatedAllLocalProjects.findIndex(
+      e => e.slug === slug
+    );
 
-      setAllLocalProjects([ ...updatedAllLocalProjects ]);
-    }
+    updatedAllLocalProjects[projectToUpdateIndex] = {
+      slug: slug,
+      data: project
+    };
+
+    setAllLocalProjects([ ...updatedAllLocalProjects ]);
+    setChangesNotSaved(false);
   };
 
   // Show a loader while loading
   // and checking the project. 
   if (!projectLocalData) return <p>Loading...</p>; 
 
-  // Show the complete UI with routes.
+  // Load all the components to run the project.
   return (
     <div className="p-4">
-      <h1 className="text-lg font-medium">{projectLocalData.name}</h1>
-        <ProjectPlay
-          data={projectLocalData}
-          saveProjectLocally={saveProjectLocally}
-          saveProjectGlobally={saveProjectGlobally}
-        />
+      <ProjectPlay
+        data={projectLocalData}
+        saveProjectLocally={saveProjectLocally}
+        saveProjectGlobally={saveProjectGlobally}
+      />
     </div>
   );
 }

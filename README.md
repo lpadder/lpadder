@@ -58,6 +58,17 @@ This file contains the project's global configuration and data.
 
   /** Launchpadders that made the cover */
   launchpadders: string[];
+
+  /** Launchpads used in the cover */
+  launchpads: ({
+    name: string;
+    samples: {
+      /** Note: 'padId' will always match with Programmer layout only ! */
+      padId: number;
+      // More in coming...
+    }[]; // Samples in the page.
+  }[]) // Pages in a launchpad.
+  []; // Launchpads array.
 }
 ```
 
@@ -65,10 +76,10 @@ This file contains the project's global configuration and data.
 
 ### Development
 
-This app is boostrapped by Vite, its PWA plugin,
-React and TypeScript.
+This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org) and [TypeScript](https://www.typescriptlang.org) and deployed with [Vercel](https://vercel.com).
 
-- `yarn dev`: Starts the Vite development server (on path `/absproxy/3000`).
+- `yarn dev`: Starts the Vite development server on port 3000.
+  - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file and append `CLIENT_PORT=443` where `443` is the port you use in your reverse proxy. This will make the HMR work.
 - `yarn build`: Builds the app into `dist` directory.
 - `yarn serve`: Serves the builded app under `dist`.
 

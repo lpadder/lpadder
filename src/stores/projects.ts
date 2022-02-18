@@ -100,7 +100,8 @@ class ProjectsStore {
     const project: ProjectStructure = {
       name,
       authors,
-      launchpadders
+      launchpadders,
+      launchpads: []
     };
 
     // Check if the slug already exists.
