@@ -369,9 +369,36 @@ export default function Projects () {
                 />
               }
             />
+
+            <Route
+              index
+              element={<NoCoverSelectedPage />}
+            />
           </Routes>
         </div>
       </div>
     </Fragment>
   );
 }
+
+const NoCoverSelectedPage = () => {
+  return (
+    <main
+      className="flex flex-col justify-center items-center w-full h-full"
+    >
+      <div
+        className="flex flex-col gap-4 justify-center items-center w-96"
+      >
+        <h2
+          className="text-2xl font-medium text-gray-200"
+        >
+          No project selected !
+        </h2>
+        <p className="p-4 mx-4 text-center text-gray-400 bg-gray-900 bg-opacity-60 rounded-lg">
+          Take a look at the menu and select, create or import a project; then play or edit the project as you want !
+        </p>
+
+      </div>
+    </main>
+  );
+};
