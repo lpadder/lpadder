@@ -14,32 +14,34 @@ import {
 } from "react-router-dom";
 
 import stores from "@/stores";
+import { useProjectsStore } from "@/pages/projects";
 
 // Pages
 import ProjectPlay from "@/components/ProjectPlay";
 
-type ProjectOverviewProps = {
-  allLocalProjects: ProjectStoredStructure[];
-  setAllLocalProjects: React.Dispatch<
-    React.SetStateAction<ProjectStoredStructure[] | null>
-  >;
 
+type ProjectOverviewProps = {
   updateMenuComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 };
 
 export default function ProjectOverview ({
-  allLocalProjects,
-  setAllLocalProjects,
   updateMenuComponents
 }: ProjectOverviewProps) {
   const navigate = useNavigate();
   const params = useParams();
+
+  const { allLocalProjects, setAllLocalProjects } = useProjectsStore(state => ({
+    allLocalProjects: state.allLocalProjects as ProjectStoredStructure[],
+    setAllLocalProjects: state.setAllLocalProjects
+  }));
 
   // Project data state that will be shared
   // with 'settings' and 'play'.
   // We use this state, when saving, to update
   // global project state.
   const [projectLocalData, setProjectLocalData] = useState<ProjectStructure | null>(null);
+
+  useEffect(() => console.info(":slug Reloaded"), []);
 
   // Update project to use when slug change.
   const projectSlug = params.slug;
@@ -54,9 +56,7 @@ export default function ProjectOverview ({
     const projectStructureData = allLocalProjects.find(e => e.slug === projectSlug);
     if (projectStructureData) {
       setProjectLocalData(projectStructureData.data);
-
-      // Reset components in header.
-      updateMenuComponents([]);
+      setChangesNotSaved(false);
 
       console.info("✔️ Finished load of", projectSlug, "project.");
       console.groupEnd();

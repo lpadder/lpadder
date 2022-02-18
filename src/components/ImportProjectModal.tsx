@@ -1,36 +1,30 @@
 import type {
-  ProjectStoredStructure,
-  ProjectStructure
+  ProjectStructure,
+  ProjectStoredStructure
 } from "@/types/Project";
+
 import { FormEvent, useState } from "react";
 
 import stores from "../stores";
 import Input from "./Input";
 
+import { useProjectsStore } from "@/pages/projects";
+ 
 type ImportProjectModalProps = {
-  projectToImport: ProjectStructure;
-  setProjectToImport: React.Dispatch<
-    React.SetStateAction<ProjectStructure | null>
-  >;
-
-  allLocalProjects: ProjectStoredStructure[];
-  setAllLocalProjects: React.Dispatch<
-    React.SetStateAction<ProjectStoredStructure[] | null>
-  >;
-
   closeModal: () => void;
 };
 
 export default function ImportProjectModal ({
-  projectToImport,
-  setProjectToImport,
-
-  allLocalProjects,
-  setAllLocalProjects,
-
   closeModal
 }: ImportProjectModalProps) {
   const [slug, setSlug] = useState("");
+
+  const projectsStore = useProjectsStore(state => ({
+    allLocalProjects: state.allLocalProjects,
+    setAllLocalProjects: state.setAllLocalProjects,
+    projectToImport: state.projectToImport,
+    setProjectToImport: state.setProjectToImport
+  }));
 
   const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,12 +33,12 @@ export default function ImportProjectModal ({
     if (!slug) return;
     
     const [success, message, project] = await stores.projects.updateProject(
-      slug, projectToImport
+      slug, projectsStore.projectToImport as ProjectStructure
     );
 
     if (success && project) {
-      setAllLocalProjects([
-        ...allLocalProjects,
+      projectsStore.setAllLocalProjects([
+        ...projectsStore.allLocalProjects as ProjectStoredStructure[],
         {
           slug,
           data: project
@@ -52,7 +46,7 @@ export default function ImportProjectModal ({
       ]);
 
       // Clear unused value.
-      setProjectToImport(null);
+      projectsStore.setProjectToImport(null);
       closeModal();
     }
     else {
@@ -70,7 +64,7 @@ export default function ImportProjectModal ({
             Import a cover
           </h2>
           <p className="px-4 py-2 text-opacity-40 bg-pink-800 bg-opacity-20 rounded-lg">
-            You are currently importing <span className="font-medium text-pink-400">{projectToImport.name}</span> project.
+            You are currently importing <span className="font-medium text-pink-400">{(projectsStore.projectToImport as ProjectStructure).name}</span> project.
           </p>
 
           <form className="mt-8 space-y-6" onSubmit={handleCreation}>
@@ -91,7 +85,7 @@ export default function ImportProjectModal ({
                 className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
                 onClick={() => {
                   // Clean values before closing modal.
-                  setProjectToImport(null);
+                  projectsStore.setProjectToImport(null);
                   closeModal();
                 }}
               >

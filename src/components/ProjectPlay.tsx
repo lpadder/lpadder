@@ -7,6 +7,8 @@ import type {
   ContextEventFunctionProps
 } from "@/components/Launchpad";
 
+import DropdownButton from "./DropdownButton";
+
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 

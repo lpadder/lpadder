@@ -15,8 +15,25 @@ import DropdownButton from "@/components/DropdownButton";
 
 // Icons
 import LpadderLogo from "@/assets/icon.png";
-import { HiCog, HiShare, HiOutlineDotsVertical } from "react-icons/hi";
+import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
+
+import create from "zustand";
+
+export type ProjectsStore = {
+  allLocalProjects: ProjectStoredStructure[] | null;
+  setAllLocalProjects: (data: ProjectStoredStructure[]) => void;
+
+  projectToImport: ProjectStructure | null;
+  setProjectToImport: (data: ProjectStructure | null) => void;
+}
+export const useProjectsStore = create<ProjectsStore>(set => ({
+  allLocalProjects: null,
+  setAllLocalProjects: (data) => set(() => ({ allLocalProjects: data })),
+
+  projectToImport: null,
+  setProjectToImport: (data) => set(() => ({ projectToImport: data }))
+}));
 
 export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,9 +42,9 @@ export default function Projects () {
   // Used to style the currently selected cover.
   const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
-  /** Saved projects are fetched and stored into . */
-  const [allLocalProjects, setAllLocalProjects] = useState<ProjectStoredStructure[] | null>(null);
-
+  const allLocalProjects = useProjectsStore(state => state.allLocalProjects);
+  const setAllLocalProjects = useProjectsStore(state => state.setAllLocalProjects);
+  
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
     const navigate = useNavigate();
@@ -223,23 +240,13 @@ export default function Projects () {
 
   return (
     <Fragment>
-      {createProjectModalOpen
-        && <CreateProjectModal
-          allLocalProjects={allLocalProjects}
-          setAllLocalProjects={setAllLocalProjects}
-
-          closeModal={() => setCreateProjectModalOpen(false)}
-        />
-      }
+      <CreateProjectModal
+        open={createProjectModalOpen}
+        closeModal={() => setCreateProjectModalOpen(false)}
+      />
 
       {(projectToImport && importProjectModalOpen)
         && <ImportProjectModal
-          projectToImport={projectToImport}
-          setProjectToImport={setProjectToImport}
-          
-          allLocalProjects={allLocalProjects}
-          setAllLocalProjects={setAllLocalProjects}
-
           closeModal={() => setImportProjectModalOpen(false)}
         />
       }
@@ -348,9 +355,6 @@ export default function Projects () {
               path=":slug/*"
               element={
                 <ProjectOverview
-                  allLocalProjects={allLocalProjects}
-                  setAllLocalProjects={setAllLocalProjects}
-
                   updateMenuComponents={setMenuComponents}
                 />
               }

@@ -9,12 +9,14 @@ type DropdownButtonProps = {
   children: React.ReactNode;
   items: { name: string; action: () => void; }[];
   buttonClassName: string;
+  alwaysShow?: boolean;
 };
 
 export default function DropdownButton ({
   items,
   children,
-  buttonClassName
+  buttonClassName,
+  alwaysShow = false
 }: DropdownButtonProps) {
   return (
     <Menu
@@ -25,11 +27,13 @@ export default function DropdownButton ({
       }
       className="inline-block relative text-left"
     >
-      <div>
-        <Menu.Button className={buttonClassName}>
-          {children}
-        </Menu.Button>
-      </div>
+      {!alwaysShow &&
+        <div>
+          <Menu.Button className={buttonClassName}>
+            {children}
+          </Menu.Button>
+        </div>
+      }
 
       <Transition
         as={Fragment}
@@ -41,6 +45,7 @@ export default function DropdownButton ({
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
+          static={alwaysShow}
           className={"absolute right-0 mt-2 w-56 bg-gray-800 rounded-md shadow-md origin-top-right"}
         >
           <div className="py-1">
