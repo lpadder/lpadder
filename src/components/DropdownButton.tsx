@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 
 function classNames(...classes: string[]) {
@@ -23,7 +23,14 @@ export default function DropdownButton ({
   itemActiveClassName
 }: DropdownButtonProps) {
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu
+      as="div"
+      onClick={
+        /** We stop propagation to prevent click event on parents. */
+        (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
+      }
+      className="inline-block relative text-left"
+    >
       <div>
         <Menu.Button className={buttonClassName}>
           {children}
@@ -40,10 +47,7 @@ export default function DropdownButton ({
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className={`
-            ${menuClassName} origin-top-right absolute right-0
-            mt-2 w-56 rounded-md shadow-md
-          `}
+          className={`absolute right-0 mt-2 w-56 rounded-md shadow-md origin-top-right ${menuClassName}`}
         >
           <div className="py-1">
             {items.map(item =>
@@ -53,7 +57,7 @@ export default function DropdownButton ({
                     onClick={item.action}
                     className={classNames(
                       active ? itemActiveClassName : itemClassName,
-                      "block mx-2 px-2 my-1 py-1 rounded text-sm cursor-pointer transition-colors"
+                      "block px-2 py-1 mx-2 my-1 text-sm rounded transition-colors cursor-pointer"
                     )}
                   >
                     {item.name}

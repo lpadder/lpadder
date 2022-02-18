@@ -15,7 +15,7 @@ import DropdownButton from "@/components/DropdownButton";
 
 // Icons
 import LpadderLogo from "@/assets/icon.png";
-import { HiCog, HiShare } from "react-icons/hi";
+import { HiCog, HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
 export default function Projects () {
@@ -24,6 +24,9 @@ export default function Projects () {
 
   // Used to style the currently selected cover.
   const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
+
+  /** Saved projects are fetched and stored into . */
+  const [allLocalProjects, setAllLocalProjects] = useState<ProjectStoredStructure[] | null>(null);
 
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
@@ -38,14 +41,45 @@ export default function Projects () {
       <div
         onClick={handleProjectUpdate}
         className={`
+          flex flex-row items-center justify-between
           w-full px-4 py-6 cursor-pointer
           ${selected ? "bg-gray-600" : "bg-gray-700"}
           hover:bg-gray-800 hover:bg-opacity-40
           border-solid border-t-2 border-gray-800
         `}
       >
-        <h3 className="text-lg font-medium">{name}</h3>
-        <span className="font-light text-md">{slug}</span>
+        <div>
+          <h3 className="text-lg font-medium">{name}</h3>
+          <span className="font-light text-md">{slug}</span>
+        </div>
+        <DropdownButton
+          buttonClassName="p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
+          menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
+          itemActiveClassName="bg-gray-600 bg-opacity-60"
+          itemClassName="bg-gray-600 bg-opacity-40"
+          items={[
+            {
+              name: "Delete",
+              action: async () => {
+                const wasRemoved = await stores.projects.deleteProject(slug);
+                if (!wasRemoved) return;
+
+                const allLocalProjectsUpdated = [ ...allLocalProjects as ProjectStoredStructure[] ];
+                setAllLocalProjects([
+                  ...allLocalProjectsUpdated.filter(e => e.slug !== slug)
+                ]);
+
+                // If the current project was removed, we redirect
+                // to root because project will be inexistant.
+                if (currentProjectSlug === slug) {
+                  navigate("/projects");
+                }
+              }
+            }
+          ]}
+        >
+          <HiOutlineDotsVertical size={24} />
+        </DropdownButton>
       </div>
     );
   };
@@ -70,9 +104,6 @@ export default function Projects () {
       </li>
     );
   };
-
-  /** Saved projects are fetched and stored into . */
-  const [allLocalProjects, setAllLocalProjects] = useState<ProjectStoredStructure[] | null>(null);
 
   /**
    * On page load, we take every cover in the localForage
@@ -103,19 +134,17 @@ export default function Projects () {
         project => project.slug === urlProjectSlug
       );
 
-      // If the project is found from slug,
-      // save slug in state.
+      // If the project is found from slug.
       if (urlProjectSlugFound) {
         const accourateProjectSlug = urlProjectSlugFound.slug;
 
-        console.info(
-          "→ Found matching project from slug in URL: ", accourateProjectSlug
-        );
-
+        console.info("→ Found matching project from slug in URL: ", accourateProjectSlug);
         console.groupEnd();
 
+        // Save slug in state.
         setCurrentProjectSlug(accourateProjectSlug);
-      } else console.groupEnd();
+      }
+      else console.groupEnd();
     })();
   }, []);
   
