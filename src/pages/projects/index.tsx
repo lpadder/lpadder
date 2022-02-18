@@ -2,6 +2,7 @@ import { ProjectStoredStructure, ProjectStructure } from "@/types/Project";
 
 import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import React, { Fragment, useState, useEffect } from "react";
+import create from "zustand";
 import JSZip from "jszip";
 
 import stores from "@/stores";
@@ -17,8 +18,6 @@ import DropdownButton from "@/components/DropdownButton";
 import LpadderLogo from "@/assets/icon.png";
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
-
-import create from "zustand";
 
 export type ProjectsStore = {
   allLocalProjects: ProjectStoredStructure[] | null;
@@ -40,7 +39,6 @@ export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Used to style the currently selected cover.
   const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
   const {
@@ -93,8 +91,12 @@ export default function Projects () {
 
                 // If the current project was removed, we redirect
                 // to root because project will be inexistant.
+                // Also remove the useless components.
                 if (currentProjectSlug === slug) {
                   navigate("/projects");
+                  
+                  setMenuComponents([]);
+                  setCurrentProjectSlug(null);
                 }
               }
             }
