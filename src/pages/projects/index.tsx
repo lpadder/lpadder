@@ -387,7 +387,7 @@ const NoCoverSelectedPage = () => {
       className="flex flex-col justify-center items-center w-full h-full"
     >
       <div
-        className="flex flex-col gap-4 justify-center items-center w-96"
+        className="flex flex-col gap-4 justify-center items-center max-w-md text-sm sm:text-base md:w-96"
       >
         <h2
           className="text-2xl font-medium text-gray-200"
