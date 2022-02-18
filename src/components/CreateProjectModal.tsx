@@ -28,6 +28,8 @@ export default function CreateProjectModal ({
   const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log("d");
+
     // Verify states.
     if (!state.name || !state.slug) return;
     
@@ -82,6 +84,7 @@ export default function CreateProjectModal ({
 
             <div className="flex gap-2 justify-between">
               <button
+                type="button"
                 className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
                 onClick={closeModal}
               >

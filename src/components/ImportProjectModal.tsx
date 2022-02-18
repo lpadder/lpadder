@@ -66,12 +66,12 @@ export default function ImportProjectModal ({
     >
       <div className="flex justify-center items-center px-4 py-12 min-h-full sm:px-6 lg:px-8">
         <div className="px-8 py-4 space-y-8 w-full max-w-md bg-gray-900 rounded-lg">
-          <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-200">
+          <h2 className="mt-6 text-3xl font-medium text-center text-gray-200">
             Import a cover
           </h2>
-          <span>
-            You are currently importing "{projectToImport.name}" project.
-          </span>
+          <p className="px-4 py-2 text-opacity-40 bg-pink-800 bg-opacity-20 rounded-lg">
+            You are currently importing <span className="font-medium text-pink-400">{projectToImport.name}</span> project.
+          </p>
 
           <form className="mt-8 space-y-6" onSubmit={handleCreation}>
             <Input
@@ -80,13 +80,14 @@ export default function ImportProjectModal ({
               smallTipText="Slug used to identify the cover more easily from URL."
               onChange={(e) => {
                 const cleanedValue = e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-                return setSlug(cleanedValue)
+                return setSlug(cleanedValue);
               }}
               value={slug}
             />
 
             <div className="flex gap-2 justify-between">
               <button
+                type="button"
                 className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
                 onClick={() => {
                   // Clean values before closing modal.
