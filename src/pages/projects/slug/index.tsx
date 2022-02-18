@@ -76,7 +76,7 @@ export default function ProjectOverview ({
         className={`py-2 px-4 ${changesNotSaved ? "bg-pink-600" : "bg-blue-600"} bg-opacity-60 rounded-full`}
         onClick={() => saveProjectGlobally(projectLocalData as ProjectStructure)}
       >
-        {changesNotSaved ? "Unsaved changes" : "Saved"}
+        {changesNotSaved ? "Save" : "Saved"}
       </button>
     );
   };
@@ -90,7 +90,7 @@ export default function ProjectOverview ({
   }, [changesNotSaved]);
 
   /** Update the local state of the current project. */
-  const saveProjectLocally = async (data: ProjectStructure) => {
+  const saveProjectLocally = (data: ProjectStructure) => {
     if (!projectSlug) return;
 
     // Update local state data.

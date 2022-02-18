@@ -12,7 +12,7 @@ import { getHexFromVelocity } from "@/utils/novationPalette";
 
 type ProjectPlayProps = {
   data: ProjectStructure;
-  saveProjectLocally: (data: ProjectStructure) => Promise<void>;
+  saveProjectLocally: (data: ProjectStructure) => void;
   saveProjectGlobally: (data: ProjectStructure) => Promise<void>;
 };
 
@@ -57,13 +57,13 @@ export default function ProjectPlay ({
             </div>
           )
           : <button
-            onClick={async () => {
+            onClick={() => {
               const newData = {
                 ...data,
                 launchpads: [...data.launchpads, []]
               };
 
-              await saveProjectLocally({ ...newData });
+              saveProjectLocally({ ...newData });
             }}
             className="px-4 py-2 bg-blue-600 rounded-full"
           >

@@ -269,14 +269,6 @@ export default function Projects () {
           {currentProjectSlug &&
             <ul className="flex flex-row-reverse gap-4">
               <HeaderItem>
-                <Link
-                  className="p-2 text-gray-400 rounded transition-colors cursor-pointer hover:bg-blue-800 hover:bg-opacity-20 hover:text-blue-400"
-                  to={`${currentProjectSlug}/settings`}
-                >
-                  <HiCog size={28} />
-                </Link>
-              </HeaderItem>
-              <HeaderItem>
                 <DropdownButton
                   buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
                   menuClassName="bg-opacity-20 bg-gray-600 backdrop-blur-md"
