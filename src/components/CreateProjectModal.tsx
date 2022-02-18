@@ -45,17 +45,27 @@ export default function CreateProjectModal ({
         }
       ]);
       
-      closeModal();
+      resetAndClose();
     }
     else {
       console.error(`[CreateProjectModal] ${message}`);
     }
   };
 
+  /** We reset the values and close modal. */
+  const resetAndClose = () => {
+    setState({
+      slug: "",
+      name: ""
+    });
+    
+    closeModal();
+  };
+
   return (
-    <Modal open={open} onClose={closeModal}>
+    <Modal open={open} onClose={resetAndClose}>
       <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-200">
-            Create a cover
+        Create a cover
       </h2>
 
       <form className="mt-8 space-y-6" onSubmit={handleCreation}>
@@ -65,6 +75,7 @@ export default function CreateProjectModal ({
           onChange={(e) => setState({ ...state, name: e.target.value })}
           value={state.name}
         />
+
         <Input
           labelName="Personal slug"
           placeholder="some-amazing-cover"
@@ -80,15 +91,15 @@ export default function CreateProjectModal ({
           <button
             type="button"
             className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
-            onClick={closeModal}
+            onClick={resetAndClose}
           >
-                Cancel
+            Cancel
           </button>
           <button
             type="submit"
             className="px-4 py-2 w-full text-sm font-medium text-pink-400 bg-pink-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
           >
-                Create
+            Create
           </button>
         </div>
       </form>

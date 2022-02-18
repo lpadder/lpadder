@@ -32,10 +32,12 @@ export default function ImportProjectModal ({
     // Verify slug state.
     if (!slug || !projectToImport || !allLocalProjects) return;
     
+    // Save the project in localForage.
     const [success, message, project] = await stores.projects.updateProject(
       slug, projectToImport
     );
 
+    // If succeed, we update the all local projects.
     if (success && project) {
       setAllLocalProjects([
         ...allLocalProjects,
@@ -45,17 +47,22 @@ export default function ImportProjectModal ({
         }
       ]);
 
-      // Clear unused value.
-      setProjectToImport(null);
-      closeModal();
+      resetAndClose();
     }
     else {
       console.error(`[ImportProjectModal] ${message}`);
     }
   };
+  
+  /** We reset the values and close modal. */
+  const resetAndClose = () => {
+    setSlug("");
+    setProjectToImport(null);
+    closeModal();
+  };
 
   return (
-    <Modal open={open} onClose={closeModal}>
+    <Modal open={open} onClose={resetAndClose}>
       <h2 className="mt-6 text-3xl font-medium text-center text-gray-200">
         Import a cover
       </h2>
@@ -81,11 +88,7 @@ export default function ImportProjectModal ({
           <button
             type="button"
             className="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
-            onClick={() => {
-              // Clean values before closing modal.
-              setProjectToImport(null);
-              closeModal();
-            }}
+            onClick={resetAndClose}
           >
             Cancel
           </button>
