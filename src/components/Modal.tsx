@@ -1,6 +1,5 @@
 import {
   useRef,
-  useState,
   useEffect,
   Fragment
 } from "react";
@@ -24,7 +23,7 @@ export default function Modal ({
     // Close modal on ESC.
     const keyHandler = (e: KeyboardEvent) => e.code === "Escape" && onClose();
 
-    // Close modal on click.
+    // Close modal on backdrop click.
     const clickHandler = (e: MouseEvent) => e.target === backdropElement && onClose();
 
     if (backdrop.current) {

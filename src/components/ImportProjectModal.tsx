@@ -1,11 +1,5 @@
-import type {
-  ProjectStoredStructure,
-  ProjectStructure
-} from "@/types/Project";
-
 import {
   FormEvent,
-  Fragment,
   useState
 } from "react";
 
