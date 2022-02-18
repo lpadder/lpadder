@@ -27,6 +27,7 @@ export type ProjectsStore = {
   projectToImport: ProjectStructure | null;
   setProjectToImport: (data: ProjectStructure | null) => void;
 }
+
 export const useProjectsStore = create<ProjectsStore>(set => ({
   allLocalProjects: null,
   setAllLocalProjects: (data) => set(() => ({ allLocalProjects: data })),
@@ -42,8 +43,15 @@ export default function Projects () {
   // Used to style the currently selected cover.
   const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
-  const allLocalProjects = useProjectsStore(state => state.allLocalProjects);
-  const setAllLocalProjects = useProjectsStore(state => state.setAllLocalProjects);
+  const {
+    allLocalProjects,
+    setAllLocalProjects,
+    setProjectToImport
+  } = useProjectsStore(state => ({
+    allLocalProjects: state.allLocalProjects,
+    setAllLocalProjects: state.setAllLocalProjects,
+    setProjectToImport: state.setProjectToImport
+  }));
   
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
@@ -167,7 +175,6 @@ export default function Projects () {
   const handleCreateCover = () => setCreateProjectModalOpen(true);
 
   const [importProjectModalOpen, setImportProjectModalOpen] = useState(false);
-  const [projectToImport, setProjectToImport] = useState<ProjectStructure | null>(null);
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
@@ -245,11 +252,10 @@ export default function Projects () {
         closeModal={() => setCreateProjectModalOpen(false)}
       />
 
-      {(projectToImport && importProjectModalOpen)
-        && <ImportProjectModal
-          closeModal={() => setImportProjectModalOpen(false)}
-        />
-      }
+      <ImportProjectModal
+        open={importProjectModalOpen}
+        closeModal={() => setImportProjectModalOpen(false)}
+      />
 
       <div
         className="w-screen h-screen"

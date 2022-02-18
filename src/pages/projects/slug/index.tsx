@@ -13,12 +13,22 @@ import {
   useNavigate
 } from "react-router-dom";
 
+import create from "zustand";
 import stores from "@/stores";
 import { useProjectsStore } from "@/pages/projects";
 
 // Pages
 import ProjectPlay from "@/components/ProjectPlay";
 
+
+type LocalProjectStore = {
+  projectLocalData: ProjectStructure | null;
+  setProjectLocalData: (data: ProjectStructure) => void;
+}
+export const useLocalProjectStore = create<LocalProjectStore>(set => ({
+  projectLocalData: null,
+  setProjectLocalData: (data) => set(() => ({ projectLocalData: data }))
+}));
 
 type ProjectOverviewProps = {
   updateMenuComponents: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
@@ -35,13 +45,10 @@ export default function ProjectOverview ({
     setAllLocalProjects: state.setAllLocalProjects
   }));
 
-  // Project data state that will be shared
-  // with 'settings' and 'play'.
-  // We use this state, when saving, to update
-  // global project state.
-  const [projectLocalData, setProjectLocalData] = useState<ProjectStructure | null>(null);
-
-  useEffect(() => console.info(":slug Reloaded"), []);
+  const {
+    projectLocalData,
+    setProjectLocalData
+  } = useLocalProjectStore();
 
   // Update project to use when slug change.
   const projectSlug = params.slug;
@@ -74,7 +81,7 @@ export default function ProjectOverview ({
     return (
       <button
         className={`py-2 px-4 ${changesNotSaved ? "bg-pink-600" : "bg-blue-600"} bg-opacity-60 rounded-full`}
-        onClick={() => saveProjectGlobally(projectLocalData as ProjectStructure)}
+        onClick={() => saveProjectGlobally(projectLocalData)}
       >
         {changesNotSaved ? "Save" : "Saved"}
       </button>
@@ -99,8 +106,8 @@ export default function ProjectOverview ({
   };
 
   /** Update the local state AND the global state. */
-  const saveProjectGlobally = async (data: ProjectStructure) => {
-    if (!projectSlug) return;
+  const saveProjectGlobally = async (data: ProjectStructure | null) => {
+    if (!projectSlug || !data) return;
 
     // Also update the localForage.
     const [success, slug, project] = await stores.projects.updateProject(projectSlug, data);
@@ -128,9 +135,7 @@ export default function ProjectOverview ({
   return (
     <div className="p-4">
       <ProjectPlay
-        data={projectLocalData}
         saveProjectLocally={saveProjectLocally}
-        saveProjectGlobally={saveProjectGlobally}
       />
     </div>
   );

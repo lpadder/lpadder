@@ -15,8 +15,7 @@ type CreateProjectModalProps = {
 };
 
 export default function CreateProjectModal ({
-  open,
-  closeModal
+  open, closeModal
 }: CreateProjectModalProps) {
   const allLocalProjects = useProjectsStore(state => state.allLocalProjects);
   const setAllLocalProjects = useProjectsStore(state => state.setAllLocalProjects);

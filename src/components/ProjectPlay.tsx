@@ -7,23 +7,27 @@ import type {
   ContextEventFunctionProps
 } from "@/components/Launchpad";
 
-import DropdownButton from "./DropdownButton";
+import { useLocalProjectStore } from "@/pages/projects/slug";
 
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
+import { useEffect } from "react";
 
 type ProjectPlayProps = {
-  data: ProjectStructure;
   saveProjectLocally: (data: ProjectStructure) => void;
-  saveProjectGlobally: (data: ProjectStructure) => Promise<void>;
 };
 
 export default function ProjectPlay ({
-  data, 
-  saveProjectLocally, saveProjectGlobally
+  saveProjectLocally
 }: ProjectPlayProps) {
-  console.info("[ProjectPlay] 'data' from render:", data);
+  const data = useLocalProjectStore(state => state.projectLocalData);
 
+  useEffect(() => {
+    console.group("[ProjectPlay][useEffect]");
+    console.info("Got 'projectLocalData' from local state !", data);
+    console.groupEnd();
+  }, []);
+  
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
   };
@@ -36,6 +40,8 @@ export default function ProjectPlay ({
   const handleContextMenu: ContextEventFunctionProps = (padId, launchpadId, event) => {
     console.log(event.currentTarget);
   };
+
+  if (!data) return <p>Loading...</p>;
 
   return (
     <div>      
