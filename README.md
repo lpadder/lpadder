@@ -83,4 +83,9 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 - `yarn build`: Builds the app into `dist` directory.
 - `yarn serve`: Serves the builded app under `dist`.
 
+### Launchpad resources
+
+- Launchpad Pro MK3: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
+  - Used to determine layouts (`live` and `programmer`) and pads ID.
+
 ### Thanks you for reading !
