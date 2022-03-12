@@ -8,20 +8,29 @@ import FullLoader from "@/components/FullLoader";
 const AbletonParse = lazy(() => import("./ableton-parse"));
 const ConvertMidi = lazy(() => import("./convert-midi"));
 const MidiChecker = lazy(() => import("./midi-checker"));
+const MidiVisualizer = lazy(() => import("./midi-visualizer"));
 
 // List all utilities available.
 const utilities = [
   {
     slug: "ableton-parse",
-    description: "Parse Ableton Live Set (.als) file."
+    description: "Parse Ableton Live Set (.als) file.",
+    component: <AbletonParse />
   },
   {
     slug: "convert-midi",
-    description: "Convert your MIDI files to Launchpad's programmer or live layout."
+    description: "Convert your MIDI files to Launchpad's programmer or live layout.",
+    component: <ConvertMidi />
   },
   {
     slug: "midi-checker",
-    description: "Connect your MIDI device and listen to it's IO. You can also send input to them."
+    description: "Connect your MIDI device and listen to it's IO. You can also send input to them.",
+    component: <MidiChecker />
+  },
+  {
+    slug: "midi-visualizer",
+    description: "Parse any MIDI file and visualize it on an Launchpad. Useful when making lightshows.",
+    component: <MidiVisualizer />
   }
 ];
 
@@ -75,9 +84,14 @@ export default function Utilities () {
         <Suspense fallback={<FullLoader loadingText="Loading the utility..." />}>
           <Routes>
             <Route index element={<UtilitiesHome />} />
-            <Route path="ableton-parse" element={<AbletonParse />} />
-            <Route path="convert-midi" element={<ConvertMidi />} />
-            <Route path="midi-checker" element={<MidiChecker />} />
+
+            {utilities.map(utility => (
+              <Route
+                key={utility.slug}
+                path={utility.slug}
+                element={utility.component} 
+              />
+            ))}
 
             <Route path="*" element={<Navigate to="/utilities" />} />
           </Routes>
