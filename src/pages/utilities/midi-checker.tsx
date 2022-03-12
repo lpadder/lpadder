@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { WebMidi, Input, Output } from "webmidi";
+import type { Input, Output } from "webmidi";
 
+import { useEffect, useState } from "react";
+import { WebMidi } from "webmidi";
 
 export default function UtilitiesMidiChecker () {
   const [webMidiEnabled, setWebMidiEnabled] = useState(false);
