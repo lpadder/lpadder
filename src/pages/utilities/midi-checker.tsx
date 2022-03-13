@@ -1,30 +1,38 @@
 import type { Input, Output } from "webmidi";
 
 import { useEffect, useState } from "react";
-import { WebMidi } from "webmidi";
+import WebMidi from "webmidi";
 
 export default function UtilitiesMidiChecker () {
-  const [webMidiEnabled, setWebMidiEnabled] = useState(false);
+  const [webMidiEnabled, setWebMidiEnabled] = useState(WebMidi.enabled);
 
   useEffect(() => {
     console.group("[midi-checker][useEffect]");
-    console.info("-> Starting WebMidi...");
 
-    WebMidi
-      .enable()
-      .then (() => {
+    if (!webMidiEnabled) {
+      console.info("-> Starting WebMidi...");
+
+      WebMidi.enable((err) => {
+        if (err) {
+          console.error("<- An error was thrown.", err);
+          console.groupEnd();
+
+          alert("An error happenned, check console.");
+          return;
+        }
+
         console.info("<- Successfully enabled !");
         console.groupEnd();
 
         // Update WebMidi state.
         setWebMidiEnabled(true);
-      })
-      .catch (err => {
-        console.error("<- An error was thrown.", err);
-        console.groupEnd();
-
-        alert("An error happenned, check console.");
       });
+    }
+    // WebMidi was already enabled.
+    else {
+      console.info("<- WebMidi is already enabled !");
+      console.groupEnd();
+    }
   }, []);
 
   const [availableInputs, setAvailableInputs] = useState<Input[]>([]);
@@ -64,7 +72,6 @@ export default function UtilitiesMidiChecker () {
       )}
 
       <h2>Send MIDI</h2>
-      
     </div>
   );
 }
