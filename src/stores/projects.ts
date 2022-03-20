@@ -97,11 +97,13 @@ class ProjectsStore {
   ]> {
     if (!name || !slug) return [false, "Project name and slug are required.", null];
 
+    // Defining an empty project.
     const project: ProjectStructure = {
       name,
       authors,
       launchpadders,
-      launchpads: []
+      launchpads: [],
+      assets: []
     };
 
     // Check if the slug already exists.

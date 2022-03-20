@@ -7,6 +7,18 @@ export type ProjectStructureLaunchpadPage = {
   samples: ProjectStructureLaunchpadPageSample[];
 }
 
+export type ProjectStructureAssets = {
+  fileName: string;
+  /**
+   * Uint8Array only when the data is stored.
+   * string is for path in the current "lpadder zip" file.
+   */
+  data: Uint8Array | string;
+
+  /** Used as a filter for assets. */
+  type: "audio";
+}
+
 /**
  * Content of a cover that is stored in
  * a cover.json file or in localForage.
@@ -16,6 +28,7 @@ export interface ProjectStructure {
   authors: string[];
   launchpadders: string[];
   launchpads: ProjectStructureLaunchpadPage[][];
+  assets: ProjectStructureAssets[];
 }
 
 /**

@@ -17,9 +17,8 @@ import create from "zustand";
 import stores from "@/stores";
 import { useProjectsStore } from "@/pages/projects";
 
-// Pages
 import ProjectPlay from "@/components/ProjectPlay";
-
+import ProjectEditor from "@/components/ProjectEditor";
 
 type LocalProjectStore = {
   projectLocalData: ProjectStructure | null;
@@ -53,7 +52,7 @@ export default function ProjectOverview ({
   // Update project to use when slug change.
   const projectSlug = params.slug;
   useEffect(() => {
-    console.group("[/:slug][useEffect]");
+    console.group(`[/${projectSlug}][useEffect]`);
     console.info("⌛ Loading", projectSlug, "project from 'allLocalProjects' state.");
 
     // Check if 'projectSlug' exists on router.
@@ -135,6 +134,9 @@ export default function ProjectOverview ({
   return (
     <div className="p-4">
       <ProjectPlay
+        saveProjectLocally={saveProjectLocally}
+      />
+      <ProjectEditor
         saveProjectLocally={saveProjectLocally}
       />
     </div>
