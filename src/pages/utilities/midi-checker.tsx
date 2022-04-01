@@ -1,12 +1,10 @@
-import type { Input, Output } from "webmidi";
-
 import { useEffect, useState } from "react";
-import WebMidi from "webmidi";
+import { WebMidi, Input, Output } from "webmidi";
 
 export default function UtilitiesMidiChecker () {
   const [webMidiEnabled, setWebMidiEnabled] = useState(WebMidi.enabled);
 
-  useEffect(() => {
+/*  useEffect(() => {
     console.group("[midi-checker][useEffect]");
 
     if (!webMidiEnabled) {
@@ -33,7 +31,29 @@ export default function UtilitiesMidiChecker () {
       console.info("<- WebMidi is already enabled !");
       console.groupEnd();
     }
+  }, []);*/
+
+  useEffect(() => {
+    console.group("[midi-checker][useEffect]");
+    console.info("-> Starting WebMidi...");
+
+    WebMidi
+      .enable()
+      .then (() => {
+        console.info("<- Successfully enabled !");
+        console.groupEnd();
+
+        // Update WebMidi state.
+        setWebMidiEnabled(true);
+      })
+      .catch (err => {
+        console.error("<- An error was thrown.", err);
+        console.groupEnd();
+
+        alert("An error happenned, check console.");
+      });
   }, []);
+
 
   const [availableInputs, setAvailableInputs] = useState<Input[]>([]);
   const [availableOutputs, setAvailableOutputs] = useState<Output[]>([]);
