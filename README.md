@@ -1,6 +1,6 @@
 # lpadder: Play Launchpad covers directly from your browser.
 
-![GitHub - Social Banner](https://user-images.githubusercontent.com/59152884/149331485-5665c855-29ad-4205-9c90-3e632f1e7bef.png)
+![GitHub - Social Banner](https://user-images.githubusercontent.com/59152884/162007722-4f9df4b9-b293-4ae2-bcfa-4b4b8e25ce70.png)
 
 `lpadder` (pronounced `el padder` or `launchpadder`) is a web
 application - **still in development** - that lets you play
