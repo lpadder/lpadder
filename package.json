@@ -57,7 +57,7 @@
     },
     "github": {
       "release": true,
-      "draft": true,
+      "draft": false,
       "releaseName": "Release v${version}"
     },
     "npm": {

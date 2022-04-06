@@ -1,9 +1,8 @@
 name: Build and deploy
 
-# On new Github Releases (initially drafts)
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   build-and-deploy:
@@ -11,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: amondnet/vercel-action@v20
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Vercel Deploy
+        id: vercel-deploy
+        uses: amondnet/vercel-action@v20
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -20,3 +23,18 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} 
           github-comment: false
           vercel-args: "--prod"
+
+      - name: Create Vercel URL file
+        run: echo ${{ steps.vercel-deploy.outputs.preview-url }} >> url.txt
+
+      - name: Test output of the file
+        run: cat url.txt
+
+      - name: Upload to GitHub Releases
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: url.txt
+          asset_name: url.txt
+          asset_content_type: text/plain
+
