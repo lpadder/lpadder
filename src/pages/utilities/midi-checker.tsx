@@ -1,59 +1,37 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { WebMidi, Input, Output } from "webmidi";
 
 export default function UtilitiesMidiChecker () {
   const [webMidiEnabled, setWebMidiEnabled] = useState(WebMidi.enabled);
 
-/*  useEffect(() => {
+  useEffect(() => {
     console.group("[midi-checker][useEffect]");
 
     if (!webMidiEnabled) {
       console.info("-> Starting WebMidi...");
 
-      WebMidi.enable((err) => {
-        if (err) {
+      WebMidi
+        .enable()
+        .then (() => {
+          console.info("<- Successfully enabled !");
+          console.groupEnd();
+
+          // Update WebMidi state.
+          setWebMidiEnabled(true);
+        })
+        .catch (err => {
           console.error("<- An error was thrown.", err);
           console.groupEnd();
 
           alert("An error happenned, check console.");
-          return;
-        }
-
-        console.info("<- Successfully enabled !");
-        console.groupEnd();
-
-        // Update WebMidi state.
-        setWebMidiEnabled(true);
-      });
+        });
     }
     // WebMidi was already enabled.
     else {
       console.info("<- WebMidi is already enabled !");
       console.groupEnd();
     }
-  }, []);*/
-
-  useEffect(() => {
-    console.group("[midi-checker][useEffect]");
-    console.info("-> Starting WebMidi...");
-
-    WebMidi
-      .enable()
-      .then (() => {
-        console.info("<- Successfully enabled !");
-        console.groupEnd();
-
-        // Update WebMidi state.
-        setWebMidiEnabled(true);
-      })
-      .catch (err => {
-        console.error("<- An error was thrown.", err);
-        console.groupEnd();
-
-        alert("An error happenned, check console.");
-      });
   }, []);
-
 
   const [availableInputs, setAvailableInputs] = useState<Input[]>([]);
   const [availableOutputs, setAvailableOutputs] = useState<Output[]>([]);
@@ -89,6 +67,31 @@ export default function UtilitiesMidiChecker () {
         <div>
           <p>Loading WebMidi...</p>
         </div> 
+      )}
+
+      {webMidiEnabled && (
+        <Fragment>
+          <select>
+            {availableInputs.map(input => (
+              <option
+                key={input.id}
+                value={input.id}
+              >
+                {input.name}
+              </option>
+            ))}
+          </select>
+          <select>
+            {availableOutputs.map(input => (
+              <option
+                key={input.id}
+                value={input.id}
+              >
+                {input.name}
+              </option>
+            ))}
+          </select>
+        </Fragment>
       )}
 
       <h2>Send MIDI</h2>

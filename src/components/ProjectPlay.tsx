@@ -1,8 +1,4 @@
 import type {
-  ProjectStructure
-} from "@/types/Project";
-
-import type {
   ClickEventFunctionProps,
   ContextEventFunctionProps
 } from "@/components/Launchpad";

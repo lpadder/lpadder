@@ -42,8 +42,10 @@ export default function ProjectEditor ({
   const addLaunchpad = () => {
     const data_copy = { ...data };
 
-    // New empty launchpad.
-    data_copy.launchpads.push([]);
+    const index = data_copy.launchpads.length + 1;
+    const name = `Launchpad ${index}`;
+    data_copy.launchpads.push({ name, pages: [] });
+    
     saveProjectLocally(data_copy);
   };
 

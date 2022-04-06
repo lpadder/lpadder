@@ -99,6 +99,9 @@ class ProjectsStore {
 
     // Defining an empty project.
     const project: ProjectStructure = {
+      // Version of lpadder is defined globally, see `global.d.ts`.
+      version: APP_VERSION,
+
       name,
       authors,
       launchpadders,

@@ -1,11 +1,14 @@
-# Dependencies.
+# Dependencies
 node_modules
 
-# Miscallaneous.
+# Miscallaneous
 .DS_Store
 
-# Production build.
+# Production
 dist
 
-# Used to specify 'CLIENT_PORT' for Vite HMR.
+# Used for Vite HMR `CLIENT_PORT`.
 .env.local
+
+# Vercel
+.vercel

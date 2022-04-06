@@ -62,9 +62,12 @@ You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types
 This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org) and [TypeScript](https://www.typescriptlang.org). Deployment is made with [Vercel](https://vercel.com).
 
 - `yarn dev`: Starts the Vite development server on port 3000.
-  - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file and append `CLIENT_PORT=443` where `443` is the port you use in your reverse proxy. This will make the HMR work.
+  - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
 - `yarn build`: Builds the app into `dist` directory.
 - `yarn serve`: Serves the builded app under `dist`.
+- `yarn lint`: Only runs `eslint`. Useful when used with `--fix`.
+- `yarn run check`: Runs `eslint` and `tsc` to check for errors.
+- `yarn release`: Runs `yarn check`, bumps the `version` in `package.json`, commits the changes to `main` branch, tags the release and create a GitHub Release. The release will trigger a GitHub Action that would run a Vercel build. On successful deploy, it will updatethe GitHub Release to point to the newly deployed URL.
 
 ### Launchpad resources
 
