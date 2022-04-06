@@ -4,34 +4,107 @@ import type {
 
 import { useLocalProjectStore } from "@/pages/projects/slug";
 
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type ProjectEditorProps = {
   saveProjectLocally: (data: ProjectStructure) => void;
 };
 
-export default function ProjectPlay ({
+export default function ProjectEditor ({
   saveProjectLocally
 }: ProjectEditorProps) {
-  const data = useLocalProjectStore(state => state.projectLocalData);
+  const data = useLocalProjectStore(
+    state => state.projectLocalData
+  );
 
   useEffect(() => {
-    console.group("[ProjectEditor][useEffect]");
-    console.info("Got 'projectLocalData' from local state !", data);
-    console.groupEnd();
+    console.info("[ProjectEditor] Loading project editor...");
+
+    // TODO: Load modules and components...
+
+    console.info("[ProjectEditor] Done !");
   }, []);
-  
+
   if (!data) return <p>Loading...</p>;
 
-  return (
-    <div>      
-      <p>Timeline</p>
-      <div
-        className="flex flex-col  w-full bg-blue-600"
-      >
-        <div className="w-full h-26">
+  /** Index of the current used launchpad. */
+  const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | null>(null);
+  const handleLaunchpadSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
+    const index = evt.target.value;
+    if (index === "none") {
+      setCurrentLaunchpadSelected(null);
+      return;
+    }
 
-        </div>
+    setCurrentLaunchpadSelected(parseInt(index));
+  };
+
+  const addLaunchpad = () => {
+    const data_copy = { ...data };
+
+    // New empty launchpad.
+    data_copy.launchpads.push([]);
+    saveProjectLocally(data_copy);
+  };
+
+  const removeLaunchpad = () => {
+    const data_copy = { ...data };
+
+    // Remove launchpad using current index.
+    data_copy.launchpads = data_copy.launchpads.filter(
+      (_, index) => index !== currentLaunchpadSelected
+    );
+
+    console.log(data_copy);
+    saveProjectLocally(data_copy);
+  };
+
+  return (
+    <div>
+      <div>
+        <h3>Launchpads</h3>
+
+        <select
+          onChange={handleLaunchpadSelection}
+          placeholder="Select a launchpad"
+        >
+          <option value="none">None</option>
+          {data.launchpads.map((launchpad, launchpadKey) =>
+            <option value={launchpadKey} key={launchpadKey}>
+              Launchpad {launchpadKey}
+            </option>
+          )}
+        </select>
+
+        <button onClick={addLaunchpad}>
+          Add a launchpad
+        </button>
+
+        {currentLaunchpadSelected !== null && data.launchpads[currentLaunchpadSelected] &&
+          <div>
+            <button onClick={removeLaunchpad}>
+              Remove this launchpad
+            </button>
+          </div>
+        }
+        
+        {/*
+          Idea: 
+Launchpad: [input:number=1]
+Page:      [input:number=4] 
+
+(launchpad-(id) from page (page))
+=> when clicking on buttons it shows the details about it
+
+(if(button_clicked)
+  (button (id) detail)
+  triggers: nothing
+  | triggers: { sample: wave_id }
+
+  if (triggers.sample)
+    (waveform with highlighted part)
+)
+        */}
       </div>
     </div>
   );

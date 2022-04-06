@@ -13,18 +13,19 @@ import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 import { useEffect } from "react";
 
-type ProjectPlayProps = {
-  saveProjectLocally: (data: ProjectStructure) => void;
-};
-
-export default function ProjectPlay ({
-  saveProjectLocally
-}: ProjectPlayProps) {
-  const data = useLocalProjectStore(state => state.projectLocalData);
+export default function ProjectPlay () {
+  // Get the project data from page local store.
+  const data = useLocalProjectStore(
+    state => state.projectLocalData
+  );
 
   useEffect(() => {
-    console.group("[ProjectPlay][useEffect]");
-    console.info("Got 'projectLocalData' from local state !", data);
+    console.group("[ProjectPlay] Update on project data.");
+    console.info("Re-rendering...");
+
+    // TODO: Reload all the audio, etc... (when it will be supported).
+
+    console.info("Done !");
     console.groupEnd();
   }, []);
   
@@ -48,36 +49,21 @@ export default function ProjectPlay ({
       <div
         className="flex flex-row gap-2 justify-center items-center w-full"
       >
-        {data.launchpads.length > 0
-          ? data.launchpads.map((_, id) =>
-            <div
-              key={id}
-              className="w-64 h-64"
-            >
-              <Launchpad
-                launchpadId={id}
-                layout="programmer"
-                onPadDown={handlePadDown}
-                onPadUp={handlePadUp}
-
-                onContextMenu={handleContextMenu}
-              />
-            </div>
-          )
-          : <button
-            onClick={() => {
-              const newData = {
-                ...data,
-                launchpads: [...data.launchpads, []]
-              };
-
-              saveProjectLocally({ ...newData });
-            }}
-            className="px-4 py-2 bg-blue-600 rounded-full"
+        {data.launchpads.map((_, id) =>
+          <div
+            key={id}
+            className="w-64 h-64"
           >
-            Add a launchpad
-          </button>
-        }
+            <Launchpad
+              launchpadId={id}
+              layout="programmer"
+              onPadDown={handlePadDown}
+              onPadUp={handlePadUp}
+
+              onContextMenu={handleContextMenu}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

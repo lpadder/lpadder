@@ -80,7 +80,7 @@ export default function ProjectOverview ({
     return (
       <button
         className={`py-2 px-4 ${changesNotSaved ? "bg-pink-600" : "bg-blue-600"} bg-opacity-60 rounded-full`}
-        onClick={() => saveProjectGlobally(projectLocalData)}
+        onClick={saveProjectGlobally}
       >
         {changesNotSaved ? "Save" : "Saved"}
       </button>
@@ -92,7 +92,12 @@ export default function ProjectOverview ({
   useEffect(() => {
     console.info("[changesNotSaved] New state:", changesNotSaved);
 
-    updateMenuComponents([<SaveButtonInMenu key={null} changesNotSaved={changesNotSaved} />]);
+    updateMenuComponents([
+      <SaveButtonInMenu
+        key={null}
+        changesNotSaved={changesNotSaved}
+      />
+    ]);
   }, [changesNotSaved]);
 
   /** Update the local state of the current project. */
@@ -105,11 +110,13 @@ export default function ProjectOverview ({
   };
 
   /** Update the local state AND the global state. */
-  const saveProjectGlobally = async (data: ProjectStructure | null) => {
-    if (!projectSlug || !data) return;
+  const saveProjectGlobally = async () => {
+    const currentProjectLocalData = useLocalProjectStore.getState().projectLocalData;
+    if (!projectSlug || !currentProjectLocalData) return;
+    console.log(currentProjectLocalData);
 
     // Also update the localForage.
-    const [success, slug, project] = await stores.projects.updateProject(projectSlug, data);
+    const [success, slug, project] = await stores.projects.updateProject(projectSlug, currentProjectLocalData);
     if (!success || !project) return;
 
     const updatedAllLocalProjects =  [ ...allLocalProjects ];
@@ -128,17 +135,14 @@ export default function ProjectOverview ({
 
   // Show a loader while loading
   // and checking the project. 
-  if (!projectLocalData) return <p>Loading...</p>; 
+  if (!projectLocalData)
+    return <p>Loading...</p>;
 
   // Load all the components to run the project.
   return (
     <div className="p-4">
-      <ProjectPlay
-        saveProjectLocally={saveProjectLocally}
-      />
-      <ProjectEditor
-        saveProjectLocally={saveProjectLocally}
-      />
+      <ProjectPlay />
+      <ProjectEditor saveProjectLocally={saveProjectLocally} />
     </div>
   );
 }
