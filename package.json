@@ -41,17 +41,24 @@
     "vite": "^2.7.13",
     "vite-plugin-pwa": "^0.11.13"
   },
+  "author": {
+    "name": "Mikkel RINGAUD",
+    "url": "https://github.com/Vexcited",
+    "email": "mikkel@milescode.dev"
+  },
   "license": "MIT",
   "release-it": {
     "hooks": {
-      "after:git:release": "git checkout main && git merge develop"
+      "after:git:release": "git checkout main && git merge develop && git push -u origin main && git checkout develop"
     },
     "git": {
       "commitMessage": "Release v${version}",
       "tagName": "v${version}"
     },
     "github": {
-      "release": true
+      "release": true,
+      "draft": true,
+      "releaseName": "Release v${version}"
     },
     "npm": {
       "publish": false
