@@ -1,40 +1,69 @@
-export type ProjectStructureLaunchpadPageSample = {
-  padId: string;
-}
-
-export type ProjectStructureLaunchpadPage = {
-  name: string;
-  samples: ProjectStructureLaunchpadPageSample[];
-}
-
-export type ProjectStructureAssets = {
+export interface ProjectStructureAssets {
   fileName: string;
-  /**
-   * Uint8Array only when the data is stored.
-   * string is for path in the current "lpadder zip" file.
-   */
-  data: Uint8Array | string;
 
-  /** Used as a filter for assets. */
-  type: "audio";
+  /** Path used to know where the file is. */
+  path: string;
+
+  /** Available only when the data is stored in localForage. */
+  data?: Uint8Array;
+
+  /** Used as a filter. */
+  type:
+    | "audio"
+    | "midi-json" // MIDI file rearanged to JSON.
+    | "midi-raw" // Raw `.mid` file.
 }
 
 /**
  * Content of a cover that is stored in
- * a cover.json file or in localForage.
+ * a `cover.json` file or in localForage.
  */
 export interface ProjectStructure {
+  /**
+   * Version of lpadder supported for this project.
+   * It corresponds to the version on the home page `/`
+   * or to the "version" field in `package.json`.
+   * 
+   * When a version don't match, we show a modal 
+   * redirecting to the latest build of the version.
+   */
+  version: string;
+
+  /** Project's name. */
   name: string;
+
+  /** Cover music author(s). */
   authors: string[];
+  /** Creator(s) of the cover. */
   launchpadders: string[];
-  launchpads: ProjectStructureLaunchpadPage[][];
+
+  /** Data used for launchpads handling. */
+  launchpads: {
+    /** Name of the launchpad (more friendly than default: `Launchpad 0`) */
+    name: string;
+
+    pages: {
+      /** Name of the page. */
+      name: string;
+
+      /** Samples of the page. */
+      samples: {
+        /** Optionnal friendly name for this sample - because why not ?-? */
+        name?: string;
+
+        /** Pad ID in **PROGRAMMER** layout. */
+        pad_id: number;
+
+        // TODO: Metadatas for the sample (audio and lightshow).
+      }[];
+    }[];
+  }[];
+
+  /** Assets used for reading MIDI/JSON/audio files.  */
   assets: ProjectStructureAssets[];
 }
 
-/**
- * Same as ProjectStructure but with slug
- * that is used in getStoredProject
- */
+/** Used when the projects are preloaded. */
 export interface ProjectStoredStructure {
   slug: string;
   data: ProjectStructure;

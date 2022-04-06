@@ -20,6 +20,12 @@ or lpadder projects.
 There's lists of what I need to work on to make this app better !
 It can also help the contributors to know what they can work on.
 
+### Project Management
+- [ ] Add something to build and create changelogs programmatically (thinking of using `release-it`)
+  - [ ] Add a changelog for the project (`./src/assets/changelogs.json`) to access them from lpadder (and then be able to redirect a user to a supported version of lpadder for a old project) + Changelogs button for new versions.
+  - [ ] Auto-increment versions
+  - [ ] Development on branch `develop` and leave `main` branch for commits to production only (when a new version releases).
+
 ### App Structure
 - [ ] Think about a way to store projects (structure of the `.zip`).
   - [ ] Add `assets` key to interface that will contain nor the path of the asset (in zipped cover.json) nor the Uint8Array of the asset (in localForage when parsed).
@@ -47,28 +53,7 @@ It can also help the contributors to know what they can work on.
 Each covers is bundled into a `.zip` file that contains a single `cover.json` file.
 This file contains the project's global configuration and data.
 
-### Interface `cover.json`
-
-```typescript
-{
-  name: string;
-  authors: string[];
-
-  /** Launchpadders that made the cover */
-  launchpadders: string[];
-
-  /** Launchpads used in the cover */
-  launchpads: ({
-    name: string;
-    samples: {
-      /** Note: 'padId' will always match with Programmer layout only ! */
-      padId: number;
-      // More in coming...
-    }[]; // Samples in the page.
-  }[]) // Pages in a launchpad.
-  []; // Launchpads array.
-}
-```
+You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types/Project.ts) file.
 
 ## Contribute
 

@@ -54,7 +54,7 @@ const UtilitiesHome = () => {
         {utilities.map(utility => (
           <Link
             to={utility.slug}
-            className="group p-4 rounded-lg w-full bg-gray-900 bg-opacity-20 shadow-gray-900/50 shadow-none hover:bg-opacity-60 shadow-sm hover:shadow-lg transition cursor-pointer"
+            className="group p-4 rounded-lg w-full bg-gray-900 bg-opacity-20 shadow-gray-900/50 hover:bg-opacity-60 shadow-sm hover:shadow-lg transition cursor-pointer"
             key={utility.slug}
           >
             <h2
