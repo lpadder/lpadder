@@ -20,15 +20,9 @@ or lpadder projects.
 There's lists of what I need to work on to make this app better !
 It can also help the contributors to know what they can work on.
 
-### Project Management
-- [ ] Add something to build and create changelogs programmatically (thinking of using `release-it`)
-  - [ ] Add a changelog for the project (`./src/assets/changelogs.json`) to access them from lpadder (and then be able to redirect a user to a supported version of lpadder for a old project) + Changelogs button for new versions.
-  - [ ] Auto-increment versions
-  - [ ] Development on branch `develop` and leave `main` branch for commits to production only (when a new version releases).
-
 ### App Structure
-- [ ] Think about a way to store projects (structure of the `.zip`).
-  - [ ] Add `assets` key to interface that will contain nor the path of the asset (in zipped cover.json) nor the Uint8Array of the asset (in localForage when parsed).
+- [x] Think about a way to store projects (structure of the `.zip`).
+  - [x] Add `assets` key to interface that will contain nor the path of the asset (in zipped cover.json) nor the Uint8Array of the asset (in localForage when parsed).
   - [x] Think how I can implement the pages and samples (+ multi-launchpad support).
     - A sample can maybe look like this `{ padId: number, onPadDown: ActionTrigger | null, onPadUp: ActionTrigger | null }`
     - ActionTrigger interface can look like this: `{ audio: any (?), midi: any (?) }`.
@@ -39,14 +33,21 @@ It can also help the contributors to know what they can work on.
     - [x] Can read the zip content imported
     - [x] Can get content of cover.json + check if file exists
     - [x] Show a modal to choose a slug to save the cover in localForage.
+- [ ] Metadata for samples (how to create them ?)
+  - I think to use wavesurfer, so maybe I need to dig in before starting to think about samples interface.
+- [ ] Make everything editable
+  - [ ] Add inputs and selects for launchpads and pages.
+  - [ ] Add audio imports and MIDI/JSON imports.
+  - [ ] Create a timeline (using wavesurfer)
 
 ### Design
+- [ ] Responsive launchpads on projects.
 - [x] Responsive menus for `/projects`. 
 - [x] Launchpad component is "responsive" (using full width and aspect ratio 1/1 on pads).
-- [ ] Utilities page
+- [x] Utilities page
   - [x] Think how the pages will be displayed
   - [x] Code-splitting on every utilities routes (to reduce bundle size and then better performances)
-  - [ ] Design the current utilities
+  - [ ] Design the utilities
 
 ## Explaining the lpadder project structure
 
@@ -67,7 +68,8 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 - `yarn serve`: Serves the builded app under `dist`.
 - `yarn lint`: Only runs `eslint`. Useful when used with `--fix`.
 - `yarn run check`: Runs `eslint` and `tsc` to check for errors.
-- `yarn release`: Runs `yarn check`, bumps the `version` in `package.json`, commits the changes to `main` branch, tags the release and create a GitHub Release. The release will trigger a GitHub Action that would run a Vercel build. On successful deploy, it will updatethe GitHub Release to point to the newly deployed URL.
+- `yarn release`: Runs `yarn run check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
+  - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and add a new asset (`url.txt`) which points to the Vercel deployed URL.
 
 ### Launchpad resources
 
