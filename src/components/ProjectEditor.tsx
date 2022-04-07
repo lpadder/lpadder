@@ -54,7 +54,7 @@ export default function ProjectEditor ({
     setCurrentLaunchpadPageSelected(parseInt(index));
   };
 
-
+  /** Add a new launchpad in the project. */
   const addLaunchpad = () => {
     const data_copy = { ...data };
 
@@ -65,6 +65,7 @@ export default function ProjectEditor ({
     saveProjectLocally(data_copy);
   };
 
+  /** Remove the current selected launchpad with all of its page. */
   const removeLaunchpad = () => {
     const data_copy = { ...data };
 
@@ -77,6 +78,7 @@ export default function ProjectEditor ({
     saveProjectLocally(data_copy);
   };
 
+  /** Add a new page to the current selected launchpad. */
   const addLaunchpadPage = () => {
     if (currentLaunchpadSelected === null) return;
     const data_copy = { ...data };
@@ -88,6 +90,18 @@ export default function ProjectEditor ({
 
     saveProjectLocally(data_copy);
   };
+
+  // Short-hands for the current launchpad and page.
+  // We append the current index in the objects to avoid
+  // having to always re-use `(currentLaunchpadSelected !== null)`, etc...
+  const launchpad = (currentLaunchpadSelected !== null) ? {
+    ...data.launchpads[currentLaunchpadSelected],
+    id: currentLaunchpadSelected
+  } : null;
+  const page = (launchpad && currentLaunchpadPageSelected !== null) ? {
+    ...launchpad.pages[currentLaunchpadPageSelected],
+    id: currentLaunchpadPageSelected
+  } : null;
 
   return (
     <div>
@@ -110,14 +124,14 @@ export default function ProjectEditor ({
           Add a launchpad
         </button>
 
-        {currentLaunchpadSelected !== null && data.launchpads[currentLaunchpadSelected] &&
+        {launchpad &&
           <div>
             <input
               type="text"
-              value={data.launchpads[currentLaunchpadSelected].name}
+              value={launchpad.name}
               onChange={evt => {
                 const data_copy = { ...data };
-                data_copy.launchpads[currentLaunchpadSelected].name = evt.target.value;
+                data_copy.launchpads[launchpad.id].name = evt.target.value;
                 saveProjectLocally(data_copy);
               }}
             />
@@ -130,7 +144,7 @@ export default function ProjectEditor ({
               onChange={handleLaunchpadPageSelection}
             >
               <option value="none">None</option>
-              {data.launchpads[currentLaunchpadSelected].pages.map((page, pageKey) =>
+              {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
                 <option value={pageKey} key={pageKey}>
                   {page.name}
                 </option>
@@ -142,6 +156,12 @@ export default function ProjectEditor ({
             </button>
           </div>
         }
+
+        {launchpad && page && (
+          <div>
+            <h3>Page {page.name} from {launchpad.name}</h3>
+          </div>
+        )}
         
         {/*
           Idea: 
