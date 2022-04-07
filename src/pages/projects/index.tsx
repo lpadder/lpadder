@@ -193,11 +193,45 @@ export default function Projects () {
 
         const coverDataFile = zip_content.file("cover.json");
         if (!coverDataFile) return console.error(
-          "This ZIP file doesn't contains a 'cover.json' file. Indeed this file isn't a lpadder cover."
+          "This file doesn't contain a `cover.json` file in root directory."
         );
 
         const coverData = await coverDataFile.async("string");
         const parsedCoverData: ProjectStructure = JSON.parse(coverData);
+
+        /**
+         * `next` version is when the project was created using
+         * lpadder in a development envrionment (`yarn dev`).
+         */
+        const { version } = parsedCoverData;
+        if (version !== "next") {
+          if (version !== APP_VERSION) {
+            // TODO: Show a modal to warn the user that the project isn't supported.
+            console.warn(
+              "This project was created with a different version of lpadder. " +
+              "It's not possible to import this project."
+            );
+              
+            // TODO: Get the URL of a lpadder version which supports the project. 
+            const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${APP_VERSION}`;
+            const release_response = await fetch(release_url);
+            const release_data = await release_response.json();
+
+            if (!release_data.id) return console.error(
+              release_data.message
+            );
+
+            const assets: { name: string; browser_download_url: string; }[] = release_data.assets;
+            const deploy_url_asset = assets.find(
+              asset => asset.name === "url.txt"
+            ).browser_download_url;
+            const deploy_url_response = await fetch(deploy_url_asset);
+            const deploy_url = await deploy_url_response.text();
+            console.log("deploy_url", deploy_url);
+
+            return;
+          }
+        }
 
         setProjectToImport(parsedCoverData);
         setImportProjectModalOpen(true);

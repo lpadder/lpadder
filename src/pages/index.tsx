@@ -41,7 +41,9 @@ export default function Home () {
       </div>
 
       <footer className="flex flex-col fixed bottom-0 left-0 justify-start sm:justify-center items-center sm:items-start w-full h-24 sm:left-auto sm:w-auto">
-        <p className="text-opacity-60">Version: <span className="font-medium">{APP_VERSION}</span></p>
+        <p className="text-opacity-60">Version: <span className="font-medium">
+          {import.meta.env.DEV ? "next" : APP_VERSION}
+        </span></p>
         <p className="text-gray-200 text-opacity-80">
           Made with ❤️ by {" "}
           <a

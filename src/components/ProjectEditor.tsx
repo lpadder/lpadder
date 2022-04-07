@@ -4,7 +4,7 @@ import type {
 
 import { useLocalProjectStore } from "@/pages/projects/slug";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, Fragment, useEffect, useState } from "react";
 
 type ProjectEditorProps = {
   saveProjectLocally: (data: ProjectStructure) => void;
@@ -125,7 +125,7 @@ export default function ProjectEditor ({
         </button>
 
         {launchpad &&
-          <div>
+          <Fragment>
             <input
               type="text"
               value={launchpad.name}
@@ -154,7 +154,7 @@ export default function ProjectEditor ({
             <button onClick={addLaunchpadPage}>
               Add a page to this launchpad
             </button>
-          </div>
+          </Fragment>
         }
 
         {launchpad && page && (
