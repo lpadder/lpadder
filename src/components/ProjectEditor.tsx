@@ -30,14 +30,30 @@ export default function ProjectEditor ({
   /** Index of the current used launchpad. */
   const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | null>(null);
   const handleLaunchpadSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
+    // Reset the page selector.
+    setCurrentLaunchpadPageSelected(null);
+
     const index = evt.target.value;
     if (index === "none") {
       setCurrentLaunchpadSelected(null);
       return;
     }
-
+    
     setCurrentLaunchpadSelected(parseInt(index));
   };
+  
+  /** Index of the current page used in current launchpad. */
+  const [currentLaunchpadPageSelected, setCurrentLaunchpadPageSelected] = useState<number | null>(null);
+  const handleLaunchpadPageSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
+    const index = evt.target.value;
+    if (index === "none") {
+      setCurrentLaunchpadPageSelected(null);
+      return;
+    }
+
+    setCurrentLaunchpadPageSelected(parseInt(index));
+  };
+
 
   const addLaunchpad = () => {
     const data_copy = { ...data };
@@ -58,6 +74,18 @@ export default function ProjectEditor ({
     );
 
     console.log(data_copy);
+    saveProjectLocally(data_copy);
+  };
+
+  const addLaunchpadPage = () => {
+    if (currentLaunchpadSelected === null) return;
+    const data_copy = { ...data };
+
+    // Add a new page to the current launchpad.
+    const index = data_copy.launchpads[currentLaunchpadSelected].pages.length + 1;
+    const name = `Page ${index}`;
+    data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
+
     saveProjectLocally(data_copy);
   };
 
@@ -95,6 +123,22 @@ export default function ProjectEditor ({
             />
             <button onClick={removeLaunchpad}>
               Remove this launchpad
+            </button>
+
+            <select
+              placeholder="Select a page"
+              onChange={handleLaunchpadPageSelection}
+            >
+              <option value="none">None</option>
+              {data.launchpads[currentLaunchpadSelected].pages.map((page, pageKey) =>
+                <option value={pageKey} key={pageKey}>
+                  {page.name}
+                </option>
+              )}
+            </select>
+
+            <button onClick={addLaunchpadPage}>
+              Add a page to this launchpad
             </button>
           </div>
         }
