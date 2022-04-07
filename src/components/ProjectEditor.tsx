@@ -73,7 +73,7 @@ export default function ProjectEditor ({
           <option value="none">None</option>
           {data.launchpads.map((launchpad, launchpadKey) =>
             <option value={launchpadKey} key={launchpadKey}>
-              Launchpad {launchpadKey}
+              {launchpad.name}
             </option>
           )}
         </select>
@@ -84,6 +84,15 @@ export default function ProjectEditor ({
 
         {currentLaunchpadSelected !== null && data.launchpads[currentLaunchpadSelected] &&
           <div>
+            <input
+              type="text"
+              value={data.launchpads[currentLaunchpadSelected].name}
+              onChange={evt => {
+                const data_copy = { ...data };
+                data_copy.launchpads[currentLaunchpadSelected].name = evt.target.value;
+                saveProjectLocally(data_copy);
+              }}
+            />
             <button onClick={removeLaunchpad}>
               Remove this launchpad
             </button>
