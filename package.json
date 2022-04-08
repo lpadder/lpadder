@@ -7,7 +7,7 @@
     "serve": "vite preview",
     "lint": "eslint .",
     "check": "yarn lint && tsc",
-    "release": "dotenv -e .env.local yarn run check && release-it"
+    "release": "yarn run check && dotenv -e .env.local release-it --"
   },
   "dependencies": {
     "@fontsource/poppins": "^4.5.0",
