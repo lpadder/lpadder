@@ -69,7 +69,7 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 - `yarn lint`: Only runs `eslint`. Useful when used with `--fix`.
 - `yarn run check`: Runs `eslint` and `tsc` to check for errors.
 - `yarn release`: Runs `yarn run check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
-  - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and add a new asset (`url.txt`) which points to the Vercel deployed URL.
+  - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
 
 ### Launchpad resources
 
