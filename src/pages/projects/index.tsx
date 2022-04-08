@@ -205,8 +205,8 @@ export default function Projects () {
          */
         const { version } = parsedCoverData;
         if (
-          // version !== "next" &&
-          version !== "0.0.2"
+          version !== "next" &&
+          version !== APP_VERSION
         ) { 
           // TODO: Show a modal to warn the user that the project isn't supported.
           console.warn(
@@ -218,29 +218,23 @@ export default function Projects () {
           const release_response = await fetch(release_url);
 
           const release_data = await release_response.json() as {
-              assets: { name: string; browser_download_url: string; }[],
-              id: string;
+            /** Content of the release. */
+            body?: string;
+            /** Only when an error was thrown. */
+            message?: string;
+          };
 
-              // On error.
-              message: string;
-            };
+          if (release_data.message || !release_data.body)
+            return console.error("GitHub API:", release_data.message);
 
-          if (!release_data.id) return console.error(
-            release_data.message
+          const deploy_url_regex = /Deployment URL: <(.*)>/;
+          const deploy_url_results = release_data.body.match(deploy_url_regex);
+
+          if (!deploy_url_results) return console.error(
+            "Deployment URL wasn't found !"
           );
 
-          const assets = release_data.assets;
-          const deploy_url_asset = assets.find(
-            asset => asset.name === "url.txt"
-          );
-
-          if (!deploy_url_asset) return console.error(
-            `Couldn't find 'url.txt' asset in v${version} release.`
-          );
-
-          const deploy_url_response = await fetch(deploy_url_asset.browser_download_url);
-          console.log("deploy_url", deploy_url_response);
-
+          console.info("Deploy URL:", deploy_url_results);
           return;
         }
 
