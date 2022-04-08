@@ -25,9 +25,14 @@ jobs:
           vercel-args: "--prod"
 
       - name: Add deployment URL to GitHub Release
-        run: | 
-          curl \
-            -X PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            ${{ github.event.release.url }} \
-            -d '{"body":"Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ github.event.release.body }}"}'
+        uses: octokit/request-action@v2.x
+        with:
+          route: PATCH /repos/${{ github.repository }}/releases/{release_id}
+          release_id: ${{ github.event.release.id }}
+          body: |
+            |
+            {"body":"${{ env.RELEASE_BODY }}"}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BODY: "Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ github.event.release.body }}"
+
