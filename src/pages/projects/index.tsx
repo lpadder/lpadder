@@ -204,33 +204,44 @@ export default function Projects () {
          * lpadder in a development envrionment (`yarn dev`).
          */
         const { version } = parsedCoverData;
-        if (version !== "next") {
-          if (version !== APP_VERSION) {
-            // TODO: Show a modal to warn the user that the project isn't supported.
-            console.warn(
-              "This project was created with a different version of lpadder. " +
+        if (
+          // version !== "next" &&
+          version !== "0.0.2"
+        ) { 
+          // TODO: Show a modal to warn the user that the project isn't supported.
+          console.warn(
+            "This project was created with a different version of lpadder. " +
               "It's not possible to import this project."
-            );
+          );
               
-            // TODO: Get the URL of a lpadder version which supports the project. 
-            const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${APP_VERSION}`;
-            const release_response = await fetch(release_url);
-            const release_data = await release_response.json();
+          const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${version}`;
+          const release_response = await fetch(release_url);
 
-            if (!release_data.id) return console.error(
-              release_data.message
-            );
+          const release_data = await release_response.json() as {
+              assets: { name: string; browser_download_url: string; }[],
+              id: string;
 
-            const assets: { name: string; browser_download_url: string; }[] = release_data.assets;
-            const deploy_url_asset = assets.find(
-              asset => asset.name === "url.txt"
-            ).browser_download_url;
-            const deploy_url_response = await fetch(deploy_url_asset);
-            const deploy_url = await deploy_url_response.text();
-            console.log("deploy_url", deploy_url);
+              // On error.
+              message: string;
+            };
 
-            return;
-          }
+          if (!release_data.id) return console.error(
+            release_data.message
+          );
+
+          const assets = release_data.assets;
+          const deploy_url_asset = assets.find(
+            asset => asset.name === "url.txt"
+          );
+
+          if (!deploy_url_asset) return console.error(
+            `Couldn't find 'url.txt' asset in v${version} release.`
+          );
+
+          const deploy_url_response = await fetch(deploy_url_asset.browser_download_url);
+          console.log("deploy_url", deploy_url_response);
+
+          return;
         }
 
         setProjectToImport(parsedCoverData);
