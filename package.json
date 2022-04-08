@@ -7,7 +7,7 @@
     "serve": "vite preview",
     "lint": "eslint .",
     "check": "yarn lint && tsc",
-    "release": "yarn run check && release-it"
+    "release": "dotenv -e .env.local yarn run check && release-it"
   },
   "dependencies": {
     "@fontsource/poppins": "^4.5.0",
@@ -32,6 +32,7 @@
     "@vitejs/plugin-react": "^1.1.4",
     "autoprefixer": "^10.4.2",
     "dotenv": "^14.2.0",
+    "dotenv-cli": "^5.1.0",
     "eslint": "^8.7.0",
     "eslint-plugin-react": "^7.28.0",
     "postcss": "^8.4.6",
