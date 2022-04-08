@@ -12,6 +12,9 @@ import exportCoverToZip from "@/utils/exportCoverToZip";
 import ProjectOverview from "@/pages/projects/slug/index";
 import ImportProjectModal from "@/components/ImportProjectModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import LpadderWrongVersionModal, {
+  LpadderWrongVersionModalData
+} from "@/components/LpadderWrongVersionModal";
 import DropdownButton from "@/components/DropdownButton";
 import FullLoader from "@/components/FullLoader";
 
@@ -23,6 +26,7 @@ export type ProjectsStore = {
   allLocalProjects: ProjectStoredStructure[] | null;
   setAllLocalProjects: (data: ProjectStoredStructure[]) => void;
 
+  // Used for the import modal.
   projectToImport: ProjectStructure | null;
   setProjectToImport: (data: ProjectStructure | null) => void;
 }
@@ -176,6 +180,15 @@ export default function Projects () {
   const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false);
   const handleCreateCover = () => setCreateProjectModalOpen(true);
 
+  const default_lpadderWrongVersionModalData = {
+    requiredVersion: APP_VERSION,
+    errorMessage: undefined,
+    lpadderDeployUrl: undefined
+  };
+
+  const [lpadderWrongVersionModalData, setLpadderWrongVersionModalData] = useState<LpadderWrongVersionModalData>(default_lpadderWrongVersionModalData);
+  const [lpadderWrongVersionModalOpen, setLpadderWrongVersionModalOpen] = useState(false);
+
   const [importProjectModalOpen, setImportProjectModalOpen] = useState(false);
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
@@ -207,13 +220,7 @@ export default function Projects () {
         if (
           version !== "next" &&
           version !== APP_VERSION
-        ) { 
-          // TODO: Show a modal to warn the user that the project isn't supported.
-          console.warn(
-            "This project was created with a different version of lpadder. " +
-              "It's not possible to import this project."
-          );
-              
+        ) {               
           const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${version}`;
           const release_response = await fetch(release_url);
 
@@ -224,17 +231,39 @@ export default function Projects () {
             message?: string;
           };
 
-          if (release_data.message || !release_data.body)
-            return console.error("GitHub API:", release_data.message);
+          if (release_data.message || !release_data.body) {
+            setLpadderWrongVersionModalData({
+              requiredVersion: version,
+              errorMessage: "GitHub API Error: " + release_data.message,
+              lpadderDeployUrl: undefined
+            });
+    
+            setLpadderWrongVersionModalOpen(true);
+            return;
+          }
 
           const deploy_url_regex = /Deployment URL: <(.*)>/;
           const deploy_url_results = release_data.body.match(deploy_url_regex);
 
-          if (!deploy_url_results) return console.error(
-            "Deployment URL wasn't found !"
-          );
+          if (!deploy_url_results) {
+            setLpadderWrongVersionModalData({
+              requiredVersion: version,
+              errorMessage: "Deployment URL wasn't found !",
+              lpadderDeployUrl: undefined
+            });
+  
+            setLpadderWrongVersionModalOpen(true);
+            return;
+          }
 
-          console.info("Deploy URL:", deploy_url_results);
+          const deploy_url = deploy_url_results[1];
+          setLpadderWrongVersionModalData({
+            requiredVersion: version,
+            errorMessage: undefined,
+            lpadderDeployUrl: deploy_url
+          });
+
+          setLpadderWrongVersionModalOpen(true);
           return;
         }
 
@@ -275,6 +304,15 @@ export default function Projects () {
       <ImportProjectModal
         open={importProjectModalOpen}
         closeModal={() => setImportProjectModalOpen(false)}
+      />
+
+      <LpadderWrongVersionModal
+        open={lpadderWrongVersionModalOpen}
+        closeModal={() => setLpadderWrongVersionModalOpen(false)}
+
+        lpadderDeployUrl={lpadderWrongVersionModalData.lpadderDeployUrl}
+        requiredVersion={lpadderWrongVersionModalData.requiredVersion}
+        errorMessage={lpadderWrongVersionModalData.errorMessage}
       />
 
       <div
