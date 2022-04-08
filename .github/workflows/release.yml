@@ -24,19 +24,10 @@ jobs:
           github-comment: false
           vercel-args: "--prod"
 
-      - name: Create Vercel URL file
-        run: echo ${{ steps.vercel-deploy.outputs.preview-url }} >> url.txt
-
-      - name: Test output of the file
-        run: cat url.txt
-
-      - name: Upload to GitHub Releases
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: url.txt
-          asset_name: url.txt
-          asset_content_type: text/plain
-
+      - name: Add deployment URL to GitHub Release
+        run: | 
+          curl \
+            -X PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            ${{ github.event.release.url }} \
+            -d '{"body":"Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ github.event.release.body }}"}'
