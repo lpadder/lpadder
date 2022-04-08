@@ -31,5 +31,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_RELEASE_ID: ${{ github.event.release.id }}
-          INPUT_BODY: "Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ github.event.release.body }}"
+          INPUT_BODY: |
+            "Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ github.event.release.body }}"
 
