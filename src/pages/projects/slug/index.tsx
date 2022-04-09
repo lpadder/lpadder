@@ -113,7 +113,6 @@ export default function ProjectOverview ({
   const saveProjectGlobally = async () => {
     const currentProjectLocalData = useLocalProjectStore.getState().projectLocalData;
     if (!projectSlug || !currentProjectLocalData) return;
-    console.log(currentProjectLocalData);
 
     // Also update the localForage.
     const [success, slug, project] = await stores.projects.updateProject(projectSlug, currentProjectLocalData);

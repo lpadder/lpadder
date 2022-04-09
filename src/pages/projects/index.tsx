@@ -7,6 +7,7 @@ import JSZip from "jszip";
 
 import stores from "@/stores";
 import exportCoverToZip from "@/utils/exportCoverToZip";
+import checkProjectVersion from "@/utils/checkProjectVersion";
 
 // Components in the layout.
 import ProjectOverview from "@/pages/projects/slug/index";
@@ -212,59 +213,19 @@ export default function Projects () {
         const coverData = await coverDataFile.async("string");
         const parsedCoverData: ProjectStructure = JSON.parse(coverData);
 
-        /**
-         * `next` version is when the project was created using
-         * lpadder in a development envrionment (`yarn dev`).
-         */
+        // We check if the project version is matching
+        // with lpadder's one - except on development.
         const { version } = parsedCoverData;
-        if (
-          version !== "next" &&
-          version !== APP_VERSION
-        ) {               
-          const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${version}`;
-          const release_response = await fetch(release_url);
-
-          const release_data = await release_response.json() as {
-            /** Content of the release. */
-            body?: string;
-            /** Only when an error was thrown. */
-            message?: string;
-          };
-
-          if (release_data.message || !release_data.body) {
-            setLpadderWrongVersionModalData({
-              requiredVersion: version,
-              errorMessage: "GitHub API Error: " + release_data.message,
-              lpadderDeployUrl: undefined
-            });
-    
-            setLpadderWrongVersionModalOpen(true);
-            return;
-          }
-
-          const deploy_url_regex = /Deployment URL: <(.*)>/;
-          const deploy_url_results = release_data.body.match(deploy_url_regex);
-
-          if (!deploy_url_results) {
-            setLpadderWrongVersionModalData({
-              requiredVersion: version,
-              errorMessage: "Deployment URL wasn't found !",
-              lpadderDeployUrl: undefined
-            });
-  
-            setLpadderWrongVersionModalOpen(true);
-            return;
-          }
-
-          const deploy_url = deploy_url_results[1];
+        const version_data = await checkProjectVersion(version);
+        if (!version_data.success) {
           setLpadderWrongVersionModalData({
             requiredVersion: version,
-            errorMessage: undefined,
-            lpadderDeployUrl: deploy_url
+            errorMessage: version_data.error_message,
+            lpadderDeployUrl: version_data.deploy_url
           });
 
           setLpadderWrongVersionModalOpen(true);
-          return;
+          return; // We stop here.
         }
 
         setProjectToImport(parsedCoverData);

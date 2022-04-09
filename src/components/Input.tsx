@@ -1,4 +1,5 @@
 export type InputProps = {
+  className?: string;
   labelName: string;
   placeholder: string;
   smallTipText?: string;
@@ -8,6 +9,7 @@ export type InputProps = {
 };
 
 export default function Input ({
+  className,
   labelName,
   placeholder,
   smallTipText,
@@ -24,13 +26,13 @@ export default function Input ({
         name={labelName}
         onChange={onChange}
         placeholder={placeholder}
-        className="
+        className={`
           p-2 w-full rounded outline-none
           m:text-sm
-          bg-gray-900
-          transition-colors focus:bg-gray-800
-          border border-pink-400
-        "
+          bg-gray-800 bg-opacity-40
+          transition-colors focus:bg-opacity-100
+          ${className ? className : ""}
+        `}
       />
 
       {smallTipText &&

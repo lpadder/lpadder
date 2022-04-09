@@ -70,6 +70,7 @@ export default function CreateProjectModal ({
 
       <form className="mt-8 space-y-6" onSubmit={handleCreation}>
         <Input
+          className="border border-pink-400"
           labelName="Cover's name"
           placeholder="Author - Title (Launchpad Cover)"
           onChange={(e) => setState({ ...state, name: e.target.value })}
@@ -77,6 +78,7 @@ export default function CreateProjectModal ({
         />
 
         <Input
+          className="border border-pink-400"
           labelName="Personal slug"
           placeholder="some-amazing-cover"
           smallTipText="Slug used to identify the cover more easily from URL."
