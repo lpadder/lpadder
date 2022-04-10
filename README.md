@@ -73,7 +73,8 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 
 ### Launchpad resources
 
+I used these documentations to determine how `live` and `programmer` layouts were made.
+- Launchpad Pro MK2: [Programmer Documentation](https://d2xhy469pqj8rc.cloudfront.net/sites/default/files/novation/downloads/10598/launchpad-pro-programmers-reference-guide_0.pdf)
 - Launchpad Pro MK3: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
-  - Used to determine layouts (`live` and `programmer`) and pads ID.
 
 ### Thanks you for reading !
