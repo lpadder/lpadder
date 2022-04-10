@@ -1,21 +1,25 @@
 import type {
-  ProjectStructure
-} from "@/types/Project";
+  ChangeEvent
+} from "react";
 
-import { useLocalProjectStore } from "@/pages/projects/slug";
+import {
+  Fragment,
+  useEffect,
+  useState
+} from "react";
 
-import { ChangeEvent, Fragment, useEffect, useState } from "react";
+import {
+  useCurrentProjectStore,
+} from "@/stores/projects";
 
-type ProjectEditorProps = {
-  saveProjectLocally: (data: ProjectStructure) => void;
-};
-
-export default function ProjectEditor ({
-  saveProjectLocally
-}: ProjectEditorProps) {
-  const data = useLocalProjectStore(
-    state => state.projectLocalData
-  );
+export default function ProjectEditor () {
+  const {
+    project,
+    setProject
+  } = useCurrentProjectStore(state => ({
+    project: state.currentProject,
+    setProject: state.setCurrentProject
+  }));
 
   useEffect(() => {
     console.info("[ProjectEditor] Loading project editor...");
@@ -25,7 +29,11 @@ export default function ProjectEditor ({
     console.info("[ProjectEditor] Done !");
   }, []);
 
-  if (!data) return <p>Loading...</p>;
+  if (!project) return <p>Loading...</p>;
+
+  // Short-hands.
+  const data = project.data;
+  const setData = (data: typeof project.data) => setProject({ data, slug: project.slug });
 
   /** Index of the current used launchpad. */
   const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | null>(null);
@@ -62,7 +70,7 @@ export default function ProjectEditor ({
     const name = `Launchpad ${index}`;
     data_copy.launchpads.push({ name, pages: [] });
     
-    saveProjectLocally(data_copy);
+    setData(data_copy);
   };
 
   /** Remove the current selected launchpad with all of its page. */
@@ -75,7 +83,7 @@ export default function ProjectEditor ({
     );
 
     console.log(data_copy);
-    saveProjectLocally(data_copy);
+    setData(data_copy);
   };
 
   /** Add a new page to the current selected launchpad. */
@@ -88,7 +96,7 @@ export default function ProjectEditor ({
     const name = `Page ${index}`;
     data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
 
-    saveProjectLocally(data_copy);
+    setData(data_copy);
   };
 
   // Short-hands for the current launchpad and page.
@@ -132,7 +140,7 @@ export default function ProjectEditor ({
               onChange={evt => {
                 const data_copy = { ...data };
                 data_copy.launchpads[launchpad.id].name = evt.target.value;
-                saveProjectLocally(data_copy);
+                setData(data_copy);
               }}
             />
             <button onClick={removeLaunchpad}>

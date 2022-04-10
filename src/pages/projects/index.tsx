@@ -2,65 +2,72 @@ import { ProjectStoredStructure, ProjectStructure } from "@/types/Project";
 
 import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import React, { Fragment, useState, useEffect } from "react";
-import create from "zustand";
 import JSZip from "jszip";
 
-import stores from "@/stores";
 import exportCoverToZip from "@/utils/exportCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
 
 // Components in the layout.
 import ProjectOverview from "@/pages/projects/slug/index";
-import ImportProjectModal from "@/components/ImportProjectModal";
-import CreateProjectModal from "@/components/CreateProjectModal";
 import LpadderWrongVersionModal, {
   LpadderWrongVersionModalData
 } from "@/components/LpadderWrongVersionModal";
 import DropdownButton from "@/components/DropdownButton";
 import FullLoader from "@/components/FullLoader";
 
+import {
+  storedProjects,
+  useLocalProjectsStore,
+  useCurrentProjectStore
+} from "@/stores/projects";
+import { useModalsStore } from "@/stores/modals";
+
 // Icons
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
-export type ProjectsStore = {
-  allLocalProjects: ProjectStoredStructure[] | null;
-  setAllLocalProjects: (data: ProjectStoredStructure[]) => void;
-
-  // Used for the import modal.
-  projectToImport: ProjectStructure | null;
-  setProjectToImport: (data: ProjectStructure | null) => void;
-}
-
-export const useProjectsStore = create<ProjectsStore>(set => ({
-  allLocalProjects: null,
-  setAllLocalProjects: (data) => set(() => ({ allLocalProjects: data })),
-
-  projectToImport: null,
-  setProjectToImport: (data) => set(() => ({ projectToImport: data }))
-}));
-
 export default function Projects () {
   const [menuOpen, setMenuOpen] = useState(false);
+  
   const location = useLocation();
-
   const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
+  // Loading the projects store.
   const {
-    allLocalProjects,
-    setAllLocalProjects,
-    setProjectToImport
-  } = useProjectsStore(state => ({
-    allLocalProjects: state.allLocalProjects,
-    setAllLocalProjects: state.setAllLocalProjects,
-    setProjectToImport: state.setProjectToImport
+    localProjects,
+    setLocalProjects,
+  } = useLocalProjectsStore();
+
+  // Loading the modals store.
+  const {
+    setCreateProjectModalVisibility,
+    setImportProjectModalVisibility,
+    setImportProjectModalData
+  } = useModalsStore(state => ({
+    setCreateProjectModalVisibility: state.setCreateProjectModal,
+    setImportProjectModalVisibility: state.setImportProjectModal,
+    setImportProjectModalData: state.setImportProjectModalData
   }));
+
+  const project = useCurrentProjectStore(state => ({
+    isSaved: state.isSaved,
+    setIsSaved: state.setIsSaved,
+    state: state.currentProject,
+    setState: state.setCurrentProject,
+    updateGlobally: state.updateGlobally,
+  })); 
   
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
     const navigate = useNavigate();
   
     const handleProjectUpdate = () => {
+      // We remove any currently opened project.
+      project.setIsSaved(true);
+      project.setState(null);
+
+      // We update the current project slug
+      // and navigate to its page to load it.
       setCurrentProjectSlug(slug);
       navigate(slug);
     };
@@ -86,12 +93,14 @@ export default function Projects () {
             {
               name: "Delete",
               action: async () => {
-                const wasRemoved = await stores.projects.deleteProject(slug);
+                const wasRemoved = await storedProjects.deleteProject(slug);
                 if (!wasRemoved) return;
 
-                const allLocalProjectsUpdated = [ ...allLocalProjects as ProjectStoredStructure[] ];
-                setAllLocalProjects([
-                  ...allLocalProjectsUpdated.filter(e => e.slug !== slug)
+                const localProjectsUpdated = [ ...localProjects as ProjectStoredStructure[] ];
+                setLocalProjects([
+                  ...localProjectsUpdated.filter(
+                    project => project.slug !== slug
+                  )
                 ]);
 
                 // If the current project was removed, we redirect
@@ -100,7 +109,10 @@ export default function Projects () {
                 if (currentProjectSlug === slug) {
                   navigate("/projects");
                   
-                  setMenuComponents([]);
+                  // We remove any currently opened project.
+                  project.setIsSaved(true);
+                  project.setState(null);
+                  
                   setCurrentProjectSlug(null);
                 }
               }
@@ -146,8 +158,8 @@ export default function Projects () {
       console.group("[/][useEffect]");
       console.info("⌛ Fetching every stored projects...");
 
-      const allStorageProjects = await stores.projects.getStoredProjects();
-      setAllLocalProjects(allStorageProjects);
+      const allStorageProjects = await storedProjects.getStoredProjects();
+      setLocalProjects(allStorageProjects);
 
       console.info(
         "✔️ Stored every projects in local state: 'allLocalProjects' !"
@@ -177,10 +189,6 @@ export default function Projects () {
     })();
   }, []);
   
-  /** Open CreateProjectModal when creating a new cover. */
-  const [createProjectModalOpen, setCreateProjectModalOpen] = useState(false);
-  const handleCreateCover = () => setCreateProjectModalOpen(true);
-
   const default_lpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
     errorMessage: undefined,
@@ -190,7 +198,6 @@ export default function Projects () {
   const [lpadderWrongVersionModalData, setLpadderWrongVersionModalData] = useState<LpadderWrongVersionModalData>(default_lpadderWrongVersionModalData);
   const [lpadderWrongVersionModalOpen, setLpadderWrongVersionModalOpen] = useState(false);
 
-  const [importProjectModalOpen, setImportProjectModalOpen] = useState(false);
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
@@ -228,8 +235,8 @@ export default function Projects () {
           return; // We stop here.
         }
 
-        setProjectToImport(parsedCoverData);
-        setImportProjectModalOpen(true);
+        setImportProjectModalData(parsedCoverData);
+        setImportProjectModalVisibility(true);
       };
       
       const files = fileInput.files;
@@ -246,27 +253,13 @@ export default function Projects () {
     fileInput.remove();
   };
 
-  // State for components in header that can be updated from
-  // children pages.
-  const [menuComponents, setMenuComponents] = useState<JSX.Element[]>([]);
-
   /** Show a loader while the projects are loading. */
-  if (!allLocalProjects) return <FullLoader
+  if (!localProjects) return <FullLoader
     loadingText="Loading your saved projects..."
   />;
 
   return (
     <Fragment>
-      <CreateProjectModal
-        open={createProjectModalOpen}
-        closeModal={() => setCreateProjectModalOpen(false)}
-      />
-
-      <ImportProjectModal
-        open={importProjectModalOpen}
-        closeModal={() => setImportProjectModalOpen(false)}
-      />
-
       <LpadderWrongVersionModal
         open={lpadderWrongVersionModalOpen}
         closeModal={() => setLpadderWrongVersionModalOpen(false)}
@@ -295,7 +288,7 @@ export default function Projects () {
             </button>
           </div>
 
-          {currentProjectSlug &&
+          {project.state &&
             <ul className="flex flex-row-reverse gap-4">
               <HeaderItem>
                 <DropdownButton
@@ -303,7 +296,7 @@ export default function Projects () {
                   items={[
                     {
                       name: "Export to .zip",
-                      action: async () => await exportCoverToZip(currentProjectSlug)
+                      action: async () => project.state ? await exportCoverToZip(project.state.slug) : null
                     },
                     {
                       name: "Collaborate online",
@@ -314,13 +307,14 @@ export default function Projects () {
                   <HiShare size={28} />
                 </DropdownButton>
               </HeaderItem>
-              {menuComponents.length > 0
-                && menuComponents.map((component, key) =>
-                  <HeaderItem key={key}>
-                    {component}
-                  </HeaderItem>
-                )
-              }
+              <HeaderItem>
+                <button
+                  className={`py-2 px-4 ${project.isSaved ? "bg-blue-600" : "bg-pink-600"} bg-opacity-60 rounded-full`}
+                  onClick={project.updateGlobally}
+                >
+                  {project.isSaved ? "Saved" : "Save"}
+                </button>
+              </HeaderItem>
             </ul>
           }
         </header>
@@ -332,16 +326,16 @@ export default function Projects () {
             <NavbarItem onClick={handleImportCover}>
               Import
             </NavbarItem>
-            <NavbarItem onClick={handleCreateCover}>
+            <NavbarItem onClick={() => setCreateProjectModalVisibility(true)}>
               Create
             </NavbarItem>
           </div>
 
           {/** Projects List */}
           <div className="overflow-auto fixed bottom-0 top-32 w-full md:w-72">
-            {allLocalProjects.length > 0
+            {localProjects.length > 0
               ? <Fragment>
-                {allLocalProjects.map(project =>
+                {localProjects.map(project =>
                   <ProjectItem
                     key={project.slug}
                     slug={project.slug}
@@ -357,7 +351,7 @@ export default function Projects () {
                 <div className="flex flex-col gap-4 justify-center items-center">
                   <button
                     className="px-4 py-2 font-medium bg-pink-600 bg-opacity-20 rounded border-2 border-pink-600"
-                    onClick={handleCreateCover}
+                    onClick={() => setCreateProjectModalVisibility(true)}
                   >
                     Create a new cover !
                   </button>
@@ -378,11 +372,7 @@ export default function Projects () {
           <Routes>
             <Route
               path=":slug/*"
-              element={
-                <ProjectOverview
-                  updateMenuComponents={setMenuComponents}
-                />
-              }
+              element={<ProjectOverview />}
             />
 
             <Route

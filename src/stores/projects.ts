@@ -3,16 +3,24 @@ import type {
   ProjectStructure
 } from "../types/Project";
 
-type CreateEmptyProjectProps = {
-  name: string;
-  slug: string;
-  authors?: string[];
-  launchpadders?: string[];
-};
-
 import localforage from "localforage";
+import create from "zustand";
 
-class ProjectsStore {
+interface SuccessResponse<T> {
+  success: true;
+  data: T;
+}
+
+interface FailResponse {
+  success: false;
+  message: string;
+  debug?: unknown;
+}
+
+type Response<T> = Promise<SuccessResponse<T> | FailResponse>;
+
+/** localForage store for persistance of projects. */
+class StoredProjectsStore {
   private store: LocalForage;
 
   constructor (databaseName: string) {
@@ -40,18 +48,29 @@ class ProjectsStore {
     return projects;
   }
 
-  async getProjectFromSlug (slug: string): Promise<[boolean, ProjectStructure | string]> {
+  async getProjectFromSlug (slug: string): Response<ProjectStructure> {
     try {
       const project: ProjectStructure | null = await this.store.getItem(slug);
-      if (project) {
-        return [true, project];
-      }
+      if (project) return {
+        success: true,
+        data: project
+      };
 
-      return [false, "Project not found."];
+      return {
+        success: false,
+        message: "Project not found."
+      };
     }
     catch (e) {
-      /** Debug */ console.error("[stores->projects->getProjectFromSlug]", e);
-      return [false, e as string];
+      console.error("[stores][projects][getProjectFromSlug]", e);
+
+      return {
+        success: false,
+        message: `Error while getting the project of slug "${slug}"`,
+        debug: {
+          error: e
+        }
+      };
     }
   }
 
@@ -65,14 +84,26 @@ class ProjectsStore {
   async updateProject (
     slug: string,
     data: ProjectStructure
-  ): Promise<[boolean, string, (ProjectStructure | null)]> {
+  ): Response<ProjectStoredStructure> {
     try {
       const savedData: ProjectStructure = await this.store.setItem(slug, data);
-      return [true, slug, savedData];
+      return {
+        success: true,
+        data: {
+          slug,
+          data: savedData
+        }
+      };
     }
     catch (e) {
-      /** Debug */ console.error("[stores->projects->updateProject]", e);
-      return [false, e as string, null];
+      console.error("[stores][projects][updateProject]", e);
+      return {
+        success: false,
+        message: `Error while saving the project of slug "${slug}"`,
+        debug: {
+          error: e
+        }
+      };
     }
   }
 
@@ -92,11 +123,17 @@ class ProjectsStore {
     slug,
     authors = [],
     launchpadders = []
-  }: CreateEmptyProjectProps): Promise<[
-    boolean, string, (ProjectStructure | null)
-  ]> {
-    if (!name || !slug) return [false, "Project name and slug are required.", null];
-
+  }: {
+    name: string;
+    slug: string;
+    authors?: string[];
+    launchpadders?: string[];
+  }): Response<ProjectStoredStructure> {
+    if (!name || !slug) return {
+      success: false,
+      message: "Name and slug are required."
+    };
+    
     // Defining an empty project.
     const project: ProjectStructure = {
       // Version of lpadder is defined globally, see `global.d.ts`.
@@ -105,18 +142,103 @@ class ProjectsStore {
       name,
       authors,
       launchpadders,
+      
+      // Empty cover data.
       launchpads: [],
       assets: []
     };
 
     // Check if the slug already exists.
-    const [alreadyExists] = await this.getProjectFromSlug(slug);
-    if (alreadyExists) return [false, "Project already exists.", null];
+    const { success: alreadyExists } = await this.getProjectFromSlug(slug);
+    if (alreadyExists) return {
+      success: false,
+      message: "A project with this slug already exists."
+    };
 
     // Store the new project.
-    const [status] = await this.updateProject(slug, project);
-    return [status, slug, project];
+    const created_project = await this.updateProject(slug, project);
+    if (!created_project.success) return {
+      success: false,
+      message: "Error while creating the project.",
+      debug: {
+        response: created_project
+      }
+    };
+
+    return {
+      success: true,
+      data: created_project.data
+    };
   }
 }
 
-export default ProjectsStore;
+/** localForage store wrapped with some utility functions. */
+export const storedProjects = new StoredProjectsStore("lpadder");
+
+interface LocalProjectsStore {
+  localProjects: ProjectStoredStructure[] | null;
+  setLocalProjects: (data: ProjectStoredStructure[]) => void;
+}
+
+/**
+ * This store is used to store every projects
+ * that was in the localForage.
+ */
+export const useLocalProjectsStore = create<LocalProjectsStore>((set) => ({
+  localProjects: null,
+  setLocalProjects: (data) => set({ localProjects: data })
+}));
+
+interface CurrentProjectStore {
+  /** Is the project saved globally and locally. */
+  isSaved: boolean;
+  currentProject: ProjectStoredStructure | null;
+  setIsSaved: (value: boolean) => void;
+  setCurrentProject: (data: ProjectStoredStructure | null) => void;
+
+  /**
+   * Takes the current project data and put it in the
+   * localProjects and the stored projects.
+   */
+   updateGlobally: () => Promise<void>
+}
+
+/**
+ * Store used when a project is opened.
+ * We use this store to keep track of the current project.
+ */
+export const useCurrentProjectStore = create<CurrentProjectStore>((set, get) => ({
+  isSaved: true,
+  currentProject: null,
+  setIsSaved: (value: boolean) => set({ isSaved: value }),
+  setCurrentProject: (data) => set({
+    currentProject: data,
+    isSaved: false
+  }),
+
+  updateGlobally: async () => {
+    const projectData = get().currentProject;
+    if (!projectData) return;
+
+    // Store the current project in the localForage.
+    const update_project = await storedProjects.updateProject(projectData.slug, projectData.data);
+    if (!update_project.success) return;
+
+    const localProjects = useLocalProjectsStore.getState().localProjects;
+    const updatedLocalProjects =  [ ...(localProjects || []) ];
+    const projectToUpdateIndex = updatedLocalProjects.findIndex(
+      project => project.slug === update_project.data.slug
+    );
+
+    updatedLocalProjects[projectToUpdateIndex] = {
+      slug: update_project.data.slug,
+      data: update_project.data.data
+    };
+
+    // Store the current project in local projects.
+    useLocalProjectsStore.getState().setLocalProjects(updatedLocalProjects);
+
+    // Set the current project as saved (locally and globally).
+    set({ isSaved: true });
+  }
+}));

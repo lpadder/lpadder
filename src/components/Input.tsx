@@ -29,7 +29,7 @@ export default function Input ({
         className={`
           p-2 w-full rounded outline-none
           m:text-sm
-          bg-gray-800 bg-opacity-40
+          bg-gray-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
           ${className ? className : ""}
         `}

@@ -22,8 +22,11 @@ import Home from "@/pages/index";
 import Projects from "@/pages/projects/index";
 import Utilities from "@/pages/utilities/index";
 
-// PWA Content Update
+// Modals
 import ReloadPrompt from "@/components/ReloadPrompt";
+import ImportProjectModal from "@/components/ImportProjectModal";
+import CreateProjectModal from "@/components/CreateProjectModal";
+// import LpadderWrongVersionModal from "./components/LpadderWrongVersionModal";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -38,6 +41,8 @@ ReactDOM.render(
     </BrowserRouter>
     
     <ReloadPrompt />
+    <ImportProjectModal />
+    <CreateProjectModal />
   </React.StrictMode>,
   document.getElementById("root")
 );

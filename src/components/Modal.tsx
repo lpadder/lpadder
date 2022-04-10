@@ -43,12 +43,12 @@ export default function Modal ({
   return (
     <Fragment>
       {open && (
-        <Portal className="modal-portal">
+        <Portal>
           <div
             ref={backdrop}
             className={`${open && "flex fixed top-0 left-0 z-50 justify-center items-center w-screen h-screen bg-gray-900 bg-opacity-60"}`}
           >
-            <div className="px-8 py-4 mx-4 space-y-8 w-full max-w-md bg-gray-900 rounded-lg">
+            <div className="p-4 mx-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900 shadow-lg shadow-gray-900">
               {children}
             </div>
           </div>
