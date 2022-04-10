@@ -85,7 +85,10 @@ export default function ProjectEditor () {
       (_, index) => index !== currentLaunchpadSelected
     );
 
-    console.log(data_copy);
+    // Prevent selecting a removed launchpad.
+    setCurrentLaunchpadSelected(null);
+
+    // Save locally the changes.
     setData(data_copy);
   };
 
@@ -98,7 +101,6 @@ export default function ProjectEditor () {
     const index = data_copy.launchpads[currentLaunchpadSelected].pages.length + 1;
     const name = `Page ${index}`;
     data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
-
     setData(data_copy);
   };
 
