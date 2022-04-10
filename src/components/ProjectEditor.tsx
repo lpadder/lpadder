@@ -12,6 +12,9 @@ import {
   useCurrentProjectStore,
 } from "@/stores/projects";
 
+import Select from "./Select";
+import Input from "./Input";
+
 export default function ProjectEditor () {
   const {
     project,
@@ -116,7 +119,7 @@ export default function ProjectEditor () {
       <div>
         <h3>Launchpads</h3>
 
-        <select
+        <Select
           onChange={handleLaunchpadSelection}
           placeholder="Select a launchpad"
         >
@@ -126,7 +129,7 @@ export default function ProjectEditor () {
               {launchpad.name}
             </option>
           )}
-        </select>
+        </Select>
 
         <button onClick={addLaunchpad}>
           Add a launchpad
@@ -134,8 +137,9 @@ export default function ProjectEditor () {
 
         {launchpad &&
           <Fragment>
-            <input
-              type="text"
+            <Input
+              labelName="Launchpad name"
+              placeholder={launchpad.name}
               value={launchpad.name}
               onChange={evt => {
                 const data_copy = { ...data };
@@ -147,7 +151,7 @@ export default function ProjectEditor () {
               Remove this launchpad
             </button>
 
-            <select
+            <Select
               placeholder="Select a page"
               onChange={handleLaunchpadPageSelection}
             >
@@ -157,7 +161,7 @@ export default function ProjectEditor () {
                   {page.name}
                 </option>
               )}
-            </select>
+            </Select>
 
             <button onClick={addLaunchpadPage}>
               Add a page to this launchpad

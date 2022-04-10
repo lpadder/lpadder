@@ -26,8 +26,13 @@ export default function Input ({
         name={labelName}
         onChange={onChange}
         placeholder={placeholder}
+
+        autoComplete="off"
+        autoCapitalize="off"
+        autoCorrect="off"
+
         className={`
-          p-2 w-full rounded outline-none
+          py-2 px-4 w-full rounded-lg outline-none
           m:text-sm
           bg-gray-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
