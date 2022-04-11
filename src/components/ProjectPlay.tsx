@@ -5,7 +5,7 @@ import type {
 
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   useCurrentProjectStore
@@ -13,14 +13,17 @@ import {
 
 export default function ProjectPlay () {
   const project = useCurrentProjectStore(state => state.currentProject);
+  const [isRendering, setIsRendering] = useState(true);
 
   useEffect(() => {
     console.group("[ProjectPlay] Update on project data.");
+    setIsRendering(true);
     console.info("Re-rendering...");
 
     // TODO: Reload all the audio, etc... (when it will be supported).
 
     console.info("Done !");
+    setIsRendering(false);
     console.groupEnd();
   }, [project]);
   
@@ -37,17 +40,29 @@ export default function ProjectPlay () {
     console.log(event.currentTarget);
   };
 
-  if (!project) return <p>Loading...</p>;
+  if (isRendering) return (
+    <div>
+      <p>Rendering new configuration...</p>
+    </div>
+  );
+
+  if (!project) return (
+    <p>Loading project data...</p>
+  );
 
   return (
-    <div>      
-      <div
-        className="flex flex-row gap-2 justify-center items-center w-full"
-      >
+    <div className="
+      w-full bg-gray-700 bg-opacity-60 h-64 p-6 mb-6
+      rounded-lg overflow-y-auto
+    "> 
+      <div className="
+        flex justify-start items-center 
+        w-fit h-full gap-2
+      ">
         {project.data.launchpads.map((_, id) =>
           <div
             key={id}
-            className="w-64 h-64"
+            className="h-full w-auto aspect-square"
           >
             <Launchpad
               launchpadId={id}
