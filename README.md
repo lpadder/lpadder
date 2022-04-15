@@ -71,7 +71,7 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 - `yarn release`: Runs `yarn run check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
 
-### Launchpad resources
+### Resources and credits
 
 I used these documentations to determine how `live` and `programmer` layouts were made.
 - Launchpad Pro MK2: [Programmer Documentation](https://d2xhy469pqj8rc.cloudfront.net/sites/default/files/novation/downloads/10598/launchpad-pro-programmers-reference-guide_0.pdf)

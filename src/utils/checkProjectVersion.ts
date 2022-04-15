@@ -88,14 +88,6 @@ export default async function checkProjectVersion (
       success: false,
       deploy_url
     };
-    // setLpadderWrongVersionModalData({
-    //   requiredVersion: version,
-    //   errorMessage: undefined,
-    //   lpadderDeployUrl: deploy_url
-    // });
-
-    // setLpadderWrongVersionModalOpen(true);
-    // return;
   }
 
   return {

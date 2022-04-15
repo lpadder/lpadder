@@ -8,9 +8,13 @@ import Modal from "@/components/Modal";
 
 import { useModalsStore } from "@/stores/modals";
 import {
-  storedProjects,
+  storedProjectsData
+} from "@/stores/projects_data";
+
+import {
+  storedProjectsMetadata,
   useLocalProjectsStore
-} from "@/stores/projects";
+} from "@/stores/projects_metadata";
 
 export default function ImportProjectModal () {
   const [slug, setSlug] = useState("");
@@ -24,28 +28,28 @@ export default function ImportProjectModal () {
   }));
 
   const {
-    localProjects,
-    setLocalProjects
+    localProjectsMetadata,
+    setLocalProjectsMetadata
   } = useLocalProjectsStore();
 
   const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Verify slug state.
-    if (!slug || !modal.data || !localProjects) return;
+    if (!slug || !modal.data || !localProjectsMetadata) return;
     
-    // Save the project in localForage.
-    const project_saved = await storedProjects.updateProject(
-      slug, modal.data
-    );
+    // Save the data in localForage.
+    await storedProjectsData.updateProjectData(slug, modal.data.data);
+
+    // Save the metadata in localForage.
+    await storedProjectsMetadata.updateProjectMetdata(slug, modal.data.metadata);
 
     // If succeed, we update the all local projects.
-    if (!project_saved.success) return console.error(`[ImportProjectModal] ${project_saved.message}`);
-    setLocalProjects([
-      ...localProjects,
+    setLocalProjectsMetadata([
+      ...localProjectsMetadata,
       {
-        slug: project_saved.data.slug,
-        data: project_saved.data.data
+        slug,
+        metadata: modal.data.metadata
       }
     ]);
 
@@ -67,7 +71,7 @@ export default function ImportProjectModal () {
       </h2>
       <p className="mt-4 px-4 py-2 mx-4 text-opacity-40 bg-blue-800 bg-opacity-20 rounded-lg">
         You are currently importing <span className="font-medium text-blue-400">
-          {modal.data ? modal.data.name : ""}
+          {modal.data ? modal.data.metadata.name : ""}
         </span> project.
       </p>
 

@@ -46,6 +46,8 @@ export default function Launchpad ({
   const launchpadLayouts = new LaunchpadLayout();
   const currentLayout = launchpadLayouts.layouts[layout];
 
+  console.log("Render launchpad");
+
   return (
     <div
       className="flex flex-col gap-1"

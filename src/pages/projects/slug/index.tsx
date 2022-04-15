@@ -1,70 +1,77 @@
-import {
-  useEffect
-} from "react";
+import { useEffect } from "react";
 
 import {
   useParams,
   useNavigate
 } from "react-router-dom";
 
-import {
-  useCurrentProjectStore,
-  useLocalProjectsStore
-} from "@/stores/projects";
+// Stores.
+import { useCurrentProjectStore } from "@/stores/current_project";
+import { useLocalProjectsStore } from "@/stores/projects_metadata";
+import { useUnsavedProjectStore } from "@/stores/unsaved_project";
+import { storedProjectsData } from "@/stores/projects_data";
+import shallow from "zustand/shallow";
 
+// Components.
 import ProjectPlay from "@/components/ProjectPlay";
 import ProjectEditor from "@/components/ProjectEditor";
 
 export default function ProjectOverview () {
   const navigate = useNavigate();
   const params = useParams();
+  
+  const unsaved_project = useUnsavedProjectStore();
 
-  const localProjects = useLocalProjectsStore(state => state.localProjects);
-
-  const {
-    project,
-    setProject,
-    setIsSaved
-  } = useCurrentProjectStore(state => ({
-    project: state.currentProject,
-    setProject: state.setCurrentProject,
-    setIsSaved: state.setIsSaved
-  }));
-
+  const project = useCurrentProjectStore(state => ({
+    metadata: state.metadata,
+    setData: state.setData,
+    setMetadata: state.setMetadata,
+    setIsGloballySaved: state.setIsGloballySaved
+  }), shallow);
+  
   // Update project to use when slug change.
   const projectSlug = params.slug;
   useEffect(() => {
-    if (!projectSlug || !localProjects) return;
+    (async () => {
+      const localProjectsMetadata = useLocalProjectsStore.getState().localProjectsMetadata;
+      if (!projectSlug || !localProjectsMetadata) return;
 
-    console.group(`[/${projectSlug}][useEffect]`);
-    console.info("⌛ Loading", projectSlug, "project from 'localProjects' state.");
+      console.group(`[/${projectSlug}][useEffect]`);
+      console.info("⌛ Loading", projectSlug, "project metadata and data from stores.");
 
-    // Get the project data and save it to local state.
-    const projectStructureData = localProjects.find(e => e.slug === projectSlug);
-    if (projectStructureData) {
-      setProject(projectStructureData);
+      const projectLoadedMetadata = localProjectsMetadata.find(local_project => local_project.slug === projectSlug);
+      const projectData = await storedProjectsData.getProjectDataFromSlug(projectSlug);
+    
+      if (!projectLoadedMetadata || !projectData.success) {
+        console.error(`! Project "${projectSlug}" not found ! Redirecting to "/projects".`);
+        console.groupEnd();
+      
+        navigate("/projects");
+        return;
+      }
+
+      // Sync with local stores.
+      project.setData(projectData.data);
+      unsaved_project.setData(projectData.data);
+      project.setMetadata(projectLoadedMetadata.metadata);
+      
       // On the first load, the project is already saved
-      // but when calling `setProject`, it will
-      // automatically set `isSaved` to false.
-      setIsSaved(true);
-
+      // but when calling `setMetadata` and `setData`, it will
+      // automatically set `isGloballySaved` to false.
+      project.setIsGloballySaved(true);
+      
       console.info("✔️ Finished load of", projectSlug, "project.");
       console.groupEnd();
-    }
-    // Project wasn't found (can happen when URL slug doesn't exist).
-    else {
-      console.error("Project", projectSlug, "not found ! Redirecting to '/projects'.");
-      console.groupEnd();
-      
-      navigate("/projects");
-    }
+    })();
   }, [projectSlug]);
 
-  // Show a loader while loading and checking the project. 
-  if (!project)
+  // Debug.
+  console.info("[RENDER][/:slug]");
+
+  // Show a loader while loading data and metadata.
+  if (!project.metadata)
     return <p>Loading...</p>;
 
-  // Load all the components to run the project.
   return (
     <div className="p-4">
       <ProjectPlay />

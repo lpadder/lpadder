@@ -4,39 +4,20 @@ import type {
 
 import {
   Fragment,
-  useEffect,
   useState
 } from "react";
 
+
 import {
-  useCurrentProjectStore,
-} from "@/stores/projects";
+  useUnsavedProjectStore
+} from "@/stores/unsaved_project";
 
 import Select from "./Select";
 import Input from "./Input";
 
 export default function ProjectEditor () {
-  const {
-    project,
-    setProject
-  } = useCurrentProjectStore(state => ({
-    project: state.currentProject,
-    setProject: state.setCurrentProject
-  }));
-
-  useEffect(() => {
-    console.info("[ProjectEditor] Loading project editor...");
-
-    // TODO: Load modules and components...
-
-    console.info("[ProjectEditor] Done !");
-  }, []);
-
-  if (!project) return <p>Loading...</p>;
-
-  // Short-hands.
-  const data = project.data;
-  const setData = (data: typeof project.data) => setProject({ data, slug: project.slug });
+  const { data, setData } = useUnsavedProjectStore();
+  if (!data) return <p>Loading...</p>;
 
   /** Index of the current used launchpad. */
   const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | null>(null);
@@ -115,6 +96,8 @@ export default function ProjectEditor () {
     ...launchpad.pages[currentLaunchpadPageSelected],
     id: currentLaunchpadPageSelected
   } : null;
+
+  console.info("[RENDER][/:slug][ProjectEditor]");
 
   return (
     <div>

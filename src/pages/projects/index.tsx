@@ -1,7 +1,7 @@
-import { ProjectStoredStructure, ProjectStructure } from "@/types/Project";
+import type { ProjectStructure, ProjectLoadedMetadata } from "@/types/Project";
 
 import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import JSZip from "jszip";
 
 import exportCoverToZip from "@/utils/exportCoverToZip";
@@ -16,29 +16,36 @@ import DropdownButton from "@/components/DropdownButton";
 import FullLoader from "@/components/FullLoader";
 
 import {
-  storedProjects,
-  useLocalProjectsStore,
+  storedProjectsMetadata,
+  useLocalProjectsStore
+} from "@/stores/projects_metadata";
+
+import {
+  syncDataGlobally,
   useCurrentProjectStore
-} from "@/stores/projects";
+} from "@/stores/current_project";
+
 import { useModalsStore } from "@/stores/modals";
+import shallow from "zustand/shallow";
 
 // Icons
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
 
 export default function Projects () {
-  const [menuOpen, setMenuOpen] = useState(false);
-  
+  const projectMenuRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
-  const [currentProjectSlug, setCurrentProjectSlug] = useState<string | null>(null);
 
-  // Loading the projects store.
+  // Load the projects metadata store.
   const {
-    localProjects,
-    setLocalProjects,
-  } = useLocalProjectsStore();
+    localProjectsMetadata,
+    setLocalProjectsMetadata
+  } = useLocalProjectsStore(state => ({
+    localProjectsMetadata: state.localProjectsMetadata,
+    setLocalProjectsMetadata: state.setLocalProjectsMetadata
+  }), shallow);
 
-  // Loading the modals store.
+  // Load the modals store.
   const {
     setCreateProjectModalVisibility,
     setImportProjectModalVisibility,
@@ -47,29 +54,40 @@ export default function Projects () {
     setCreateProjectModalVisibility: state.setCreateProjectModal,
     setImportProjectModalVisibility: state.setImportProjectModal,
     setImportProjectModalData: state.setImportProjectModalData
-  }));
+  }), shallow);
 
   const project = useCurrentProjectStore(state => ({
-    isSaved: state.isSaved,
-    setIsSaved: state.setIsSaved,
-    state: state.currentProject,
-    setState: state.setCurrentProject,
-    updateGlobally: state.updateGlobally,
-  })); 
+    slug: state.slug,
+    setSlug: state.setSlug,
+    isGloballySaved: state.isGloballySaved,
+    setIsGloballySaved: state.setIsGloballySaved,
+    setData: state.setData,
+    metadata: state.metadata,
+    setMetadata: state.setMetadata
+  }), shallow);
+
+  // Debug.
+  console.info("[RENDER][/]");
   
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
     const navigate = useNavigate();
   
     const handleProjectUpdate = () => {
+      if (project.slug === slug) return;
+      console.info("[handleProjectUpdate] Switching from", project.slug, "to", slug);
+
       // We remove any currently opened project.
-      project.setIsSaved(true);
-      project.setState(null);
+      project.setIsGloballySaved(true);
+      project.setData(null);
+      project.setMetadata(null);
+      console.info("[handleProjectUpdate] Project data and metadata cleared.");
 
       // We update the current project slug
       // and navigate to its page to load it.
-      setCurrentProjectSlug(slug);
+      project.setSlug(slug);
       navigate(slug);
+      console.info("[handleProjectUpdate] Project slug updated and navigated to route.");
     };
   
     return (
@@ -93,11 +111,11 @@ export default function Projects () {
             {
               name: "Delete",
               action: async () => {
-                const wasRemoved = await storedProjects.deleteProject(slug);
+                const wasRemoved = await storedProjectsMetadata.deleteProjectMetadata(slug);
                 if (!wasRemoved) return;
 
-                const localProjectsUpdated = [ ...localProjects as ProjectStoredStructure[] ];
-                setLocalProjects([
+                const localProjectsUpdated = [ ...localProjectsMetadata as ProjectLoadedMetadata[] ];
+                setLocalProjectsMetadata([
                   ...localProjectsUpdated.filter(
                     project => project.slug !== slug
                   )
@@ -106,14 +124,14 @@ export default function Projects () {
                 // If the current project was removed, we redirect
                 // to root because project will be inexistant.
                 // Also remove the useless components.
-                if (currentProjectSlug === slug) {
+                if (project.slug === slug) {
                   navigate("/projects");
                   
                   // We remove any currently opened project.
-                  project.setIsSaved(true);
-                  project.setState(null);
-                  
-                  setCurrentProjectSlug(null);
+                  project.setIsGloballySaved(true);
+                  project.setData(null);
+                  project.setMetadata(null);
+                  project.setSlug(null);
                 }
               }
             }
@@ -156,13 +174,13 @@ export default function Projects () {
   useEffect(() => {
     (async () => {
       console.group("[/][useEffect]");
-      console.info("⌛ Fetching every stored projects...");
+      console.info("⌛ Fetching every stored projects' metadatas...");
 
-      const allStorageProjects = await storedProjects.getStoredProjects();
-      setLocalProjects(allStorageProjects);
+      const projects_metadatas = await storedProjectsMetadata.getProjectsMetadata();
+      setLocalProjectsMetadata(projects_metadatas);
 
       console.info(
-        "✔️ Stored every projects in local state: 'allLocalProjects' !"
+        "✔️ Stored every projects' metadatas in local store: 'localProjectsMetadata' !"
       );
 
       // Check if we have selected a project from URL.
@@ -171,25 +189,49 @@ export default function Projects () {
         .replace(/\/projects\//g, "");
 
       // Check if the project's slug exists.
-      const urlProjectSlugFound = allStorageProjects.find(
+      const urlProjectSlugFound = projects_metadatas.find(
         project => project.slug === urlProjectSlug
       );
 
       // If the project is found from slug.
       if (urlProjectSlugFound) {
-        const accourateProjectSlug = urlProjectSlugFound.slug;
+        const accurateProjectSlug = urlProjectSlugFound.slug;
 
-        console.info("→ Found matching project from slug in URL: ", accourateProjectSlug);
+        console.info("→ Found matching project from slug in URL: ", accurateProjectSlug);
         console.groupEnd();
 
         // Save slug in state.
-        setCurrentProjectSlug(accourateProjectSlug);
+        project.setSlug(accurateProjectSlug);
       }
       else console.groupEnd();
     })();
   }, []);
+
+  /** Setup configuration for CTRL+S shortcut. */
+  useEffect(() => {
+    const platform = navigator.userAgentData?.platform || navigator.platform;
+    const saveShortcut = (e: KeyboardEvent) => {
+      if (!project) return;
+
+      if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+
+        console.info(`[CTRL+S] Save for ${project.slug}.`);
+        syncDataGlobally();
+      }
+    };
+
+    // Configure shortcuts. 
+    document.addEventListener("keydown", saveShortcut);
+    console.info("[CTRL+S] Configured shortcut.");
+    
+    return () => {
+      document.removeEventListener("keydown", saveShortcut);
+      console.info("[CTRL+S] Unconfigured shortcut.");
+    };
+  }, [project.slug]);
   
-  const default_lpadderWrongVersionModalData = {
+  const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
     errorMessage: undefined,
     lpadderDeployUrl: undefined
@@ -222,7 +264,7 @@ export default function Projects () {
 
         // We check if the project version is matching
         // with lpadder's one - except on development.
-        const { version } = parsedCoverData;
+        const { version } = parsedCoverData.metadata;
         const version_data = await checkProjectVersion(version);
         if (!version_data.success) {
           setLpadderWrongVersionModalData({
@@ -254,7 +296,7 @@ export default function Projects () {
   };
 
   /** Show a loader while the projects are loading. */
-  if (!localProjects) return <FullLoader
+  if (!localProjectsMetadata) return <FullLoader
     loadingText="Loading your saved projects..."
   />;
 
@@ -271,7 +313,7 @@ export default function Projects () {
 
       <div
         className="w-screen h-screen"
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => /** Prevent context menu. */ e.preventDefault()}
       >
         <header
           className="flex fixed top-0 justify-between items-center px-8 w-full h-20 bg-gray-900 bg-opacity-60 shadow backdrop-blur"
@@ -281,14 +323,17 @@ export default function Projects () {
               <IoMdArrowBack size={28} />
             </Link>
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={() => {
+                if (projectMenuRef.current)
+                  projectMenuRef.current.classList.toggle("hidden");
+              }}
               className="p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 md:hidden hover:bg-opacity-20 focus:bg-opacity-40"
             >
               <IoMdMenu size={28} />
             </button>
           </div>
 
-          {project.state &&
+          {project.slug &&
             <ul className="flex flex-row-reverse gap-4">
               <HeaderItem>
                 <DropdownButton
@@ -296,7 +341,7 @@ export default function Projects () {
                   items={[
                     {
                       name: "Export to .zip",
-                      action: async () => project.state ? await exportCoverToZip(project.state.slug) : null
+                      action: async () => project.slug ? await exportCoverToZip(project.slug) : null
                     },
                     {
                       name: "Collaborate online",
@@ -309,10 +354,10 @@ export default function Projects () {
               </HeaderItem>
               <HeaderItem>
                 <button
-                  className={`py-2 px-4 ${project.isSaved ? "bg-blue-600" : "bg-pink-600"} bg-opacity-60 rounded-full`}
-                  onClick={project.updateGlobally}
+                  className={`py-2 px-4 ${project.isGloballySaved ? "bg-blue-600" : "bg-pink-600"} bg-opacity-60 rounded-full`}
+                  onClick={syncDataGlobally}
                 >
-                  {project.isSaved ? "Saved" : "Save"}
+                  {project.isGloballySaved ? "Saved" : "Save"}
                 </button>
               </HeaderItem>
             </ul>
@@ -320,7 +365,7 @@ export default function Projects () {
         </header>
 
         {/** Projects Navigation */}
-        <nav className={`${menuOpen ? "block" : "hidden"} md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700`}>
+        <nav ref={projectMenuRef} className="hidden md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700">
           {/** Import / Create */}
           <div className="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
             <NavbarItem onClick={handleImportCover}>
@@ -333,14 +378,14 @@ export default function Projects () {
 
           {/** Projects List */}
           <div className="overflow-auto fixed bottom-0 top-32 w-full md:w-72">
-            {localProjects.length > 0
+            {localProjectsMetadata.length > 0
               ? <Fragment>
-                {localProjects.map(project =>
+                {localProjectsMetadata.map(local_project =>
                   <ProjectItem
-                    key={project.slug}
-                    slug={project.slug}
-                    name={project.data.name}
-                    selected={project.slug === currentProjectSlug}
+                    key={local_project.slug}
+                    slug={local_project.slug}
+                    name={local_project.metadata.name}
+                    selected={local_project.slug === project.slug}
                   />
                 )}
               </Fragment>

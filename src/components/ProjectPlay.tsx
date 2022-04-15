@@ -5,28 +5,18 @@ import type {
 
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import {
   useCurrentProjectStore
-} from "@/stores/projects";
+} from "@/stores/current_project";
 
 export default function ProjectPlay () {
-  const project = useCurrentProjectStore(state => state.currentProject);
-  const [isRendering, setIsRendering] = useState(true);
+  const projectRef = useRef(useCurrentProjectStore.getState().data);
+  useEffect(() => useCurrentProjectStore.subscribe(
+    state => (projectRef.current = state.data)
+  ), []);
 
-  useEffect(() => {
-    console.group("[ProjectPlay] Update on project data.");
-    setIsRendering(true);
-    console.info("Re-rendering...");
-
-    // TODO: Reload all the audio, etc... (when it will be supported).
-
-    console.info("Done !");
-    setIsRendering(false);
-    console.groupEnd();
-  }, [project]);
-  
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
   };
@@ -40,15 +30,11 @@ export default function ProjectPlay () {
     console.log(event.currentTarget);
   };
 
-  if (isRendering) return (
-    <div>
-      <p>Rendering new configuration...</p>
-    </div>
-  );
-
-  if (!project) return (
+  if (!projectRef.current) return (
     <p>Loading project data...</p>
   );
+
+  console.info("[RENDER][/:slug][ProjectPlay]");
 
   return (
     <div className="
@@ -59,19 +45,24 @@ export default function ProjectPlay () {
         flex justify-start items-center 
         w-fit h-full gap-2
       ">
-        {project.data.launchpads.map((_, id) =>
+        {projectRef.current.launchpads.map((_, launchpadId) =>
           <div
-            key={id}
-            className="h-full w-auto aspect-square"
+            key={launchpadId}
+            className="flex gap-2 items-start flex-row h-full"
           >
-            <Launchpad
-              launchpadId={id}
-              layout="programmer"
-              onPadDown={handlePadDown}
-              onPadUp={handlePadUp}
+            <div
+              className="h-full w-full aspect-square"
+            >
+              <Launchpad
+                launchpadId={launchpadId}
+                layout="programmer"
+                onPadDown={handlePadDown}
+                onPadUp={handlePadUp}
 
-              onContextMenu={handleContextMenu}
-            />
+                onContextMenu={handleContextMenu}
+              />
+            </div>
+            <button className="rounded-full bg-gray-600 p-2"></button>
           </div>
         )}
       </div>

@@ -11,9 +11,13 @@ import {
 } from "@/stores/modals";
 
 import {
-  storedProjects,
+  storedProjectsData  
+} from "@/stores/projects_data";
+
+import {
+  storedProjectsMetadata,
   useLocalProjectsStore
-} from "@/stores/projects";
+} from "@/stores/projects_metadata";
 
 export default function CreateProjectModal () {
   const [state, setState] = useState({
@@ -27,28 +31,32 @@ export default function CreateProjectModal () {
   }));
 
   const {
-    localProjects,
-    setLocalProjects
+    localProjectsMetadata,
+    setLocalProjectsMetadata
   } = useLocalProjectsStore();
 
   const handleCreation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!state.name || !state.slug || !localProjects) return;
+    if (!state.name || !state.slug || !localProjectsMetadata) return;
     
     // We create an empty project in localForage.
-    const created_project = await storedProjects.createEmptyProject({
-      name: state.name,
-      slug: state.slug
+    const created_project_metadata = await storedProjectsMetadata.createEmptyProjectMetdata(state.slug, {
+      name: state.name
     });
+    
+    if (!created_project_metadata.success)
+      return console.error("[CreateProjectModal]", created_project_metadata.message);
+      
+    const created_project_data = await storedProjectsData.createEmptyProjectData(state.slug);
+      
+    if (!created_project_data.success)
+      return console.error("[CreateProjectModal]", created_project_data.message);
 
-    if (!created_project.success)
-      return console.error("[CreateProjectModal]", created_project.message);
-
-    setLocalProjects([
-      ...localProjects,
+    setLocalProjectsMetadata([
+      ...localProjectsMetadata,
       {
-        slug: created_project.data.slug,
-        data: created_project.data.data
+        slug: created_project_metadata.data.slug,
+        metadata: created_project_metadata.data.metadata
       }
     ]);
     
