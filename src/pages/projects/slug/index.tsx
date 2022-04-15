@@ -61,6 +61,10 @@ export default function ProjectOverview () {
       console.info("✔️ Finished load of", projectSlug, "project.");
       console.groupEnd();
     })();
+
+    return () => {
+      console.log("[ProjectOverview][useEffect] Cleaning up.");
+    };
   }, [projectSlug]);
 
   // Debug.

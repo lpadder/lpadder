@@ -163,7 +163,7 @@ export const storedProjectsMetadata = new StoredProjectsMetadataStore("lpadder")
 
 interface LocalProjectsStore {
   localProjectsMetadata: ProjectLoadedMetadata[] | null;
-  setLocalProjectsMetadata: (data: ProjectLoadedMetadata[]) => void;
+  setLocalProjectsMetadata: (data: ProjectLoadedMetadata[] | null) => void;
 }
 
 /**

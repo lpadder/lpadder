@@ -4,7 +4,7 @@ import { Link, Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import JSZip from "jszip";
 
-import exportCoverToZip from "@/utils/exportCoverToZip";
+import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
 
 // Components in the layout.
@@ -30,10 +30,23 @@ import shallow from "zustand/shallow";
 
 // Icons
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
-import { IoMdArrowBack, IoMdMenu } from "react-icons/io";
+import { IoMdArrowBack, IoMdMenu, IoMdSave } from "react-icons/io";
 
 export default function Projects () {
   const projectMenuRef = useRef<HTMLDivElement | null>(null);
+  const projectSaveButtonRef = useRef<HTMLButtonElement | null>(null);
+  const menuBarComponentsRef = useRef<HTMLUListElement | null>(null);
+
+  const showMenuBarComponents = (visible: boolean) => {
+    /** Debug */ console.info("[showMenuBarComponents]:", visible);
+
+    const components = menuBarComponentsRef.current;
+    if (!components) return;
+
+    components.classList.toggle("flex", visible);
+    components.classList.toggle("hidden", !visible);
+  };
+
   const location = useLocation();
 
   // Load the projects metadata store.
@@ -58,16 +71,11 @@ export default function Projects () {
 
   const project = useCurrentProjectStore(state => ({
     setSlug: state.setSlug,
-    isGloballySaved: state.isGloballySaved,
     setIsGloballySaved: state.setIsGloballySaved,
     setData: state.setData,
-    metadata: state.metadata,
     setMetadata: state.setMetadata
   }), shallow);
 
-  // Debug.
-  console.info("[RENDER][/]");
-  
   type ProjectItemProps = { name: string; slug: string; selected: boolean; };
   const ProjectItem = ({ name, slug, selected = false }: ProjectItemProps) => {
     const navigate = useNavigate();
@@ -204,38 +212,84 @@ export default function Projects () {
       }
       else console.groupEnd();
     })();
+
+    return () => {
+      console.group("[/][useEffect] Cleanup...");
+
+      console.info("⌛ Clearing local projects' metadata...");
+      setLocalProjectsMetadata(null);
+      
+      console.info("⌛ Clearing current project store...");
+      project.setIsGloballySaved(true);
+      project.setData(null);
+      project.setMetadata(null);
+      project.setSlug(null);
+      
+      console.info("✔️ Done !");
+      console.groupEnd();
+    };
   }, []);
 
   const project_slug = useRef(useCurrentProjectStore.getState().slug);
 
-  // Connect to the store on mount, disconnect on unmount, catch state-changes in a reference
-  useEffect(() => useCurrentProjectStore.subscribe(
-    state => (project_slug.current = state.slug)
-  ), []);
-
-  /** Setup configuration for CTRL+S shortcut. */
   useEffect(() => {
     const platform = navigator.userAgentData?.platform || navigator.platform;
     const saveShortcut = (e: KeyboardEvent) => {
-      if (!project) return;
-
       if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
         e.preventDefault();
 
-        console.info(`[CTRL+S] Save for ${project_slug.current}.`);
+        const current_project = useCurrentProjectStore.getState();
+
+        // Do nothing if project is already saved globally.
+        if (current_project.isGloballySaved) return;
+
+        console.info(`[CTRL+S] Save for ${current_project.slug}.`);
         syncDataGlobally();
       }
     };
 
-    // Configure shortcuts. 
-    document.addEventListener("keydown", saveShortcut);
-    console.info("[CTRL+S] Configured shortcut.");
+    const unsubcribe = useCurrentProjectStore.subscribe(state => {
+      project_slug.current = state.slug;
+
+      if (!state.slug) {
+        showMenuBarComponents(false);
+      }
+      else {
+        showMenuBarComponents(true);
+
+        // Configure shortcuts. 
+        document.addEventListener("keydown", saveShortcut);
+        console.info("[/][useEffect][CTRL+S] Configured shortcut.");
+      }
     
+      /** Show the save button only when project isn't globally saved. */
+      if (!projectSaveButtonRef.current) return; 
+      projectSaveButtonRef.current.classList.toggle("hidden", !state.isGloballySaved);
+    });
+
     return () => {
+      console.info("[/][useEffect][stores] Clean-up.");
+      showMenuBarComponents(false);
+
       document.removeEventListener("keydown", saveShortcut);
-      console.info("[CTRL+S] Unconfigured shortcut.");
+      console.info("[/][useEffect][CTRL+S] Unconfigured shortcut.");
+
+      return unsubcribe();
     };
-  }, [project_slug.current]);
+  }, []);
+
+
+  // useEffect(() => {
+  //   // if (!projectSaveButtonRef.current) return; 
+
+  //   console.info("[Event: globally_saved]:", globally_saved.current);
+
+  //   return () => {
+  //     console.info("[Event: globally_saved] Unmounting...");
+  //   };
+
+  //   // projectSaveButtonRef.current.classList.toggle("hidden", !globally_saved.current);
+  // }, [globally_saved.current]);
   
   const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
@@ -302,9 +356,19 @@ export default function Projects () {
   };
 
   /** Show a loader while the projects are loading. */
-  if (!localProjectsMetadata) return <FullLoader
-    loadingText="Loading your saved projects..."
-  />;
+  if (!localProjectsMetadata) {
+    /** Debug */ console.info("[RENDER][/] Loading metadatas of projects...");
+
+    return (
+      <FullLoader
+        loadingText="Loading your saved projects..."
+      />
+    );
+  }
+  
+  /** Debug */ console.info(
+    "[RENDER][/] Re-render because of metadata update.", localProjectsMetadata
+  );
 
   return (
     <Fragment>
@@ -339,35 +403,34 @@ export default function Projects () {
             </button>
           </div>
 
-          {project_slug.current &&
-            <ul className="flex flex-row-reverse gap-4">
-              <HeaderItem>
-                <DropdownButton
-                  buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
-                  items={[
-                    {
-                      name: "Export to .zip",
-                      action: async () => project_slug.current ? await exportCoverToZip(project_slug.current) : null
-                    },
-                    {
-                      name: "Collaborate online",
-                      action: () => console.info("Collaborate")
-                    },
-                  ]}
-                >
-                  <HiShare size={28} />
-                </DropdownButton>
-              </HeaderItem>
-              <HeaderItem>
-                <button
-                  className={`py-2 px-4 ${project.isGloballySaved ? "bg-blue-600" : "bg-pink-600"} bg-opacity-60 rounded-full`}
-                  onClick={syncDataGlobally}
-                >
-                  {project.isGloballySaved ? "Saved" : "Save"}
-                </button>
-              </HeaderItem>
-            </ul>
-          }
+          <ul ref={menuBarComponentsRef} className="hidden flex-row-reverse gap-4">
+            <HeaderItem>
+              <DropdownButton
+                buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                items={[
+                  {
+                    name: "Export to .zip",
+                    action: async () => await exportCurrentCoverToZip()
+                  },
+                  {
+                    name: "Collaborate online",
+                    action: () => console.info("Collaborate")
+                  },
+                ]}
+              >
+                <HiShare size={28} />
+              </DropdownButton>
+            </HeaderItem>
+            <HeaderItem>
+              <button
+                ref={projectSaveButtonRef}
+                className="py-2 px-4 bg-opacity-60 rounded-full"
+                onClick={syncDataGlobally}
+              >
+                <IoMdSave size={28} />
+              </button>
+            </HeaderItem>
+          </ul>
         </header>
 
         {/** Projects Navigation */}

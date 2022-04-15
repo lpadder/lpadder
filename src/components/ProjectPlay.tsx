@@ -5,7 +5,6 @@ import type {
 
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
-import { useEffect, useRef } from "react";
 
 import {
   useCurrentProjectStore
@@ -13,6 +12,7 @@ import {
 
 export default function ProjectPlay () {
   const project = useCurrentProjectStore(state => state.data);
+  console.log(project);
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
