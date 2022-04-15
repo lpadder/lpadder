@@ -57,7 +57,6 @@ export default function Projects () {
   }), shallow);
 
   const project = useCurrentProjectStore(state => ({
-    slug: state.slug,
     setSlug: state.setSlug,
     isGloballySaved: state.isGloballySaved,
     setIsGloballySaved: state.setIsGloballySaved,
@@ -74,8 +73,8 @@ export default function Projects () {
     const navigate = useNavigate();
   
     const handleProjectUpdate = () => {
-      if (project.slug === slug) return;
-      console.info("[handleProjectUpdate] Switching from", project.slug, "to", slug);
+      if (project_slug.current === slug) return;
+      console.info("[handleProjectUpdate] Switching from", project_slug.current, "to", slug);
 
       // We remove any currently opened project.
       project.setIsGloballySaved(true);
@@ -124,7 +123,7 @@ export default function Projects () {
                 // If the current project was removed, we redirect
                 // to root because project will be inexistant.
                 // Also remove the useless components.
-                if (project.slug === slug) {
+                if (project_slug.current === slug) {
                   navigate("/projects");
                   
                   // We remove any currently opened project.
@@ -207,6 +206,13 @@ export default function Projects () {
     })();
   }, []);
 
+  const project_slug = useRef(useCurrentProjectStore.getState().slug);
+
+  // Connect to the store on mount, disconnect on unmount, catch state-changes in a reference
+  useEffect(() => useCurrentProjectStore.subscribe(
+    state => (project_slug.current = state.slug)
+  ), []);
+
   /** Setup configuration for CTRL+S shortcut. */
   useEffect(() => {
     const platform = navigator.userAgentData?.platform || navigator.platform;
@@ -216,7 +222,7 @@ export default function Projects () {
       if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
         e.preventDefault();
 
-        console.info(`[CTRL+S] Save for ${project.slug}.`);
+        console.info(`[CTRL+S] Save for ${project_slug.current}.`);
         syncDataGlobally();
       }
     };
@@ -229,7 +235,7 @@ export default function Projects () {
       document.removeEventListener("keydown", saveShortcut);
       console.info("[CTRL+S] Unconfigured shortcut.");
     };
-  }, [project.slug]);
+  }, [project_slug.current]);
   
   const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
@@ -333,7 +339,7 @@ export default function Projects () {
             </button>
           </div>
 
-          {project.slug &&
+          {project_slug.current &&
             <ul className="flex flex-row-reverse gap-4">
               <HeaderItem>
                 <DropdownButton
@@ -341,7 +347,7 @@ export default function Projects () {
                   items={[
                     {
                       name: "Export to .zip",
-                      action: async () => project.slug ? await exportCoverToZip(project.slug) : null
+                      action: async () => project_slug.current ? await exportCoverToZip(project_slug.current) : null
                     },
                     {
                       name: "Collaborate online",
@@ -385,7 +391,7 @@ export default function Projects () {
                     key={local_project.slug}
                     slug={local_project.slug}
                     name={local_project.metadata.name}
-                    selected={local_project.slug === project.slug}
+                    selected={local_project.slug === project_slug.current}
                   />
                 )}
               </Fragment>

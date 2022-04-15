@@ -20,8 +20,6 @@ export default function ProjectOverview () {
   const navigate = useNavigate();
   const params = useParams();
   
-  const unsaved_project = useUnsavedProjectStore();
-
   const project = useCurrentProjectStore(state => ({
     metadata: state.metadata,
     setData: state.setData,
@@ -52,7 +50,7 @@ export default function ProjectOverview () {
 
       // Sync with local stores.
       project.setData(projectData.data);
-      unsaved_project.setData(projectData.data);
+      useUnsavedProjectStore.getState().setData(projectData.data);
       project.setMetadata(projectLoadedMetadata.metadata);
       
       // On the first load, the project is already saved

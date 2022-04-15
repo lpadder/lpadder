@@ -12,10 +12,7 @@ import {
 } from "@/stores/current_project";
 
 export default function ProjectPlay () {
-  const projectRef = useRef(useCurrentProjectStore.getState().data);
-  useEffect(() => useCurrentProjectStore.subscribe(
-    state => (projectRef.current = state.data)
-  ), []);
+  const project = useCurrentProjectStore(state => state.data);
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
@@ -30,7 +27,7 @@ export default function ProjectPlay () {
     console.log(event.currentTarget);
   };
 
-  if (!projectRef.current) return (
+  if (!project) return (
     <p>Loading project data...</p>
   );
 
@@ -45,7 +42,7 @@ export default function ProjectPlay () {
         flex justify-start items-center 
         w-fit h-full gap-2
       ">
-        {projectRef.current.launchpads.map((_, launchpadId) =>
+        {project.launchpads.map((_, launchpadId) =>
           <div
             key={launchpadId}
             className="flex gap-2 items-start flex-row h-full"
