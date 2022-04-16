@@ -264,11 +264,14 @@ export default function Projects () {
     
       /** Show the save button only when project isn't globally saved. */
       if (!projectSaveButtonRef.current) return; 
-      projectSaveButtonRef.current.classList.toggle("hidden", !state.isGloballySaved);
+      projectSaveButtonRef.current.classList.toggle("hidden", state.isGloballySaved);
     });
-
+    
     return () => {
       console.info("[/][useEffect][stores] Clean-up.");
+      if (projectSaveButtonRef.current)
+        projectSaveButtonRef.current.classList.toggle("hidden", true);
+      
       showMenuBarComponents(false);
 
       document.removeEventListener("keydown", saveShortcut);
@@ -277,19 +280,6 @@ export default function Projects () {
       return unsubcribe();
     };
   }, []);
-
-
-  // useEffect(() => {
-  //   // if (!projectSaveButtonRef.current) return; 
-
-  //   console.info("[Event: globally_saved]:", globally_saved.current);
-
-  //   return () => {
-  //     console.info("[Event: globally_saved] Unmounting...");
-  //   };
-
-  //   // projectSaveButtonRef.current.classList.toggle("hidden", !globally_saved.current);
-  // }, [globally_saved.current]);
   
   const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
