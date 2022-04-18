@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 
 // Fonts
 import "@fontsource/poppins/latin-300.css";
@@ -28,7 +28,13 @@ import ImportProjectModal from "@/components/ImportProjectModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 // import LpadderWrongVersionModal from "./components/LpadderWrongVersionModal";
 
-ReactDOM.render(
+/** Mount point of the React app. */
+const container = document.getElementById("root");
+if (!container) throw new Error("Failed to find the root element.");
+
+// Create the root and render the app.
+const root = ReactDOM.createRoot(container);
+root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
@@ -43,6 +49,5 @@ ReactDOM.render(
     <ReloadPrompt />
     <ImportProjectModal />
     <CreateProjectModal />
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );

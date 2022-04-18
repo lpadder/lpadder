@@ -77,7 +77,7 @@ const UtilitiesHome = () => {
 // Routes for `/utilities`.
 export default function Utilities () {
   return (
-    <div className="relative w-screen min-h-screen">
+    <div className="relative min-h-screen">
       <UtilitiesHeader />
       
       <main className="relative p-4 h-full">

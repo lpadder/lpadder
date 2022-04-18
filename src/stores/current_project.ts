@@ -60,6 +60,9 @@ export const syncDataGlobally = async () => {
   // Sync data in localForage.
   await storedProjectsData.updateProjectData(current_project.slug, unsaved_data);
 
+  // Sync data in store.
+  current_project.setData(unsaved_data);
+
   // Update state of current project, for <ProjectPlay /> reload.
   current_project.setIsGloballySaved(true);
 };

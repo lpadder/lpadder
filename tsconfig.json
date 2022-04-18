@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./*"]
     },
     "types": [
       "vite-plugin-pwa/client",

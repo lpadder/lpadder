@@ -249,18 +249,18 @@ export default function Projects () {
     };
 
     const unsubcribe = useCurrentProjectStore.subscribe(state => {
-      project_slug.current = state.slug;
-
-      if (!state.slug) {
-        showMenuBarComponents(false);
-      }
+      if (!state.slug) showMenuBarComponents(false);
       else {
         showMenuBarComponents(true);
 
-        // Configure shortcuts. 
-        document.addEventListener("keydown", saveShortcut);
-        console.info("[/][useEffect][CTRL+S] Configured shortcut.");
+        // Reconfigure shortcuts only when the slug changes. 
+        if (project_slug.current !== state.slug) {
+          document.addEventListener("keydown", saveShortcut);
+          console.info("[/][useEffect][CTRL+S] Configured shortcut.");
+        }
       }
+
+      project_slug.current = state.slug;
     
       /** Show the save button only when project isn't globally saved. */
       if (!projectSaveButtonRef.current) return; 
@@ -277,7 +277,7 @@ export default function Projects () {
       document.removeEventListener("keydown", saveShortcut);
       console.info("[/][useEffect][CTRL+S] Unconfigured shortcut.");
 
-      return unsubcribe();
+      unsubcribe();
     };
   }, []);
   
@@ -372,7 +372,7 @@ export default function Projects () {
       />
 
       <div
-        className="w-screen h-screen"
+        className="h-screen"
         onContextMenu={(e) => /** Prevent context menu. */ e.preventDefault()}
       >
         <header

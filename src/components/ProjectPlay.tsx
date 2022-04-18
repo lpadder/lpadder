@@ -1,6 +1,5 @@
 import type {
-  ClickEventFunctionProps,
-  ContextEventFunctionProps
+  ClickEventFunctionProps
 } from "@/components/Launchpad";
 
 import Launchpad from "@/components/Launchpad";
@@ -12,7 +11,6 @@ import {
 
 export default function ProjectPlay () {
   const project = useCurrentProjectStore(state => state.data);
-  console.log(project);
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
@@ -23,15 +21,11 @@ export default function ProjectPlay () {
     padElement.removeAttribute("style");
   };
 
-  const handleContextMenu: ContextEventFunctionProps = (padId, launchpadId, event) => {
-    console.log(event.currentTarget);
-  };
-
   if (!project) return (
     <p>Loading project data...</p>
   );
 
-  console.info("[RENDER][/:slug][ProjectPlay]");
+  /** Debug */ console.info("[RENDER][/:slug][ProjectPlay]");
 
   return (
     <div className="
@@ -55,8 +49,6 @@ export default function ProjectPlay () {
                 layout="programmer"
                 onPadDown={handlePadDown}
                 onPadUp={handlePadUp}
-
-                onContextMenu={handleContextMenu}
               />
             </div>
             <button className="rounded-full bg-gray-600 p-2"></button>
