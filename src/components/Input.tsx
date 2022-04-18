@@ -1,4 +1,5 @@
 export type InputProps = {
+  type?: "text" | "number";
   className?: string;
   labelName: string;
   placeholder: string;
@@ -6,15 +7,21 @@ export type InputProps = {
 
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+
+  max?: number;
+  min?: number;
 };
 
 export default function Input ({
+  type = "text",
   className,
   labelName,
   placeholder,
   smallTipText,
   value,
-  onChange
+  onChange,
+
+  max, min
 }: InputProps) {
   return (
     <div>
@@ -22,10 +29,14 @@ export default function Input ({
         {labelName}
       </label>
       <input
+        type={type}
         value={value}
         name={labelName}
         onChange={onChange}
         placeholder={placeholder}
+
+        min={min}
+        max={max}
 
         autoComplete="off"
         autoCapitalize="off"

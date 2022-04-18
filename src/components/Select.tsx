@@ -3,9 +3,10 @@ interface SelectProps {
 
   placeholder: string;
   onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  name?: string;
 }
 
-export default function Select ({ children, onChange, ...props }: SelectProps) {
+export default function Select ({ children, onChange, name }: SelectProps) {
   const unFocusOnChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     evt.target.blur();
     return onChange(evt);
@@ -26,7 +27,7 @@ export default function Select ({ children, onChange, ...props }: SelectProps) {
         focus:rounded-b-none focus:border-b-0
       "
 
-      {...props}
+      name={name}
     >
       {children}
     </select>
