@@ -1,6 +1,8 @@
 import type { AvailableLayouts } from "../utils/LaunchpadLayout";
 import LaunchpadLayout from "../utils/LaunchpadLayout";
 
+import logger from "@/utils/logger";
+
 export function getPadElementId (padId: number, launchpadId = 0) {
   const elementId = `launchpad-${launchpadId}-pad-${padId}`;
   return elementId;
@@ -46,7 +48,8 @@ export default function Launchpad ({
   const launchpadLayouts = new LaunchpadLayout();
   const currentLayout = launchpadLayouts.layouts[layout];
 
-  console.log("Render launchpad");
+  const log = logger("~Launchpad");
+  /** Debug. */ log.render();
 
   return (
     <div

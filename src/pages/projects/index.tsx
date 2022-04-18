@@ -27,6 +27,7 @@ import {
 
 import { useModalsStore } from "@/stores/modals";
 import shallow from "zustand/shallow";
+import logger from "@/utils/logger";
 
 // Icons
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
@@ -36,10 +37,9 @@ export default function Projects () {
   const projectMenuRef = useRef<HTMLDivElement | null>(null);
   const projectSaveButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuBarComponentsRef = useRef<HTMLUListElement | null>(null);
+  const project_slug = useRef(useCurrentProjectStore.getState().slug);
 
   const showMenuBarComponents = (visible: boolean) => {
-    /** Debug */ console.info("[showMenuBarComponents]:", visible);
-
     const components = menuBarComponentsRef.current;
     if (!components) return;
 
@@ -48,6 +48,7 @@ export default function Projects () {
   };
 
   const location = useLocation();
+  const log = logger("/");
 
   // Load the projects metadata store.
   const {
@@ -179,8 +180,8 @@ export default function Projects () {
    * We also check if a project slug was specified.
    */
   useEffect(() => {
+    log.effectGroup("Load.");
     (async () => {
-      console.group("[/][useEffect]");
       console.info("⌛ Fetching every stored projects' metadatas...");
 
       const projects_metadatas = await storedProjectsMetadata.getProjectsMetadata();
@@ -213,26 +214,6 @@ export default function Projects () {
       else console.groupEnd();
     })();
 
-    return () => {
-      console.group("[/][useEffect] Cleanup...");
-
-      console.info("⌛ Clearing local projects' metadata...");
-      setLocalProjectsMetadata(null);
-      
-      console.info("⌛ Clearing current project store...");
-      project.setIsGloballySaved(true);
-      project.setData(null);
-      project.setMetadata(null);
-      project.setSlug(null);
-      
-      console.info("✔️ Done !");
-      console.groupEnd();
-    };
-  }, []);
-
-  const project_slug = useRef(useCurrentProjectStore.getState().slug);
-
-  useEffect(() => {
     const platform = navigator.userAgentData?.platform || navigator.platform;
     const saveShortcut = (e: KeyboardEvent) => {
       if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
@@ -248,7 +229,7 @@ export default function Projects () {
       }
     };
 
-    const unsubcribe = useCurrentProjectStore.subscribe(state => {
+    const store_unsubcribe = useCurrentProjectStore.subscribe(state => {
       if (!state.slug) showMenuBarComponents(false);
       else {
         showMenuBarComponents(true);
@@ -256,30 +237,47 @@ export default function Projects () {
         // Reconfigure shortcuts only when the slug changes. 
         if (project_slug.current !== state.slug) {
           document.addEventListener("keydown", saveShortcut);
-          console.info("[/][useEffect][CTRL+S] Configured shortcut.");
+          console.info(`[CTRL+S] Configured shortcut for ${state.slug}.`);
         }
       }
 
+      // Save the 
       project_slug.current = state.slug;
     
       /** Show the save button only when project isn't globally saved. */
       if (!projectSaveButtonRef.current) return; 
       projectSaveButtonRef.current.classList.toggle("hidden", state.isGloballySaved);
     });
-    
+
+
     return () => {
-      console.info("[/][useEffect][stores] Clean-up.");
+      log.effectGroup("Clean-up.");
+
+      console.info("⌛ Clearing local projects' metadata...");
+      setLocalProjectsMetadata(null);
+      
+      console.info("⌛ Clearing current project store...");
+      project.setIsGloballySaved(true);
+      project.setData(null);
+      project.setMetadata(null);
+      project.setSlug(null);
+
+      console.info("⌛ Hide menu components and unset save button state.");
+      showMenuBarComponents(false);
       if (projectSaveButtonRef.current)
         projectSaveButtonRef.current.classList.toggle("hidden", true);
       
-      showMenuBarComponents(false);
-
+      console.info("⌛ Unconfigure shortcuts.");
       document.removeEventListener("keydown", saveShortcut);
-      console.info("[/][useEffect][CTRL+S] Unconfigured shortcut.");
-
-      unsubcribe();
+      
+      console.info("⌛ Unsubscribe from stores.");
+      store_unsubcribe();
+      
+      console.info("✔️ Done !");
+      console.groupEnd();
     };
   }, []);
+
   
   const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
     requiredVersion: APP_VERSION,
@@ -347,7 +345,7 @@ export default function Projects () {
 
   /** Show a loader while the projects are loading. */
   if (!localProjectsMetadata) {
-    /** Debug */ console.info("[RENDER][/] Loading metadatas of projects...");
+    /** Debug. */ log.render("Loading metadatas of projects...");
 
     return (
       <FullLoader
@@ -356,9 +354,7 @@ export default function Projects () {
     );
   }
   
-  /** Debug */ console.info(
-    "[RENDER][/] Re-render because of metadata update.", localProjectsMetadata
-  );
+  /** Debug. */ log.render(localProjectsMetadata);
 
   return (
     <Fragment>

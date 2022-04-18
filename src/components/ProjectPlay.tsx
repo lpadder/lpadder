@@ -4,6 +4,7 @@ import type {
 
 import Launchpad from "@/components/Launchpad";
 import { getHexFromVelocity } from "@/utils/novationPalette";
+import logger from "@/utils/logger";
 
 import {
   useCurrentProjectStore
@@ -11,6 +12,9 @@ import {
 
 export default function ProjectPlay () {
   const project = useCurrentProjectStore(state => state.data);
+  
+  const log = logger("/:slug~ProjectPlay");
+  /** Debug. */ log.render();
 
   const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
@@ -24,8 +28,6 @@ export default function ProjectPlay () {
   if (!project) return (
     <p>Loading project data...</p>
   );
-
-  /** Debug */ console.info("[RENDER][/:slug][ProjectPlay]");
 
   return (
     <div className="

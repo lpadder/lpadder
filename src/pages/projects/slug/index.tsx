@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import logger from "@/utils/logger";
 
 import {
   useParams,
@@ -19,6 +20,9 @@ import ProjectEditor from "@/components/ProjectEditor";
 export default function ProjectOverview () {
   const navigate = useNavigate();
   const params = useParams();
+
+  const log = logger("/:slug");
+  /** Debug. */ log.render();
   
   const project = useCurrentProjectStore(state => ({
     metadata: state.metadata,
@@ -34,7 +38,7 @@ export default function ProjectOverview () {
       const localProjectsMetadata = useLocalProjectsStore.getState().localProjectsMetadata;
       if (!projectSlug || !localProjectsMetadata) return;
 
-      console.group(`[/${projectSlug}][useEffect]`);
+      log.effectGroup("Load.");
       console.info("⌛ Loading", projectSlug, "project metadata and data from stores.");
 
       const projectLoadedMetadata = localProjectsMetadata.find(local_project => local_project.slug === projectSlug);
@@ -63,12 +67,11 @@ export default function ProjectOverview () {
     })();
 
     return () => {
-      console.log("[ProjectOverview][useEffect] Cleaning up.");
+      log.effectGroup("[ProjectOverview][useEffect] Cleaning up.");
+
+      console.groupEnd();
     };
   }, [projectSlug]);
-
-  // Debug.
-  console.info("[RENDER][/:slug]");
 
   // Show a loader while loading data and metadata.
   if (!project.metadata)

@@ -6,7 +6,6 @@ interface SelectProps {
 }
 
 export default function Select ({ children, onChange, ...props }: SelectProps) {
-
   const unFocusOnChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     evt.target.blur();
     return onChange(evt);

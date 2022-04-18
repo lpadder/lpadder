@@ -7,6 +7,8 @@ import {
   useState
 } from "react";
 
+import logger from "@/utils/logger";
+
 import {
   useUnsavedProjectStore
 } from "@/stores/unsaved_project";
@@ -15,6 +17,9 @@ import Select from "./Select";
 import Input from "./Input";
 
 export default function ProjectEditor () {
+  const log = logger("/:slug~ProjectEditor");
+  /** Debug. */ log.render();
+
   const { data, setData } = useUnsavedProjectStore();
   if (!data) return <p>Loading...</p>;
 
@@ -95,8 +100,6 @@ export default function ProjectEditor () {
     ...launchpad.pages[currentLaunchpadPageSelected],
     id: currentLaunchpadPageSelected
   } : null;
-
-  console.info("[RENDER][/:slug][ProjectEditor]");
 
   return (
     <div>

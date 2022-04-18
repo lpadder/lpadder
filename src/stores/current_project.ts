@@ -23,9 +23,15 @@ interface CurrentProjectStore {
  * Store used when a project is opened.
  * We use this store to keep track of the current project.
  */
-export const useCurrentProjectStore = create<CurrentProjectStore>((set) => ({
+export const useCurrentProjectStore = create<CurrentProjectStore>((set, get) => ({
   isGloballySaved: true,
-  setIsGloballySaved: (value: boolean) => set({ isGloballySaved: value }),
+  setIsGloballySaved: (value: boolean) => {
+    const current = get().isGloballySaved;
+    // Prevent useless state changes.
+    if (current === value) return;
+
+    set({ isGloballySaved: value });
+  },
   
   slug: null,
   setSlug: (slug) => set({ slug }),
