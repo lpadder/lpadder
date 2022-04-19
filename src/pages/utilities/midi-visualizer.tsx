@@ -67,15 +67,14 @@ export default function UtilitiesMidiVisualizer () {
 
       const start_time = note.time * 1000;
       const duration = note.duration * 1000;
-      // Here the `+20` is a "hack" to prevent HTML pads from blinking.
+      // Here the `+20` is a "hack" to prevent pads from blinking.
+      // TODO: Make it a user global configuration (between 0 to 100ms of delay).
       const duration_start_time = start_time + duration + 20;
 
       setTimeout(() => {
         pad.style.backgroundColor = color;
         output?.playNote(convertResults.result, {
-          duration,
-          attack: note.velocity,
-          release: note.velocity
+          attack: note.velocity
         });
       }, start_time);
       
@@ -83,6 +82,7 @@ export default function UtilitiesMidiVisualizer () {
         // Check if another color haven't taken the pad.
         if (chroma(pad.style.backgroundColor).hex() === color) {
           pad.removeAttribute("style");
+          output?.stopNote(convertResults.result);
         }
       }, duration_start_time);
     }
