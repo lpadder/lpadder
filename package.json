@@ -1,6 +1,6 @@
 {
   "name": "lpadder",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
