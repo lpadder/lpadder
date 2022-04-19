@@ -44,7 +44,6 @@ export default function Input ({
 
         className={`
           py-2 px-4 w-full rounded-lg outline-none
-          m:text-sm
           bg-gray-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
           ${className ? className : ""}

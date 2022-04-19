@@ -70,17 +70,25 @@ export default class LaunchpadLayout {
     note: number,
     from: AvailableLayouts,
     to: AvailableLayouts
-  ): [boolean, number | null] {
+  ): { success: true, result: number } | { success: false, message: string } {
     // Search in the `from` layout the note.
-    this.layouts[from].map((rows, indexRows) => {
-      const index = rows.indexOf(note);
+    for (const [index_col, columns] of this.layouts[from].entries()) {
+      const index = columns.indexOf(note);
+
       if (index !== -1) {
-        const result = this.layouts[to][indexRows][index];
-        return [true, result];
+        const result = this.layouts[to][index_col][index];
+
+        return {
+          success: true,
+          result
+        };
       }
-    });
+    }
 
     // No result.
-    return [false, null];
+    return {
+      success: false,
+      message: "No result found."
+    };
   }
 }
