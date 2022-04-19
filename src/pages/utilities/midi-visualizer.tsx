@@ -172,7 +172,7 @@ export default function UtilitiesMidiVisualizer () {
       </header>
 
       <form
-        className="mb-8 mx-auto max-w-fit p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 bg-opacity-40 shadow-lg"
+        className="mb-8 mx-auto max-w-fit p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
         onSubmit={(e) => e.preventDefault()}
       >
         <FileInput
@@ -184,9 +184,9 @@ export default function UtilitiesMidiVisualizer () {
       </form>
 
       {loaded && midi && (
-        <div>
-          <h3>
-            {midi.header.name || "Untitled"}
+        <div className="max-w-xl mx-auto text-center space-y-4 mb-8">
+          <h3 className="font-medium text-xl">
+            <b className="font-bold">MIDI</b>: {midi.header.name || "Untitled"}
           </h3>
 
           {webMidiEnabled && (
@@ -208,7 +208,7 @@ export default function UtilitiesMidiVisualizer () {
           )}
 
           <div
-            className="max-w-md h-auto sm:w-64 sm:h-64 mx-auto"
+            className="max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-4 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg"
           >
             <Launchpad
               layout="programmer"
@@ -219,10 +219,10 @@ export default function UtilitiesMidiVisualizer () {
           </div>
 
           <button
-            className=""
+            className="px-4 py-2 rounded-lg bg-gray-900 font-medium"
             onClick={playMidi}
           >
-            Play track 0
+            Play MIDI
           </button>
         </div> 
       )}
