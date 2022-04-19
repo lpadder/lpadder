@@ -28,9 +28,12 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: PATCH /repos/${{ github.repository }}/releases/{release_id}
+          body: ${{ toJSON(env.RELEASE_BODY) }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_RELEASE_ID: ${{ github.event.release.id }}
-          INPUT_BODY: |
-            "Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ toJSON(github.event.release.body) }}"
+          RELEASE_BODY: |
+            Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>
 
+            ${{ github.event.release.body }}
+            
