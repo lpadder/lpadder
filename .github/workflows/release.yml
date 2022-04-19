@@ -24,19 +24,6 @@ jobs:
           github-comment: false
           vercel-args: "--prod"
 
-
-      - name: Add deployment URL to GitHub Release 
-        run: |
-          BODY_RELEASE=$(cat << EOF
-          Deployment URL: <{{ steps.vercel-deploy.outputs.preview-url }}>
-
-          ${{ github.event.release.body }}
-          EOF
-          )
-          echo "BODY_RELEASE<<EOF" >> $GITHUB_ENV
-          echo "$BODY_RELEASE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Update the GitHub Release
         uses: octokit/request-action@v2.x
         with:
@@ -44,4 +31,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_RELEASE_ID: ${{ github.event.release.id }}
-          INPUT_BODY: ${{ env.BODY_RELEASE }}
+          INPUT_BODY: |
+            "Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>\n\n${{ toJSON(github.event.release.body) }}"
+
