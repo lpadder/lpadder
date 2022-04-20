@@ -4,9 +4,10 @@ interface SelectProps {
   placeholder: string;
   onChange: React.ChangeEventHandler<HTMLSelectElement>;
   name?: string;
+  value?: string;
 }
 
-export default function Select ({ children, onChange, name }: SelectProps) {
+export default function Select ({ children, onChange, name, value }: SelectProps) {
   const unFocusOnChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     evt.target.blur();
     return onChange(evt);
@@ -27,6 +28,7 @@ export default function Select ({ children, onChange, name }: SelectProps) {
       "
 
       name={name}
+      value={value}
     >
       {children}
     </select>

@@ -1,12 +1,14 @@
 import type {
   Input, Output,
-  NoteMessageEvent
+  NoteMessageEvent,
+  ControlChangeMessageEvent
 } from "webmidi";
 
 import { useEffect, useState } from "react";
 import { WebMidi } from "webmidi";
 
 import create from "zustand";
+import logger from "@/utils/logger";
 
 // Components
 import Select from "@/components/Select";
@@ -15,6 +17,7 @@ import InputElement from "@/components/Input";
 type MidiEvent = (
   | { type: "noteon"; event: NoteMessageEvent }
   | { type: "noteoff"; event: NoteMessageEvent }
+  | { type: "controlchange"; event: ControlChangeMessageEvent }
 );
 
 interface MidiEventsStore {
@@ -34,11 +37,11 @@ const useMidiEventsStore = create<MidiEventsStore>((set, get) => ({
     const { limit, midiEvents: events } = get();
 
     if (events.length >= limit) {
-      events.shift();
+      events.pop();
     }
 
     set(() => ({
-      midiEvents: [...events, event]
+      midiEvents: [event, ...events]
     }));
   },
 
@@ -47,6 +50,9 @@ const useMidiEventsStore = create<MidiEventsStore>((set, get) => ({
 }));
 
 export default function UtilitiesMidiChecker () {
+  const log = logger("UtilitiesMidiChecker");
+  log.render();
+
   const [webMidiEnabled, setWebMidiEnabled] = useState(WebMidi.enabled);
 
   const [availableInputs, setAvailableInputs] = useState<Input[]>([]);
@@ -78,29 +84,30 @@ export default function UtilitiesMidiChecker () {
     console.groupEnd();
   };
 
+  const loadWebMidi = async () => {
+    console.info("-> Starting WebMidi...");
+
+    return WebMidi
+      .enable()
+      .then (() => {
+        console.info("<- Successfully enabled !");
+        console.groupEnd();
+
+        // Update WebMidi state.
+        setWebMidiEnabled(true);
+        refreshAvailableDevices();          
+      })
+      .catch (err => {
+        console.error("<- An error was thrown.", err);
+        console.groupEnd();
+
+        alert("An error happenned, check console.");
+      });
+  };
+  
   useEffect(() => {
-    console.group("[midi-checker][useEffect] Enable.");
+    log.effectGroup(`Enable with webMidiEnabled: ${webMidiEnabled}`);
 
-    const loadWebMidi = async () => {
-      console.info("-> Starting WebMidi...");
-
-      return WebMidi
-        .enable()
-        .then (() => {
-          console.info("<- Successfully enabled !");
-          console.groupEnd();
-
-          // Update WebMidi state.
-          setWebMidiEnabled(true);
-          refreshAvailableDevices();          
-        })
-        .catch (err => {
-          console.error("<- An error was thrown.", err);
-          console.groupEnd();
-
-          alert("An error happenned, check console.");
-        });
-    };
 
     const disableWebMidi = async () => {
       console.info("-> Disabling WebMidi...");
@@ -137,6 +144,8 @@ export default function UtilitiesMidiChecker () {
   }, []);
 
   const subscribeToMidiEvents = (input: Input) => {
+    if (!webMidiEnabled) return;
+
     input.addListener("noteon", (e) => {
       console.info(`[noteon][${input.name}][${input.id}]`, e);
 
@@ -151,6 +160,15 @@ export default function UtilitiesMidiChecker () {
 
       useMidiEventsStore.getState().appendMidiEvent({
         type: "noteoff",
+        event: e
+      });
+    });
+
+    input.addListener("controlchange", (e) => {
+      console.info(`[controlchange][${input.name}][${input.id}]`, e);
+
+      useMidiEventsStore.getState().appendMidiEvent({
+        type: "controlchange",
         event: e
       });
     });
@@ -185,10 +203,10 @@ export default function UtilitiesMidiChecker () {
       />
 
       <div className="flex flex-col gap-4">
-        {midiEvents.map(event_info => (
+        {midiEvents.map((event_info, event_index) => (
           <div
             className="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
-            key={`${event_info.type}-${event_info.event.note.number}-${event_info.event.port.id}${event_info.event.timestamp}`}
+            key={event_index}
           >
             <p>[{event_info.event.port.name}]: {event_info.type} on channel {event_info.event.message.channel}.</p>
           </div> 

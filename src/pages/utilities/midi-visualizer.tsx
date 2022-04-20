@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Midi } from "@tonejs/midi";
+import { Midi, MidiJSON } from "@tonejs/midi";
 
 import Launchpad, { getPadElementId } from "@/components/Launchpad";
 import Select from "@/components/Select";
@@ -10,10 +10,24 @@ import { getHexFromVelocity } from "@/utils/novationPalette";
 import chroma from "chroma-js";
 import { WebMidi, Output } from "webmidi";
 
+interface GroupedNotes {
+  notes: {
+    /** in MS. */
+    duration: number;
+    /** Between 0 and 1. */
+    velocity: number;
+    pad_element_id: string;
+    midi: number;
+  }[];
+  
+  /** in MS. */
+  start_time: number;
+}
 
 export default function UtilitiesMidiVisualizer () {
   const [loaded, setLoaded] = useState(false);
   const [midi, setMidi] = useState<null | Midi>(null);
+  const [notes, setNotes] = useState<null | GroupedNotes[]>(null);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Reset the loaded state (to prepare the new one).
@@ -31,64 +45,124 @@ export default function UtilitiesMidiVisualizer () {
     reader.onload = () => {
       const midiBuffer = reader.result as ArrayBuffer;
       const midiObject = new Midi(midiBuffer);
+      const midi_data = midiObject.toJSON();
 
-      // Set the midi state.
+      const notesData = loadMidiData(midi_data);
+
+      // Store the MIDI object.
       setMidi(midiObject);
 
-      // Set the loaded state.
+      // Store the parsed MIDI data.
+      setNotes(notesData);
+
       setLoaded(true);
     };
     
     reader.readAsArrayBuffer(file);
   };
 
-  const playMidi = () => {
-    if (!midi || !loaded) return;
-
-    const midi_data = midi.toJSON();
+  const loadMidiData = (midi_data: MidiJSON) => {
     const layouts = new LaunchpadLayout();
 
-    console.log("Starting playback...");
+    // TODO: Maybe a track selector ?
+    /** Notes of the first track of the MIDI file. */
+    const notes_data = midi_data.tracks[0].notes;
+
+    /**
+     * Here, we group the notes by time to setup the 
+     * setTimeouts for each group, when needed to.
+     */
+    const grouped_notes: GroupedNotes[] = [];
+
+    /**
+     * Delay in MS. Kind of a "hack" to prevent pads from blinking.
+     * TODO: Make it configurable.
+     */
+    const delay = 20;
+
+    // Group the notes by time.
+    notes_data.forEach(note => {
+      const start_time = note.time * 1000;
+      const duration = (note.duration * 1000) + delay;
+
+      const convert_results = layouts.convertNoteLayout(note.midi, "live", "programmer");
+      if (!convert_results.success) return;
+      
+      const midi = convert_results.result;
+      const pad_element_id = getPadElementId(midi, 0);
+
+      const parsed_note: typeof grouped_notes[number]["notes"][number] = {
+        velocity: note.velocity,
+        pad_element_id,
+        duration,
+        midi,
+      };
+
+      // Find the group.
+      const group = grouped_notes.find(
+        group => group.start_time === start_time
+      );
+
+      // If the group doesn't exist, create it.
+      if (!group) {
+        grouped_notes.push({
+          start_time,
+          notes: [parsed_note]
+        });
+
+        return;
+      }
+
+      group.notes.push(parsed_note);
+    });
+
+    console.log(grouped_notes);
+    return grouped_notes;
+  };
+
+  const playMidi = () => {
+    if (!notes) return;
+    console.log(notes);
 
     const output = selectedOutput ? availableOutputs.find(output => output.id === selectedOutput) : null;
     if (output) console.log("Also playing the playback on the selected output:", output.name);
 
-    // TODO: Maybe a track selector ?
-    /** Notes of the first track of the MIDI file. */
-    const notes = midi_data.tracks[0].notes;
-    for (const note of notes) {
-      const convertResults = layouts.convertNoteLayout(note.midi, "live", "programmer");
-      if (!convertResults.success) continue;
+    notes.forEach(group => {
+      const start_time = group.start_time;
       
-      const color = getHexFromVelocity(note.velocity * 127);
-      const pad_element_id = getPadElementId(convertResults.result, 0);
-      const pad = document.getElementById(pad_element_id);
-      if (!pad) continue;
-
-      const start_time = note.time * 1000;
-      const duration = note.duration * 1000;
-      // Here the `+20` is a "hack" to prevent pads from blinking.
-      // TODO: Make it a user global configuration (between 0 to 100ms of delay).
-      const duration_start_time = start_time + duration + 20;
-
+      /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
-        pad.style.backgroundColor = color;
-        output?.playNote(convertResults.result, {
-          attack: note.velocity
+        group.notes.forEach(note => {
+          const color = getHexFromVelocity(note.velocity * 127);
+          const duration = note.duration;
+  
+          const pad = document.getElementById(note.pad_element_id);
+          if (!pad) return;
+  
+          pad.style.backgroundColor = color;
+          output?.playNote(note.midi, {
+            attack: note.velocity
+          });
+  
+          /** Setup the timing for the `noteoff`. */
+          setTimeout(() => {
+            const style = pad.style.backgroundColor;
+            if (!style) return;
+
+            const style_hex = chroma(style).hex();
+
+            // Check if another color haven't taken the pad.
+            if (style_hex === color) {
+              pad.removeAttribute("style");
+              output?.stopNote(note.midi);
+            }
+          }, duration);
         });
       }, start_time);
-      
-      setTimeout(() => {
-        // Check if another color haven't taken the pad.
-        if (chroma(pad.style.backgroundColor).hex() === color) {
-          pad.removeAttribute("style");
-          output?.stopNote(convertResults.result);
-        }
-      }, duration_start_time);
-    }
+    });
   };
  
-  const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
+  const [selectedOutput, setSelectedOutput] = useState<string>("none");
   const [webMidiEnabled, setWebMidiEnabled] = useState(false);
   const [availableOutputs, setAvailableOutputs] = useState<Output[]>([]);
   const refreshAvailableOutputs = () => {
@@ -192,10 +266,11 @@ export default function UtilitiesMidiVisualizer () {
           {webMidiEnabled && (
             <Select
               placeholder="Select an output..."
+              value={selectedOutput}
               onChange={(e) => setSelectedOutput(e.target.value)}
             >
               <option value="none">
-            None
+                None
               </option>
 
               {availableOutputs.map(output => (
