@@ -124,7 +124,6 @@ export default function UtilitiesMidiVisualizer () {
       group.notes.push(parsed_note);
     });
 
-    console.log(grouped_notes);
     return grouped_notes;
   };
 

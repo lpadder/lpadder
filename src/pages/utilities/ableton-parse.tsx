@@ -167,12 +167,12 @@ const MidiDeviceSample = ({ sample }: {
   const startTimeInPercent = (sample.start_time / sample.sample_length) * 100;
 
   return (
-    <div>
+    <div className="bg-gray-600 p-2 rounded-lg">
       <h4>Sample: {sample.name} ({sample.relative_path})</h4>
 
-      <div className="relative w-full bg-gray-200 h-2.5 dark:bg-gray-700">
+      <div className="relative w-full bg-gray-200 h-4 dark:bg-gray-700 rounded-md">
         <div
-          className="absolute bg-blue-600 h-full"
+          className="absolute bg-blue-600 h-full rounded-sm"
           style={{
             width: `${durationInPercent}%`,
             left: `${startTimeInPercent}%`
@@ -185,6 +185,7 @@ const MidiDeviceSample = ({ sample }: {
 const MidiDeviceDrumRack = ({ drum_rack }: {
   drum_rack: MidiDeviceDrumRackData
 }) => {
+  const [selectedBranch, setSelectedBranch] = useState(0);
   const launchpadRef = useRef<HTMLDivElement>(null);
 
   /** Function to toggle preview buttons on the Launchpad. */
@@ -192,40 +193,49 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
     if (!launchpadRef.current) return;
     const launchpad = launchpadRef.current;
 
-    drum_rack.branches.forEach(branch => {
+    drum_rack.branches.forEach((branch, currentBranchIndex) => {
       const note = branch.receivingNote;
       
       const padElement = launchpad.querySelector(`[data-note="${note}"]`);
       if (!padElement) return;
 
-      padElement.classList.toggle("bg-blue-600", enable);
+      padElement.classList.toggle(
+        /** This is the default color of pads. */ "bg-gray-400",
+        !enable
+      );
+
+      padElement.classList.toggle(
+        selectedBranch === currentBranchIndex ? "bg-blue-400" : "bg-blue-800",
+        enable
+      );
     });
   };
 
+  /** Update the highlights on the Launchpad. */
   useEffect(() => {
     toggleLaunchpadPads(true);
     return () => toggleLaunchpadPads(false);
-  }, [drum_rack]);
-
-  const [selectedBranch, setSelectedBranch] = useState(0);
+  }, [drum_rack, selectedBranch]);
 
   return (
-    <div className="flex justify-between">
-      <div className="h-64 aspect-square">
+    <div className="flex justify-between items-center gap-4 flex-col md:flex-row">
+      <div className="w-full max-w-60 sm:w-64">
         <Launchpad
           ref={launchpadRef}
-          layout="programmer"
+          layout="live"
           onPadDown={() => null}
           onPadUp={(note_id) => {
-            console.log("pad up", note_id);
-            setSelectedBranch(note_id);
+            const branch = drum_rack.branches.findIndex(branch => branch.receivingNote === note_id);
+            if (branch === -1) return;
+
+            setSelectedBranch(branch);
           }}
         />
       </div>
 
-      <div>
-        <h4>Drum Rack: {drum_rack.branches.length}</h4>
-        <p>Viewing branch {selectedBranch}</p>
+      <div className="w-full text-center">
+        <h4>Preview of a Drum Rack with {drum_rack.branches.length} branches.</h4>
+        <p>Viewing branch {selectedBranch} (receivedNote: {drum_rack.branches[selectedBranch].receivingNote})</p>
 
         {drum_rack.branches[selectedBranch].devices.map((device, device_index) => (
           <MidiDevice
