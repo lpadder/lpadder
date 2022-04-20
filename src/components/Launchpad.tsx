@@ -2,6 +2,7 @@ import type { AvailableLayouts } from "../utils/LaunchpadLayout";
 import LaunchpadLayout from "../utils/LaunchpadLayout";
 
 import logger from "@/utils/logger";
+import { forwardRef } from "react";
 
 export function getPadElementId (padId: number, launchpadId = 0) {
   const elementId = `launchpad-${launchpadId}-pad-${padId}`;
@@ -10,14 +11,14 @@ export function getPadElementId (padId: number, launchpadId = 0) {
 
 export type ClickEventFunctionProps = (
   padId: number,
-  launchpadId: number,
-  padElement: EventTarget & HTMLDivElement
+  padElement: EventTarget & HTMLDivElement,
+  launchpadId?: number,
 ) => void;
   
 export type ContextEventFunctionProps = (
   padId: number,
-  launchpadId: number,
-  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  launchpadId?: number
 ) => void;
 
 type LaunchpadProps = {
@@ -38,13 +39,13 @@ type LaunchpadProps = {
  * on the same page. We will use it in the HTML "id" to
  * access the pad later.
  */
-export default function Launchpad ({
-  launchpadId = 0,
+function LaunchpadRaw ({
+  launchpadId,
   layout = "live",
   onPadDown,
   onPadUp,
   onContextMenu
-}: LaunchpadProps) {
+}: LaunchpadProps, ref: React.Ref<HTMLDivElement>) {
   const launchpadLayouts = new LaunchpadLayout();
   const currentLayout = launchpadLayouts.layouts[layout];
 
@@ -53,6 +54,7 @@ export default function Launchpad ({
 
   return (
     <div
+      ref={ref}
       className="flex flex-col gap-1"
     >
       {currentLayout.map((rows, rowIndex) => (
@@ -62,15 +64,16 @@ export default function Launchpad ({
         >
           {rows.map(padId => (
             <div
+              data-note={padId}
               key={padId}
-              id={getPadElementId(padId, launchpadId)}
+              id={launchpadId ? getPadElementId(padId, launchpadId) : undefined}
               onContextMenu={(event) => {
                 // We prevent the context menu.
                 event.preventDefault();
 
                 // Execute the custom behaviour if it exists.
                 if (!onContextMenu) return;
-                return onContextMenu(padId, launchpadId, event);
+                return onContextMenu(padId, event, launchpadId);
               }}
               onTouchStart={(event) => {
                 // By stopping propagation, we suppress
@@ -93,11 +96,11 @@ export default function Launchpad ({
                     "from Launchpad", launchpadId + "."
                   );
 
-                  onPadUp(padId, launchpadId, padElement);
+                  onPadUp(padId, padElement, launchpadId);
                   document.removeEventListener("touchend", handleTouchEnd);
                 };
 
-                onPadDown(padId, launchpadId, padElement);
+                onPadDown(padId, padElement, launchpadId);
                 document.addEventListener("touchend", handleTouchEnd);
               }}
               onMouseDown={(event) => {
@@ -119,11 +122,11 @@ export default function Launchpad ({
                     "from Launchpad", launchpadId + "."
                   );
 
-                  onPadUp(padId, launchpadId, padElement);
+                  onPadUp(padId, padElement, launchpadId);
                   document.removeEventListener("mouseup", handleMouseUp);
                 };
 
-                onPadDown(padId, launchpadId, padElement);
+                onPadDown(padId, padElement, launchpadId);
                 document.addEventListener("mouseup", handleMouseUp);
               }}
               className="w-full bg-gray-400 rounded-sm select-none aspect-square"
@@ -134,3 +137,6 @@ export default function Launchpad ({
     </div>
   );
 }
+
+const Launchpad = forwardRef<HTMLDivElement, LaunchpadProps>(LaunchpadRaw); 
+export default Launchpad;

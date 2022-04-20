@@ -1,5 +1,23 @@
+import pako from "pako";
+
+export function readAbletonFile (buffer: ArrayBuffer) {
+  const array = new Uint8Array(buffer);
+
+  // Ungzip the file and store it as a UTF-8 string.
+  const ungzipped_file = pako.ungzip(array);
+  const raw_file_content = new TextDecoder("utf-8").decode(ungzipped_file);
+
+  // Transform the file content from string to XML.
+  const xml_parser = new DOMParser();
+  const file_content = xml_parser.parseFromString(raw_file_content, "text/xml");
+
+  return file_content;
+}
+
+export type ParsedAbletonData = ReturnType<typeof parseAbletonData>;
+
 /** Parse an .als (Ableton Live Set) project. */
-export default function parseAbletonData (project: Document) {
+export function parseAbletonData (project: Document) {
   const getFirstElementByTag = (tag: string) => {
     const element = project.getElementsByTagName(tag)[0];
     if (!element) {
@@ -21,12 +39,12 @@ export default function parseAbletonData (project: Document) {
   };
 }
 
-interface AudioTrackData {
+export interface AudioTrackData {
   type: "audio";
   name: string;
 }
 
-interface MidiTrackData {
+export interface MidiTrackData {
   type: "midi";
   name: string;
   devices: (
@@ -82,14 +100,14 @@ function getTracksData (tracks: Element) {
   return tracksData;
 }
 
-interface MidiDeviceInstrumentRackData {
+export interface MidiDeviceInstrumentRackData {
   name: string;
   type: "instrument_rack";
 
   branches: MidiDeviceInstrumentRackBranchData[];
 }
 
-interface MidiDeviceInstrumentRackBranchData {
+export interface MidiDeviceInstrumentRackBranchData {
   name: string;
   devices: (
     | MidiDeviceInstrumentRackData
@@ -98,14 +116,14 @@ interface MidiDeviceInstrumentRackBranchData {
   )[];
 }
 
-interface MidiDeviceDrumRackData {
+export interface MidiDeviceDrumRackData {
   name: string;
   type: "drum_rack";
 
   branches: MidiDeviceDrumRackBranchData[];
 }
 
-interface MidiDeviceDrumRackBranchData {
+export interface MidiDeviceDrumRackBranchData {
   name: string;
   devices: (
     | MidiDeviceInstrumentRackData
@@ -117,10 +135,12 @@ interface MidiDeviceDrumRackBranchData {
   receivingNote: number;
 }
 
-interface MidiDeviceSampleData {
+export interface MidiDeviceSampleData {
   name: string;
   type: "sample";
 
+  /** Length of the entire sample. */
+  sample_length: number;
   start_time: number;
   end_time: number;
   duration: number;
@@ -183,6 +203,10 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
         .getElementsByTagName("SampleEnd")[0]
         .getAttribute("Value") || "-1");
 
+      const sampleFullLength = parseInt(device
+        .getElementsByTagName("DefaultDuration")[0]
+        .getAttribute("Value") || "-1");
+
       const sample_file_ref = sample_data.getElementsByTagName("FileRef")[0];
 
       const sample_file_relative_path_element = sample_file_ref.getElementsByTagName("RelativePath")[0];
@@ -209,11 +233,13 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
       const start_time = sampleStart / sampleRate;
       const end_time = sampleEnd / sampleRate;
       const duration = end_time - start_time;
+      const sample_length = sampleFullLength / sampleRate;
 
       const sample: MidiDeviceSampleData = {
         name: sample_name,
         type: "sample",
 
+        sample_length,
         start_time,
         end_time,
         duration,
