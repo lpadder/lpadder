@@ -16,11 +16,11 @@ export default function ProjectPlay () {
   const log = logger("/:slug~ProjectPlay");
   /** Debug. */ log.render();
 
-  const handlePadDown: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+  const handlePadDown: ClickEventFunctionProps = (_padId, padElement) => {
     padElement.style.backgroundColor = getHexFromVelocity(3);
   };
   
-  const handlePadUp: ClickEventFunctionProps = (padId, launchpadId, padElement) => {
+  const handlePadUp: ClickEventFunctionProps = (_padId, padElement) => {
     // Remove every styling applied to the pad.
     padElement.removeAttribute("style");
   };

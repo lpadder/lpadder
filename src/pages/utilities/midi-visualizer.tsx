@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { Midi, MidiJSON } from "@tonejs/midi";
 
-import Launchpad, { getPadElementId } from "@/components/Launchpad";
+import Launchpad from "@/components/Launchpad";
 import Select from "@/components/Select";
 import FileInput from "@/components/FileInput";
 
 import LaunchpadLayout from "@/utils/LaunchpadLayout";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 import chroma from "chroma-js";
-import { WebMidi, Output } from "webmidi";
+
+import { useWebMidiStore } from "@/stores/webmidi";
+import { useRef } from "react";
 
 interface GroupedNotes {
   notes: {
@@ -16,7 +18,6 @@ interface GroupedNotes {
     duration: number;
     /** Between 0 and 1. */
     velocity: number;
-    pad_element_id: string;
     midi: number;
   }[];
   
@@ -28,6 +29,15 @@ export default function UtilitiesMidiVisualizer () {
   const [loaded, setLoaded] = useState(false);
   const [midi, setMidi] = useState<null | Midi>(null);
   const [notes, setNotes] = useState<null | GroupedNotes[]>(null);
+  const launchpadRef = useRef<HTMLDivElement>(null);
+
+  const [selectedOutputId, setSelectedOutput] = useState<string>("none");
+  
+  const webMidiEnabled = useWebMidiStore(state => state.isEnabled);
+  const [availableOutputs, setAvailableOutputs] = useState(useWebMidiStore.getState().outputs);
+  useEffect(() => useWebMidiStore.subscribe(
+    state => setAvailableOutputs(state.outputs)
+  ), []);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Reset the loaded state (to prepare the new one).
@@ -89,11 +99,9 @@ export default function UtilitiesMidiVisualizer () {
       if (!convert_results.success) return;
       
       const midi = convert_results.result;
-      const pad_element_id = getPadElementId(midi, 0);
 
       const parsed_note: typeof grouped_notes[number]["notes"][number] = {
         velocity: note.velocity,
-        pad_element_id,
         duration,
         midi,
       };
@@ -122,10 +130,9 @@ export default function UtilitiesMidiVisualizer () {
 
   const playMidi = () => {
     if (!notes) return;
-    console.log(notes);
 
-    const output = selectedOutput ? availableOutputs.find(output => output.id === selectedOutput) : null;
-    if (output) console.log("Also playing the playback on the selected output:", output.name);
+    // Get the output device if choosen.
+    const output = selectedOutputId ? availableOutputs[selectedOutputId] : null;
 
     notes.forEach(group => {
       const start_time = group.start_time;
@@ -136,23 +143,34 @@ export default function UtilitiesMidiVisualizer () {
           const color = getHexFromVelocity(note.velocity * 127);
           const duration = note.duration;
   
-          const pad = document.getElementById(note.pad_element_id);
+          // Get the Launchpad element.
+          if (!launchpadRef.current) return;
+          const launchpad = launchpadRef.current;
+          
+          // Get the pad element from the Launchpad.
+          const pad: HTMLDivElement | null = launchpad.querySelector(`[data-note="${note.midi}"]`);
           if (!pad) return;
-  
+
+          // Set the color of the pad for the `noteon`.
           pad.style.backgroundColor = color;
           output?.playNote(note.midi, {
             attack: note.velocity
           });
   
-          /** Setup the timing for the `noteoff`. */
+          // Setup the timing for the `noteoff`.
           setTimeout(() => {
             const style = pad.style.backgroundColor;
             if (!style) return;
 
             const style_hex = chroma(style).hex();
 
-            // Check if another color haven't taken the pad.
+            // Check if the current pad color
+            // matches the color of the `noteon`.
+            //
+            // If it doesn't match, it's because
+            // another `noteon` has been played on it.
             if (style_hex === color) {
+              // Remove the color of the pad for the `noteoff`.
               pad.removeAttribute("style");
               output?.stopNote(note.midi);
             }
@@ -161,76 +179,7 @@ export default function UtilitiesMidiVisualizer () {
       }, start_time);
     });
   };
- 
-  const [selectedOutput, setSelectedOutput] = useState<string>("none");
-  const [webMidiEnabled, setWebMidiEnabled] = useState(false);
-  const [availableOutputs, setAvailableOutputs] = useState<Output[]>([]);
-  const refreshAvailableOutputs = () => {
-    // Clean the current states.
-    setAvailableOutputs([]);
   
-    // Get the devices.
-    const { outputs } = WebMidi;
-    setAvailableOutputs(outputs);
-  };
-  
-  useEffect(() => {
-    console.group("[midi-checker][useEffect] Enable.");
-  
-    const loadWebMidi = async () => {
-      console.info("-> Starting WebMidi...");
-  
-      return WebMidi
-        .enable()
-        .then (() => {
-          console.info("<- Successfully enabled !");
-          console.groupEnd();
-  
-          // Update WebMidi state.
-          setWebMidiEnabled(true);
-          refreshAvailableOutputs();          
-        })
-        .catch (err => {
-          console.error("<- An error was thrown.", err);
-          console.groupEnd();
-  
-          alert("An error happenned, check console.");
-        });
-    };
-  
-    const disableWebMidi = async () => {
-      console.info("-> Disabling WebMidi...");
-  
-      return WebMidi
-        .disable()
-        .then (() => {
-          console.info("<- Successfully disabled !");
-          console.groupEnd();
-  
-          // Update WebMidi state.
-          setWebMidiEnabled(false);
-          setAvailableOutputs([]);
-        })
-        .catch (err => {
-          console.error("<- An error was thrown.", err);
-          console.groupEnd();
-  
-          alert("An error happenned, check console.");
-        });
-    };
-  
-    if (!webMidiEnabled) loadWebMidi();
-    else {
-      console.info("<- WebMidi is already enabled ! Reloading it...");
-      disableWebMidi().then(() => loadWebMidi());
-    }
-  
-    return () => {
-      console.group("[midi-checker][useEffect] Clean-up.");
-      disableWebMidi();
-    };
-  }, []);
-
   return (
     <div>
       <header
@@ -266,18 +215,18 @@ export default function UtilitiesMidiVisualizer () {
           {webMidiEnabled && (
             <Select
               placeholder="Select an output..."
-              value={selectedOutput}
+              value={selectedOutputId}
               onChange={(e) => setSelectedOutput(e.target.value)}
             >
               <option value="none">
                 None
               </option>
 
-              {availableOutputs.map(output => (
+              {Object.keys(availableOutputs).map(output_id => (
                 <option
-                  key={output.id}
-                  value={output.id}
-                > {output.name} </option>
+                  key={output_id}
+                  value={output_id}
+                > {availableOutputs[output_id].name} </option>
               ))}
             </Select>
           )}
@@ -286,8 +235,8 @@ export default function UtilitiesMidiVisualizer () {
             className="max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-4 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg"
           >
             <Launchpad
+              ref={launchpadRef}
               layout="programmer"
-              launchpadId={0}
               onPadDown={() => null}
               onPadUp={() => null}
             />

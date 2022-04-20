@@ -28,6 +28,8 @@ import ImportProjectModal from "@/components/ImportProjectModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 // import LpadderWrongVersionModal from "./components/LpadderWrongVersionModal";
 
+import { enableAndSetup } from "@/utils/webmidi";
+
 /** Mount point of the React app. */
 const container = document.getElementById("root");
 if (!container) throw new Error("Failed to find the root element.");
@@ -51,3 +53,5 @@ root.render(
     <CreateProjectModal />
   </React.StrictMode>
 );
+
+requestIdleCallback(() => enableAndSetup());

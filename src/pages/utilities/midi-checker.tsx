@@ -1,187 +1,27 @@
 import type {
-  Input, Output,
   NoteMessageEvent,
   ControlChangeMessageEvent
 } from "webmidi";
 
 import { useEffect, useState } from "react";
-import { WebMidi } from "webmidi";
 
-import create from "zustand";
+import { subscribeToInput, unsubscribeToInput } from "@/utils/webmidi";
+import { useWebMidiStore } from "@/stores/webmidi";
+
 import logger from "@/utils/logger";
 
 // Components
 import Select from "@/components/Select";
-import InputElement from "@/components/Input";
+// import InputElement from "@/components/Input";
 
-type MidiEvent = (
+type MidiEvent =
   | { type: "noteon"; event: NoteMessageEvent }
   | { type: "noteoff"; event: NoteMessageEvent }
   | { type: "controlchange"; event: ControlChangeMessageEvent }
-);
-
-interface MidiEventsStore {
-  midiEvents: MidiEvent[];
-  appendMidiEvent: (event: MidiEvent) => void;
-  clearMidiEvents: () => void;
-
-  /** Max events for `midiEvents`. */
-  limit: number;
-  setLimit: (limit: number) => void;
-}
-
-const useMidiEventsStore = create<MidiEventsStore>((set, get) => ({
-  midiEvents: [],
-  clearMidiEvents: () => set(() => ({ midiEvents: [] })),
-  appendMidiEvent: (event: MidiEvent) => {
-    const { limit, midiEvents: events } = get();
-
-    if (events.length >= limit) {
-      events.pop();
-    }
-
-    set(() => ({
-      midiEvents: [event, ...events]
-    }));
-  },
-
-  limit: 20,
-  setLimit: (limit: number) => set(() => ({ limit })),
-}));
 
 export default function UtilitiesMidiChecker () {
   const log = logger("UtilitiesMidiChecker");
-  log.render();
-
-  const [webMidiEnabled, setWebMidiEnabled] = useState(WebMidi.enabled);
-
-  const [availableInputs, setAvailableInputs] = useState<Input[]>([]);
-  const [availableOutputs, setAvailableOutputs] = useState<Output[]>([]);
-
-  const midiEvents = useMidiEventsStore(state => state.midiEvents);
-
-  /** Function to refresh 'availableDevices' state */
-  const refreshAvailableDevices = () => {
-    console.group("[refreshAvailableDevices] Refresh states.");
-    
-    // Clean the current states.
-    setAvailableInputs([]);
-    setAvailableOutputs([]);
-
-    // Get the devices.
-    const { inputs, outputs } = WebMidi;
-
-    console.info("Inputs", inputs);    
-    setAvailableInputs(inputs);
-
-    console.info("Add listeners to inputs...");
-    inputs.forEach(input => subscribeToMidiEvents(input));
-    console.info("Done !");
-
-    console.info("Outputs", outputs);
-    setAvailableOutputs(outputs);
-
-    console.groupEnd();
-  };
-
-  const loadWebMidi = async () => {
-    console.info("-> Starting WebMidi...");
-
-    return WebMidi
-      .enable()
-      .then (() => {
-        console.info("<- Successfully enabled !");
-        console.groupEnd();
-
-        // Update WebMidi state.
-        setWebMidiEnabled(true);
-        refreshAvailableDevices();          
-      })
-      .catch (err => {
-        console.error("<- An error was thrown.", err);
-        console.groupEnd();
-
-        alert("An error happenned, check console.");
-      });
-  };
-  
-  useEffect(() => {
-    log.effectGroup(`Enable with webMidiEnabled: ${webMidiEnabled}`);
-
-
-    const disableWebMidi = async () => {
-      console.info("-> Disabling WebMidi...");
-
-      return WebMidi
-        .disable()
-        .then (() => {
-          console.info("<- Successfully disabled !");
-          console.groupEnd();
-
-          // Update WebMidi state.
-          setWebMidiEnabled(false);
-          setAvailableInputs([]);
-          setAvailableOutputs([]);
-        })
-        .catch (err => {
-          console.error("<- An error was thrown.", err);
-          console.groupEnd();
-
-          alert("An error happenned, check console.");
-        });
-    };
-
-    if (!webMidiEnabled) loadWebMidi();
-    else {
-      console.info("<- WebMidi is already enabled ! Reloading it...");
-      disableWebMidi().then(() => loadWebMidi());
-    }
-
-    return () => {
-      console.group("[midi-checker][useEffect] Clean-up.");
-      disableWebMidi();
-    };
-  }, []);
-
-  const subscribeToMidiEvents = (input: Input) => {
-    if (!webMidiEnabled) return;
-
-    input.addListener("noteon", (e) => {
-      console.info(`[noteon][${input.name}][${input.id}]`, e);
-
-      useMidiEventsStore.getState().appendMidiEvent({
-        type: "noteon",
-        event: e
-      });
-    });
-
-    input.addListener("noteoff", (e) => {
-      console.info(`[noteoff][${input.name}][${input.id}]`, e);
-
-      useMidiEventsStore.getState().appendMidiEvent({
-        type: "noteoff",
-        event: e
-      });
-    });
-
-    input.addListener("controlchange", (e) => {
-      console.info(`[controlchange][${input.name}][${input.id}]`, e);
-
-      useMidiEventsStore.getState().appendMidiEvent({
-        type: "controlchange",
-        event: e
-      });
-    });
-
-    console.info(`Subscribed to MIDI events of input "${input.name}, ${input.manufacturer}, ${input.id}".`);
-  };
-
-
-  if (!webMidiEnabled) return (
-    <div>
-      <p>WebMidi is currently loading...</p>
-    </div>
-  );
+  /** Debug. */ log.render();
 
   return (
     <div>
@@ -198,26 +38,18 @@ export default function UtilitiesMidiChecker () {
         </p>
       </header>
 
-      <MidiOutputSender
-        availableOutputs={availableOutputs}
-      />
-
-      <div className="flex flex-col gap-4">
-        {midiEvents.map((event_info, event_index) => (
-          <div
-            className="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
-            key={event_index}
-          >
-            <p>[{event_info.event.port.name}]: {event_info.type} on channel {event_info.event.message.channel}.</p>
-          </div> 
-        ))}
-      </div>
+      <MidiOutputSender />
+      <MidiInputChecker />
     </div>
   );
 }
 
-const MidiOutputSender = ({ availableOutputs }: { availableOutputs: Output[] }) => {
+const MidiOutputSender = () => {
+  const log = logger("MidiOutputSender");
+  /** Debug. */ log.render();
+
   const [selectedOutputId, setSelectedOutputId] = useState<string | null>(null);
+  const availableOutputs = useWebMidiStore(state => state.outputs);
 
   // const [message, setMessage] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
 
@@ -225,7 +57,7 @@ const MidiOutputSender = ({ availableOutputs }: { availableOutputs: Output[] }) 
     e.preventDefault();
     if (!selectedOutputId) return;
 
-    const output = availableOutputs.find(output => output.id === selectedOutputId);
+    const output = availableOutputs[selectedOutputId];
     if (!output) return;
 
     // console.info("[midi-checker] Sending message", message, "to output:", output);
@@ -251,12 +83,12 @@ const MidiOutputSender = ({ availableOutputs }: { availableOutputs: Output[] }) 
           placeholder="Select an output"
         >
           <option value="none">None</option>
-          {availableOutputs.map(input => (
+          {Object.keys(availableOutputs).map(output_id => (
             <option
-              key={input.id}
-              value={input.id}
+              key={output_id}
+              value={output_id}
             >
-              {input.name}
+              {availableOutputs[output_id].name}
             </option>
           ))}
         </Select>
@@ -295,6 +127,87 @@ const MidiOutputSender = ({ availableOutputs }: { availableOutputs: Output[] }) 
       >
         Send
       </button>
+    </div>
+  );
+};
+
+const MidiInputChecker = () => {
+  const log = logger("MidiInputChecker");
+  /** Debug. */ log.render();
+
+  const webMidiEnabled = useWebMidiStore(state => state.isEnabled);
+  const availableInputs = useWebMidiStore(state => state.inputs);
+
+  const [midiEventsLimit/**, setMidiEventsLimit*/] = useState(20);
+  const [midiEvents, setMidiEvents] = useState<MidiEvent[]>([]);
+
+  /** Add an item to the midi events array. */
+  const appendToMidiEvent = (midiEvent: MidiEvent) => setMidiEvents(events => {
+    /** If we go more than the limit, remove last item. */
+    if (events.length >= midiEventsLimit) {
+      events.pop();
+    }
+
+    /** We add the event at the start of the array. */
+    return [midiEvent, ...events];
+  });
+
+  const inputEventCallback = (event: NoteMessageEvent | ControlChangeMessageEvent) => {
+    if (event.type === "noteon" || event.type === "noteoff") {
+      return appendToMidiEvent({
+        type: event.type,
+        event: event as NoteMessageEvent
+      });
+    }
+    
+    if (event.type === "controlchange") {
+      return appendToMidiEvent({
+        type: event.type,
+        event: event as ControlChangeMessageEvent
+      });
+    }
+  };
+
+  useEffect(() => {
+    log.effectGroup("Subscribe to listeners.");
+
+    for (const [, input] of Object.entries(availableInputs)) {
+      subscribeToInput(input, inputEventCallback);
+      console.info("Subscribed to", input);
+    }
+    
+    console.info("Done !");
+    console.groupEnd();
+
+    return () => {
+      log.effectGroup("Unsubscribe to listeners.");
+      
+      for (const [, input] of Object.entries(availableInputs)) {
+        unsubscribeToInput(input, inputEventCallback);
+        console.info("Unsubscribed from", input);
+      }
+      
+      console.info("Done !");
+      console.groupEnd();
+    };
+  }, [availableInputs]);
+
+  if (!webMidiEnabled) return(
+    <div>
+      <p>WebMidi is currently loading... Please wait !</p>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      {midiEvents.map((event_info, event_index) => (
+        <div
+          className="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
+          key={event_index}
+        >
+          <p>[{event_info.event.port.name}]: {event_info.type} on channel {event_info.event.message.channel}.</p>
+        </div> 
+      ))}
     </div>
   );
 };
