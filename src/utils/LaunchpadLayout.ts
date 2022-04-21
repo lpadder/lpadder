@@ -1,6 +1,7 @@
 export type AvailableLayouts = 
+  | "live"
   | "programmer"
-  | "live";
+  | "drum_rack";
 
 type LayoutValueType = number[][];
 
@@ -8,16 +9,19 @@ export default class LaunchpadLayout {
   public layouts: {
     live: LayoutValueType;
     programmer: LayoutValueType;
+    drum_rack: LayoutValueType;
   };
 
   constructor () {
     const liveLayout = this.buildLiveLayout();
     const programmerLayout = this.buildProgrammerLayout();
+    const drumRackLayout = this.buildDrumRackLayout();
 
     // Build layouts and store them in `this.layouts`.
     this.layouts = {
       live: liveLayout,
-      programmer: programmerLayout
+      programmer: programmerLayout,
+      drum_rack: drumRackLayout
     };
   }
 
@@ -42,6 +46,32 @@ export default class LaunchpadLayout {
 
       // Push the column to layout
       layout.push(column);
+    }
+
+    return layout;
+  }
+
+  /** Build the layout for the DrumRack mode. */
+  private buildDrumRackLayout(): LayoutValueType {
+    const layout = [];
+
+    for (let columns = 92; columns >= 64; columns -= 4) {
+      const column = [];
+
+      for (let rows = 0; rows <= 7; rows++) {
+        let id = columns - rows;
+
+        // After 4 it goes to the next "side" (-32) and get back to 0 (-4)
+        if (rows >= 4) {
+          id -= 32 - 4;
+        }
+
+        // Insert the column
+        column.push(id);
+      }
+
+      // Push the column to layout
+      layout.unshift(column);
     }
 
     return layout;

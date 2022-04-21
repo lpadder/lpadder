@@ -205,7 +205,7 @@ const MidiInputChecker = () => {
           className="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
           key={event_index}
         >
-          <p>[{event_info.event.port.name}]: {event_info.type} on channel {event_info.event.message.channel}.</p>
+          <p>[{event_info.event.port.name}]: {event_info.type} ({event_info.type === "controlchange" ? event_info.event.controller.number : event_info.event.note.number}) on channel {event_info.event.message.channel}.</p>
         </div> 
       ))}
     </div>

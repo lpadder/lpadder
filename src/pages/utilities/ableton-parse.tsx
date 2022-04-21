@@ -195,7 +195,7 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
 
     drum_rack.branches.forEach((branch, currentBranchIndex) => {
       const note = branch.receivingNote;
-      
+
       const padElement = launchpad.querySelector(`[data-note="${note}"]`);
       if (!padElement) return;
 
@@ -213,6 +213,7 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
 
   /** Update the highlights on the Launchpad. */
   useEffect(() => {
+    console.log(drum_rack);
     toggleLaunchpadPads(true);
     return () => toggleLaunchpadPads(false);
   }, [drum_rack, selectedBranch]);
@@ -222,7 +223,7 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
       <div className="w-full max-w-60 sm:w-64">
         <Launchpad
           ref={launchpadRef}
-          layout="live"
+          layout="drum_rack"
           onPadDown={() => null}
           onPadUp={(note_id) => {
             const branch = drum_rack.branches.findIndex(branch => branch.receivingNote === note_id);

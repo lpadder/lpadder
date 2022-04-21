@@ -271,7 +271,6 @@ function parseInstrumentRack (device: Element): MidiDeviceInstrumentRackData {
     if (branch.tagName !== "InstrumentBranch") continue;
 
     const branch_name = branch
-      .getElementsByTagName("Name")[0]
       .getElementsByTagName("EffectiveName")[0]
       .getAttribute("Value") || "";
 
@@ -298,7 +297,6 @@ function parseDrumRack (device: Element): MidiDeviceDrumRackData {
     if (branch.tagName !== "DrumBranch") continue;
 
     const branch_name = branch
-      .getElementsByTagName("Name")[0]
       .getElementsByTagName("EffectiveName")[0]
       .getAttribute("Value") || "";
 
@@ -309,7 +307,7 @@ function parseDrumRack (device: Element): MidiDeviceDrumRackData {
     const receivingNote = parseInt(branch
       .getElementsByTagName("ReceivingNote")[0]
       .getAttribute("Value") || "-1");
-
+      
     parsed_branches.push({
       name: branch_name,
       receivingNote,
