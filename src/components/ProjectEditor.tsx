@@ -90,7 +90,7 @@ export default function ProjectEditor () {
 
   /** Add a new page to the current selected launchpad. */
   const addLaunchpadPage = () => {
-    if (!currentLaunchpadSelected) return;
+    if (typeof currentLaunchpadSelected === "undefined") return;
     const data_copy = { ...data };
 
     // Add a new page to the current launchpad.
@@ -99,6 +99,29 @@ export default function ProjectEditor () {
     data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
     setData(data_copy);
     setCurrentLaunchpadPageSelected(index);
+  };
+
+  const removeLaunchpadPage = () => {
+    if (typeof currentLaunchpadSelected === "undefined") return;
+    if (typeof currentLaunchpadPageSelected === "undefined") return;
+    const data_copy = { ...data };
+
+    // Remove launchpad page using current index.
+    data_copy.launchpads[currentLaunchpadSelected].pages = data_copy.launchpads[currentLaunchpadSelected].pages.filter(
+      (_, index) => index !== currentLaunchpadPageSelected
+    );
+
+    /**
+     * We select the page before the current one.
+     * If there's no page before, we select the first one.
+     * If there's no page at all, we select nothing.
+     */
+    const page_to_use = data_copy.launchpads[currentLaunchpadSelected].pages[currentLaunchpadPageSelected - 1]
+      ? currentLaunchpadPageSelected - 1
+      : data_copy.launchpads[currentLaunchpadSelected].pages.length > 0 ? 0 : undefined; 
+
+    setData(data_copy);
+    setCurrentLaunchpadPageSelected(page_to_use);
   };
 
   // Short-hands for the current launchpad and page.
@@ -130,7 +153,6 @@ export default function ProjectEditor () {
           )}
         </Select>
         {launchpad && (
-
           <button
             className="
               px-4 py-2 rounded-lg
@@ -156,7 +178,6 @@ export default function ProjectEditor () {
         >
           <HiOutlinePlus size={18} />
         </button>
-        
       </div>
 
       {launchpad &&
@@ -172,7 +193,9 @@ export default function ProjectEditor () {
               onPadDown={() => null}
             />
           </div>
-          <div>
+          <div className="
+            flex flex-col gap-4
+          ">
             <Input
               labelName="Launchpad name"
               placeholder={launchpad.name}
@@ -184,22 +207,46 @@ export default function ProjectEditor () {
               }}
             />
 
-            <Select
-              placeholder="Select a page"
-              value={currentLaunchpadPageSelected}
-              onChange={handleLaunchpadPageSelection}
-            >
-              {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
-                <option value={pageKey} key={pageKey}>
-                  {page.name}
-                </option>
+            <div>
+              <Select
+                placeholder="Select a page"
+                value={currentLaunchpadPageSelected}
+                onChange={handleLaunchpadPageSelection}
+              >
+                {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
+                  <option value={pageKey} key={pageKey}>
+                    {page.name}
+                  </option>
+                )}
+              </Select>
+
+              {page && (
+                <button
+                  className="
+                    px-4 py-2 rounded-lg
+                    text-gray-300 hover:text-pink-600
+                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                    border border-gray-900 hover:border-pink-600
+                  "
+                  onClick={removeLaunchpadPage}
+                >
+                  <HiOutlineTrash size={18} />
+                </button>
               )}
-            </Select>
-
-            <button onClick={addLaunchpadPage}>
-              Add a page to this launchpad
-            </button>
-
+              <button
+                className="
+                  whitespace-nowrap px-4 py-2 rounded-lg
+                  text-gray-300
+                  hover:bg-blue-600
+                  bg-gray-900 bg-opacity-20
+                  border border-gray-900 hover:border-blue-600
+                  transition-all
+                "
+                onClick={addLaunchpadPage}
+              >
+                <HiOutlinePlus size={18} />
+              </button>
+            </div>
           </div>
         </div>
       }
