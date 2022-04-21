@@ -188,6 +188,9 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
   const [selectedBranch, setSelectedBranch] = useState(0);
   const launchpadRef = useRef<HTMLDivElement>(null);
 
+  const log = logger("MidiDeviceDrumRack");
+  /** Debug. */ log.render();
+
   /** Function to toggle preview buttons on the Launchpad. */
   const toggleLaunchpadPads = (enable: boolean) => {
     if (!launchpadRef.current) return;
@@ -213,7 +216,8 @@ const MidiDeviceDrumRack = ({ drum_rack }: {
 
   /** Update the highlights on the Launchpad. */
   useEffect(() => {
-    console.log(drum_rack);
+    log.log("Update Launchpad highlights.", drum_rack);
+    
     toggleLaunchpadPads(true);
     return () => toggleLaunchpadPads(false);
   }, [drum_rack, selectedBranch]);

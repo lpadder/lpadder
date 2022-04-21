@@ -46,7 +46,7 @@ export default function DropdownButton ({
       >
         <Menu.Items
           static={alwaysShow}
-          className={"absolute right-0 mt-2 w-56 bg-gray-800 rounded-md shadow-md origin-top-right"}
+          className={"z-50 absolute right-0 mt-2 w-56 bg-gray-800 rounded-md shadow-md origin-top-right"}
         >
           <div className="py-1">
             {items.map(item =>

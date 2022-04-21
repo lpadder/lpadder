@@ -4,7 +4,7 @@ interface SelectProps {
   placeholder: string;
   onChange: React.ChangeEventHandler<HTMLSelectElement>;
   name?: string;
-  value?: string;
+  value?: string | number;
 }
 
 export default function Select ({ children, onChange, name, value }: SelectProps) {

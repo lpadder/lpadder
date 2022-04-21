@@ -31,12 +31,13 @@ import logger from "@/utils/logger";
 
 // Icons
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
-import { IoMdArrowBack, IoMdMenu, IoMdSave } from "react-icons/io";
+import { IoMdMenu, IoMdSave, IoMdHome } from "react-icons/io";
 
 export default function Projects () {
   const projectMenuRef = useRef<HTMLDivElement | null>(null);
   const projectSaveButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuBarComponentsRef = useRef<HTMLUListElement | null>(null);
+
   const project_slug = useRef(useCurrentProjectStore.getState().slug);
 
   const showMenuBarComponents = (visible: boolean) => {
@@ -45,6 +46,19 @@ export default function Projects () {
 
     components.classList.toggle("flex", visible);
     components.classList.toggle("hidden", !visible);
+  };
+
+  const toggleProjectsMenu = () => {
+    const menu = projectMenuRef.current;
+    if (!menu) return;
+
+    const root = document.getElementById("root");
+    if (!root) return;
+
+    const isHidden = menu.classList.contains("hidden");
+
+    // We show the projects menu.
+    menu.classList.toggle("hidden", !isHidden);
   };
 
   const location = useLocation();
@@ -241,7 +255,7 @@ export default function Projects () {
         }
       }
 
-      // Save the 
+      // Save the project slug into ref.
       project_slug.current = state.slug;
     
       /** Show the save button only when project isn't globally saved. */
@@ -343,6 +357,27 @@ export default function Projects () {
     fileInput.remove();
   };
 
+
+  const HeaderNavigation = ({ className, children, showHomeButtonOnMobile = false }: { className?: string, children?: React.ReactNode, showHomeButtonOnMobile?: boolean }) => (
+    <div className={`${className ? className : ""} h-20 flex px-8 bg-gray-900 justify-between items-center`}>
+      <button
+        onClick={toggleProjectsMenu}
+        className="md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
+      >
+        <IoMdMenu size={28} />
+      </button>
+            
+      <Link
+        className={`${showHomeButtonOnMobile ? "flex" : "hidden"} md:flex flex-row justify-center gap-2 items-center p-2 text-gray-400 bg-opacity-20 rounded transition-colors hover:text-gray-200 hover:bg-opacity-60`}
+        to="/"
+      >
+        <IoMdHome size={28} /> Home
+      </Link>
+
+      {children}
+    </div>
+  );
+
   /** Show a loader while the projects are loading. */
   if (!localProjectsMetadata) {
     /** Debug. */ log.render("Loading metadatas of projects...");
@@ -354,7 +389,7 @@ export default function Projects () {
     );
   }
   
-  /** Debug. */ log.render(localProjectsMetadata);
+  /** Debug. */ log.render("With metadatas", localProjectsMetadata);
 
   return (
     <Fragment>
@@ -368,27 +403,10 @@ export default function Projects () {
       />
 
       <div
-        className="h-screen"
+        className="h-screen overflow-y-hidden"
         onContextMenu={(e) => /** Prevent context menu. */ e.preventDefault()}
       >
-        <header
-          className="flex fixed top-0 justify-between items-center px-8 w-full h-20 bg-gray-900 bg-opacity-60 shadow backdrop-blur"
-        >
-          <div className="flex gap-2">
-            <Link className="p-2 text-gray-400 bg-blue-800 bg-opacity-20 rounded transition-colors hover:text-gray-200 hover:bg-opacity-60" to="/">
-              <IoMdArrowBack size={28} />
-            </Link>
-            <button
-              onClick={() => {
-                if (projectMenuRef.current)
-                  projectMenuRef.current.classList.toggle("hidden");
-              }}
-              className="p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 md:hidden hover:bg-opacity-20 focus:bg-opacity-40"
-            >
-              <IoMdMenu size={28} />
-            </button>
-          </div>
-
+        <HeaderNavigation>
           <ul ref={menuBarComponentsRef} className="hidden flex-row-reverse gap-4">
             <HeaderItem>
               <DropdownButton
@@ -417,10 +435,15 @@ export default function Projects () {
               </button>
             </HeaderItem>
           </ul>
-        </header>
+        </HeaderNavigation>
 
         {/** Projects Navigation */}
-        <nav ref={projectMenuRef} className="hidden md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700">
+        <nav ref={projectMenuRef} className="z-20 hidden md:block fixed h-full top-0 md:top-20 left-0 md:w-72 w-full bg-gray-700">
+          <HeaderNavigation
+            className="md:hidden"
+            showHomeButtonOnMobile={true}
+          />
+          
           {/** Import / Create */}
           <div className="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
             <NavbarItem onClick={handleImportCover}>
@@ -468,7 +491,7 @@ export default function Projects () {
           </div>
         </nav>
 
-        <div className="pt-20 w-full h-full md:pl-72">
+        <div className="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
           <Routes>
             <Route
               path=":slug/*"
@@ -488,9 +511,9 @@ export default function Projects () {
 
 const NoCoverSelectedPage = () => {
   return (
-    <main
-      className="flex flex-col justify-center items-center w-full h-full"
-    >
+    <main className="
+      flex flex-col justify-center items-center w-full h-full
+    ">
       <div
         className="flex flex-col gap-4 justify-center items-center max-w-md text-sm sm:text-base md:w-96"
       >
