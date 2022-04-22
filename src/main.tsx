@@ -37,7 +37,7 @@ if (!container) throw new Error("Failed to find the root element.");
 // Create the root and render the app.
 const root = ReactDOM.createRoot(container);
 root.render(
-  <React.StrictMode>
+  <React.Fragment>
     <BrowserRouter>
       <Routes>
         <Route index element={<Home />} />
@@ -51,7 +51,7 @@ root.render(
     <ReloadPrompt />
     <ImportProjectModal />
     <CreateProjectModal />
-  </React.StrictMode>
+  </React.Fragment>
 );
 
 requestIdleCallback(() => enableAndSetup());
