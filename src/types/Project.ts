@@ -23,17 +23,22 @@ export interface ProjectData {
   }[];
 
   files: {
-    [fileName: string]: {
-      /** Path used to know where the file is. */
+    [relativePath: string]: {
+      /** File name, extension isn't required. */
+      name: string;
+
+      /** Note: should always have a trailling slash ! */
       path: string;
 
-      /** Available only when the data is stored in localForage. */
-      data?: Uint8Array;
+      /** Note: not available when importing. */
+      data: ArrayBuffer;
 
-      /** Used as a filter. */
-      type:
-        | "audio"
-        | "light"
+      /**
+       * MIME of the audio file.
+       * Required at export to recompose file names with
+       * proper extensions for them.
+       */
+      type: string; 
     }
   }
 }
