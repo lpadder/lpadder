@@ -82,7 +82,10 @@ class StoredProjectsDataStore {
     try {
       const empty_project_data: ProjectData = {
         launchpads: [],
-        files: {}
+        files: {},
+        
+        /** 120 is the default BPM. */
+        global_bpm: 120
       };
 
       const stored_data: ProjectData = await this.store.setItem(slug, empty_project_data);

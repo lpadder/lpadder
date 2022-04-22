@@ -41,6 +41,8 @@ export interface ProjectData {
       type: string; 
     }
   }
+
+  global_bpm: number;
 }
 
 /**

@@ -1,15 +1,30 @@
 import type { ProjectData } from "@/types/Project";
 import type { ChangeEvent } from "react";
-import type WaveSurferType from "wavesurfer.js";
 
 import logger from "@/utils/logger";
+import { useEffect } from "react";
+import create from "zustand";
 
-import { WaveSurfer, WaveForm } from "wavesurfer-react";
 import FileInput from "@/components/FileInput";
+import Input from "@/components/Input";
+import AudioWave from "./AudioWave";
+import Select from "../Select";
 
 import { useCurrentProjectStore } from "@/stores/current_project";
 import { useUnsavedProjectStore } from "@/stores/unsaved_project";
 import { storedProjectsData } from "@/stores/projects_data";
+
+import Button from "../Button";
+import { HiOutlineTrash } from "react-icons/hi";
+
+export const useProjectSamplerData = create<{
+  /** Path of the file. */
+  selectedAudioFile: string | null;
+  setSelectedAudioFile: (file_path: string | null) => void;
+    }>(set => ({
+      selectedAudioFile: null,
+      setSelectedAudioFile: (file_path) => set(() => ({ selectedAudioFile: file_path }))
+    }));
 
 export default function ProjectSampler () {
   const log = logger("/:slug~ProjectSampler");
@@ -17,6 +32,14 @@ export default function ProjectSampler () {
 
   const { data, setData } = useUnsavedProjectStore();
   const projectSlug = useCurrentProjectStore(state => state.slug);
+  const { selectedAudioFile, setSelectedAudioFile } = useProjectSamplerData();
+
+  useEffect(() => {
+    if (selectedAudioFile || !data) return;
+
+    const firstItemInSelector = Object.keys(data.files)[0] || null;
+    setSelectedAudioFile(firstItemInSelector);
+  }, []);
 
   /** Handle the <FileInput /> to import audios and store them. */
   const handleAudioImport = async (evt: ChangeEvent<HTMLInputElement>) => {
@@ -82,16 +105,36 @@ export default function ProjectSampler () {
     await Promise.all(files_promises);
 
     const updated_data: ProjectData = {
-      launchpads: [ ...data.launchpads ],
-      files: { ...data.files, ...parsed_files }
+      ...data,
+      files: {
+        ...data.files,
+        ...parsed_files
+      }
     };
 
-    // Save files in localForage and store.
-    await storedProjectsData.updateProjectData(projectSlug, updated_data);
+    // Save files in store.
     setData(updated_data);
 
     // Reset the file input.
     evt.target.value = "";
+
+    const firstItemInSelector = Object.keys(updated_data.files)[0] || null;
+    setSelectedAudioFile(firstItemInSelector);
+  };
+
+  const removeCurrentAudioFile = async () => {
+    if (!selectedAudioFile || !data || !projectSlug) return;
+    
+    const files_copy = { ...data.files };
+    delete files_copy[selectedAudioFile];
+
+    setData({
+      ...data,
+      files: files_copy
+    });
+
+    const firstItemInSelector = Object.keys(files_copy)[0] || null;
+    setSelectedAudioFile(firstItemInSelector);    
   };
 
   if (!data) return (
@@ -100,18 +143,38 @@ export default function ProjectSampler () {
 
   return (
     <div className="
-      w-full h-64 rounded-lg
+      w-full rounded-lg
       mb-8 py-4
       bg-gray-700
     ">
       <div className="
-        px-4 flex justify-between
+        px-4 flex justify-between mb-4
       ">
         <h3 className="font-medium text-lg">
           Sampler
         </h3>
 
-        <div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            
+            value={data.global_bpm.toString()}
+            min={0}
+            max={900} /** If someone has already covered something that has more than 900 BPM, call me. */
+
+            placeholder="BPM"
+            onChange={evt => {
+              const value = evt.target.value || "0";
+
+              const bpm = parseInt(value);
+              if (isNaN(bpm)) return;
+
+              setData({
+                ...data,
+                global_bpm: bpm
+              });
+            }}
+          />
           <FileInput
             label="Import"
             accept="audio/*"
@@ -122,24 +185,50 @@ export default function ProjectSampler () {
       </div>
 
 
-      {/** Audio files */}
-      <div>
-        {Object.keys(data.files).map((file_path, file_index) => (
-          <div className="w-full h-auto" key={file_path}>
-            <WaveSurfer
-              onMount={(waveSurfer: WaveSurferType) => {
-                const file = data.files[file_path];
+      <div className="px-6">
+        <div className="flex gap-2 justify-around">
+          <Select
+            placeholder="Select an audio file"
+            title="Select an audio file"
+            value={selectedAudioFile ?? undefined}
+            onChange={(evt) => {
+              const value = evt.target.value;
+              if (!value) {
+                setSelectedAudioFile(null);
+                return;
+              }
 
-                const blob = new Blob([file.data], { type: file.type });
-                waveSurfer.loadBlob(blob);
-              }}
+              setSelectedAudioFile(value);
+            }}
+          >
+            {Object.keys(data.files).map((file_path, file_index) => (
+              <option
+                key={file_index}
+                value={file_path}
+              >
+                {data.files[file_path].name}
+              </option>
+            ))}
+          </Select>
+
+          {selectedAudioFile && (
+            <Button
+              className="hover:text-pink-600 hover:border-pink-600 w-full"
+              title="Remove the current audio file"
+              onClick={removeCurrentAudioFile}
             >
-              <WaveForm id={`waveform-${file_index}`} hideCursor cursorColor="transparent">
-                {}
-              </WaveForm>
-            </WaveSurfer>
-          </div>
-        ))}
+              <HiOutlineTrash size={18} />
+            </Button>
+          )}
+        </div>
+
+        {selectedAudioFile && (
+          <AudioWave
+            file={data.files[selectedAudioFile]}
+          >
+            {/** TODO: Write here the grid for tempo, markers, and all the stuff. */}
+          </AudioWave>
+        )}
       </div>
     </div>
   );
