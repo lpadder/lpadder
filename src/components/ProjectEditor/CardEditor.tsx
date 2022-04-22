@@ -1,10 +1,11 @@
-import type { ProjectData, ProjectDataSample } from "@/types/Project";
+import type { ProjectData } from "@/types/Project";
 import type { ChangeEvent } from "react";
 
 // Stores
 import { useUnsavedProjectStore } from "@/stores/unsaved_project";
 
 // Components
+import Button from "@/components/Button";
 import Select from "@/components/Select";
 import Input from "@/components/Input";
 import { Fragment } from "react";
@@ -84,21 +85,14 @@ export default function CardEditor ({
             )}
           </Select>
 
-          <button
-            className="
-              whitespace-nowrap px-4 py-2 rounded-lg
-              text-gray-300
-              hover:bg-blue-600
-              bg-gray-900 bg-opacity-20
-              border border-gray-900 hover:border-blue-500
-              transition-all
-            "
+          <Button
+            className="hover:bg-blue-600 hover:border-blue-500"
 
             onClick={addToSelector}
             title={`Add a ${type} to the project`}
           >
             <HiOutlinePlus size={18} />
-          </button>
+          </Button>
         </div>
 
         {children}
@@ -110,49 +104,34 @@ export default function CardEditor ({
             ? (
               <Fragment>
                 {target.id !== 0 && (
-                  <button
-                    className="
-                      px-4 py-2 rounded-lg w-full flex justify-center
-                      text-gray-300 hover:text-blue-600
-                      bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                      border border-gray-900 hover:border-blue-600
-                    "
+                  <Button
+                    className="hover:bg-blue-600 hover:border-blue-500 w-full"
 
                     title={`Move the current ${type} up`}
                     onClick={upItem}
                   >
                     <HiArrowUp size={18} />
-                  </button>
+                  </Button>
                 )}
 
-                <button
-                  className="
-                    px-4 py-2 rounded-lg w-full flex justify-center
-                    text-gray-300 hover:text-pink-600
-                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                    border border-gray-900 hover:border-pink-600
-                  "
+                <Button
+                  className="hover:text-pink-600 hover:border-pink-600 w-full"
 
                   title={`Remove the current ${type}`}
                   onClick={removeFromSelector}
                 >
                   <HiOutlineTrash size={18} />
-                </button>
+                </Button>
 
                 {launchpad && target.id !== ((type === "launchpad" ? data.launchpads : launchpad.pages).length - 1) && (
-                  <button
-                    className="
-                      px-4 py-2 rounded-lg w-full flex justify-center
-                      text-gray-300 hover:text-blue-600
-                      bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                      border border-gray-900 hover:border-blue-600
-                    "
+                  <Button
+                    className="hover:bg-blue-600 hover:border-blue-500 w-full"
 
                     title={`Move the current ${type} down`}
                     onClick={downItem}
                   >
                     <HiArrowDown size={18} />
-                  </button>
+                  </Button>
                 )}
               </Fragment>
             )

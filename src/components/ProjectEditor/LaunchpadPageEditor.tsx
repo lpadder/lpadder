@@ -90,7 +90,13 @@ export default function LaunchpadPageEditor ({
       downItem={downLaunchpadPage}
     >
 
-      <div className="w-full aspect-square bg-gray-400">
+      <div className="
+        w-full aspect-square rounded-md
+        bg-gray-400 bg-opacity-20
+        border border-gray-400
+      
+        flex justify-center items-center
+      ">
 
       </div>
     </CardEditor>

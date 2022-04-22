@@ -1,7 +1,3 @@
-import type {
-  ProjectDataSample
-} from "@/types/Project";
-
 import {
   ChangeEvent,
   useState
@@ -14,6 +10,7 @@ import { useUnsavedProjectStore } from "@/stores/unsaved_project";
 // ProjectEditor's components
 import LaunchpadEditor from "./LaunchpadEditor";
 import LaunchpadPageEditor from "./LaunchpadPageEditor";
+import LaunchpadSampleEditor from "./LaunchpadSampleEditor";
 
 export default function ProjectEditor () {
   const log = logger("/:slug~ProjectEditor");
@@ -112,7 +109,7 @@ export default function ProjectEditor () {
     // Add a new page to the current launchpad.
     const index = data_copy.launchpads[currentLaunchpadSelected].pages.length;
     const name = `Page ${index}`;
-    data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
+    data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: {} });
     
     setData(data_copy);
     setCurrentPadSelected(undefined);
@@ -166,12 +163,13 @@ export default function ProjectEditor () {
   /** Short-hand for `currentPadSelected` with data. */
   const sample = (launchpad && page && typeof currentPadSelected !== "undefined") ? {
     ...page.samples[currentPadSelected],
-    id: currentPadSelected
+    id: currentPadSelected,
+    isAssigned: !! page.samples[currentPadSelected]
   } : null;
 
   return (
     <div>
-      <div className="flex flex-row flex-wrap gap-4">
+      <div className="flex flex-row flex-wrap gap-4 mb-4">
         <LaunchpadEditor
           setCurrentLaunchpadSelected={setCurrentLaunchpadSelected}
           handleLaunchpadSelection={handleLaunchpadSelection}
@@ -197,21 +195,14 @@ export default function ProjectEditor () {
         )}
       </div>
 
-      {sample && (
-        <PadEditor
+      {launchpad && sample && page && (
+        <LaunchpadSampleEditor
+          page={page}
           sample={sample}
+          launchpad={launchpad}
         />
       )}
     </div>
   );
 }
 
-const PadEditor = ({ sample }: { sample: ProjectDataSample & { id: number } }) => {
-  return (
-    <div>
-      <p>
-        Viewing sample from note {sample.id}
-      </p>
-    </div>
-  );
-};
