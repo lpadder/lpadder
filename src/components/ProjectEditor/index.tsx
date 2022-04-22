@@ -151,19 +151,19 @@ export default function ProjectEditor () {
     setCurrentPadSelected(pad_id);
   };
 
-  // Short-hands for the current launchpad and page.
-  // We append the current index in the objects to avoid
-  // having to always re-use `(currentLaunchpadSelected !== null)`, etc...
+  /** Short-hand for `currentLaunchpadSelected` with data. */
   const launchpad = (typeof currentLaunchpadSelected !== "undefined") ? {
     ...data.launchpads[currentLaunchpadSelected],
     id: currentLaunchpadSelected
   } : null;
   
+  /** Short-hand for `currentLaunchpadPageSelected` with data. */
   const page = (launchpad && typeof currentLaunchpadPageSelected !== "undefined") ? {
     ...launchpad.pages[currentLaunchpadPageSelected],
     id: currentLaunchpadPageSelected
   } : null;
-
+  
+  /** Short-hand for `currentPadSelected` with data. */
   const sample = (launchpad && page && typeof currentPadSelected !== "undefined") ? {
     ...page.samples[currentPadSelected],
     id: currentPadSelected
@@ -173,6 +173,7 @@ export default function ProjectEditor () {
     <div>
       <div className="flex flex-row flex-wrap gap-4">
         <LaunchpadEditor
+          setCurrentLaunchpadSelected={setCurrentLaunchpadSelected}
           handleLaunchpadSelection={handleLaunchpadSelection}
           launchpad={launchpad}
           sample={sample}
@@ -206,7 +207,6 @@ export default function ProjectEditor () {
 }
 
 const PadEditor = ({ sample }: { sample: ProjectDataSample & { id: number } }) => {
-
   return (
     <div>
       <p>
