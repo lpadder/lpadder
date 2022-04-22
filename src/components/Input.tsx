@@ -1,11 +1,11 @@
 export type InputProps = {
   type?: "text" | "number";
   className?: string;
-  labelName: string;
+  labelName?: string;
   placeholder: string;
   smallTipText?: string;
 
-  value: string;
+  value?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 
   max?: number;
@@ -25,9 +25,11 @@ export default function Input ({
 }: InputProps) {
   return (
     <div>
-      <label htmlFor={labelName} className="text-sm font-medium mb-1">
-        {labelName}
-      </label>
+      {labelName && (
+        <label htmlFor={labelName} className="text-sm font-medium mb-1">
+          {labelName}
+        </label>
+      )}
       <input
         type={type}
         value={value}

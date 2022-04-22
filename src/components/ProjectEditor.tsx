@@ -1,5 +1,7 @@
-import type {
-  ChangeEvent
+import type { ProjectData } from "@/types/Project";
+
+import {
+  ChangeEvent, Fragment
 } from "react";
 
 import {
@@ -124,6 +126,8 @@ export default function ProjectEditor () {
     setCurrentLaunchpadPageSelected(page_to_use);
   };
 
+  
+
   // Short-hands for the current launchpad and page.
   // We append the current index in the objects to avoid
   // having to always re-use `(currentLaunchpadSelected !== null)`, etc...
@@ -131,17 +135,33 @@ export default function ProjectEditor () {
     ...data.launchpads[currentLaunchpadSelected],
     id: currentLaunchpadSelected
   } : null;
+  
   const page = (launchpad && typeof currentLaunchpadPageSelected !== "undefined") ? {
     ...launchpad.pages[currentLaunchpadPageSelected],
     id: currentLaunchpadPageSelected
   } : null;
 
+  const handleLaunchpadClick = (pad_id: number) => {
+    console.log("LP Click", launchpad, page, pad_id);
+  };
+
   return (
     <div>
-      <div className="
+      <LaunchpadEditor
+        currentLaunchpadPageSelected={currentLaunchpadPageSelected}
+        handleLaunchpadSelection={handleLaunchpadSelection}
+        launchpad={launchpad}
+
+        addLaunchpad={addLaunchpad}
+        removeLaunchpad={removeLaunchpad}
+
+        handleLaunchpadClick={handleLaunchpadClick}
+      />
+
+      {/* <div className="
           flex gap-2 justify-around mb-4
-        ">
-        <Select
+        "> */}
+      {/* <Select
           value={currentLaunchpadSelected}
           onChange={handleLaunchpadSelection}
           placeholder="Select a launchpad"
@@ -152,19 +172,6 @@ export default function ProjectEditor () {
             </option>
           )}
         </Select>
-        {launchpad && (
-          <button
-            className="
-              px-4 py-2 rounded-lg
-              text-gray-300 hover:text-pink-600
-               bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-              border border-gray-900 hover:border-pink-600
-            "
-            onClick={removeLaunchpad}
-          >
-            <HiOutlineTrash size={18} />
-          </button>
-        )}
         <button
           className="
               whitespace-nowrap px-4 py-2 rounded-lg
@@ -177,85 +184,16 @@ export default function ProjectEditor () {
           onClick={addLaunchpad}
         >
           <HiOutlinePlus size={18} />
-        </button>
-      </div>
+        </button> */}
+      {/* </div> */}
 
-      {launchpad &&
-        <div className="
-          flex flex-col sm:flex-row gap-4
-        ">
-          <div className="
-            w-64 mx-auto
-          ">
-            <Launchpad
-              layout="programmer"
-              onPadUp={() => null}
-              onPadDown={() => null}
-            />
-          </div>
-          <div className="
-            flex flex-col gap-4
-          ">
-            <Input
-              labelName="Launchpad name"
-              placeholder={launchpad.name}
-              value={launchpad.name}
-              onChange={evt => {
-                const data_copy = { ...data };
-                data_copy.launchpads[launchpad.id].name = evt.target.value;
-                setData(data_copy);
-              }}
-            />
+      
 
-            <div>
-              <Select
-                placeholder="Select a page"
-                value={currentLaunchpadPageSelected}
-                onChange={handleLaunchpadPageSelection}
-              >
-                {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
-                  <option value={pageKey} key={pageKey}>
-                    {page.name}
-                  </option>
-                )}
-              </Select>
-
-              {page && (
-                <button
-                  className="
-                    px-4 py-2 rounded-lg
-                    text-gray-300 hover:text-pink-600
-                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                    border border-gray-900 hover:border-pink-600
-                  "
-                  onClick={removeLaunchpadPage}
-                >
-                  <HiOutlineTrash size={18} />
-                </button>
-              )}
-              <button
-                className="
-                  whitespace-nowrap px-4 py-2 rounded-lg
-                  text-gray-300
-                  hover:bg-blue-600
-                  bg-gray-900 bg-opacity-20
-                  border border-gray-900 hover:border-blue-600
-                  transition-all
-                "
-                onClick={addLaunchpadPage}
-              >
-                <HiOutlinePlus size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-
-      {launchpad && page && (
+      {/* {launchpad && page && (
         <div>
           <h3>Page {page.name} from {launchpad.name}</h3>
         </div>
-      )}
+      )} */}
         
       {/*
           Idea: 
@@ -277,3 +215,178 @@ Page:      [input:number=4]
     </div>
   );
 }
+
+
+const LaunchpadEditor = ({
+  launchpad,
+  currentLaunchpadPageSelected,
+  handleLaunchpadSelection,
+
+  addLaunchpad,
+  removeLaunchpad,
+
+  handleLaunchpadClick
+}: {
+  launchpad: ProjectData["launchpads"][number] & { id: number } | null,
+  currentLaunchpadPageSelected: number | undefined,
+  handleLaunchpadSelection: (evt: ChangeEvent<HTMLSelectElement>) => void,
+  
+  addLaunchpad: () => void,
+  removeLaunchpad: () => void,
+
+  handleLaunchpadClick: (pad_id: number) => void;
+})  => {
+  const log = logger("/:slug~LaunchpadEditor");
+  /** Debug. */ log.render();
+
+  const { data, setData } = useUnsavedProjectStore();
+  if (!data) return <p>Loading...</p>;
+
+  return (
+    <div className="
+      flex flex-col sm:flex-row gap-4 p-4
+      bg-gray-700 rounded-lg w-fit mx-auto
+    ">
+      <div className="
+        max-w-xs sm:w-60 md:w-64 m-auto flex flex-col gap-4
+      ">
+        <div className="
+          flex gap-2 justify-around
+        ">
+          <Select
+            value={launchpad?.id}
+            onChange={handleLaunchpadSelection}
+            placeholder="Select a launchpad"
+          >
+            {data.launchpads.map((launchpad, launchpadKey) =>
+              <option value={launchpadKey} key={launchpadKey}>
+                {launchpad.name}
+              </option>
+            )}
+          </Select>
+
+          <button
+            className="
+              whitespace-nowrap px-4 py-2 rounded-lg
+              text-gray-300
+              hover:bg-blue-600
+              bg-gray-900 bg-opacity-20
+              border border-gray-900 hover:border-blue-600
+              transition-all
+            "
+            onClick={addLaunchpad}
+          >
+            <HiOutlinePlus size={18} />
+          </button>
+        </div>
+
+        <Launchpad
+          layout="programmer"
+          onPadUp={() => null}
+          onPadDown={pad_id => handleLaunchpadClick(pad_id)}
+        />
+
+        <div className="
+          flex gap-2 justify-around
+        ">
+          {launchpad
+            ? (
+              <Fragment>
+                <Input
+                  placeholder={launchpad.name}
+                  value={launchpad.name}
+                  onChange={evt => {
+                    const data_copy = { ...data };
+                    data_copy.launchpads[launchpad.id].name = evt.target.value;
+                    setData(data_copy);
+                  }}
+                />
+
+                <button
+                  className="
+                  px-4 py-2 rounded-lg
+                  text-gray-300 hover:text-pink-600
+                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                  border border-gray-900 hover:border-pink-600
+                "
+                  onClick={removeLaunchpad}
+                >
+                  <HiOutlineTrash size={18} />
+                </button>
+              </Fragment>
+            )
+            : (
+              <p className="
+                text-gray-300
+                px-4 py-2 rounded-lg
+                bg-gray-900 bg-opacity-40
+              ">
+                No launchpad selected
+              </p>
+            )
+          }
+        </div>
+      </div>
+      {/* /* <div className="
+            flex flex-col gap-4 w-full
+          ">
+        <div className="
+              flex gap-2 justify-around mb-4
+            ">
+          <Select
+            placeholder="Select a page"
+            value={currentLaunchpadPageSelected}
+            onChange={handleLaunchpadPageSelection}
+          >
+            {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
+              <option value={pageKey} key={pageKey}>
+                {page.name}
+              </option>
+            )}
+          </Select>
+
+          {page && (
+            <button
+              className="
+                    px-4 py-2 rounded-lg
+                    text-gray-300 hover:text-pink-600
+                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                    border border-gray-900 hover:border-pink-600
+                  "
+              onClick={removeLaunchpadPage}
+            >
+              <HiOutlineTrash size={18} />
+            </button>
+          )}
+
+          <button
+            className="
+                  whitespace-nowrap px-4 py-2 rounded-lg
+                  text-gray-300
+                  hover:bg-blue-600
+                  bg-gray-900 bg-opacity-20
+                  border border-gray-900 hover:border-blue-600
+                  transition-all
+                "
+            onClick={addLaunchpadPage}
+          >
+            <HiOutlinePlus size={18} />
+          </button>
+        </div>
+        {page && (
+          <Input
+            labelName="Page name"
+            placeholder={page.name}
+            value={page.name}
+            onChange={evt => {
+              const data_copy = { ...data };
+              data_copy.launchpads[launchpad.id].pages[page.id].name = evt.target.value;
+              setData(data_copy);
+            }}
+          />
+        )} */}
+      {/* </div> */}
+    </div>
+  );
+
+};
