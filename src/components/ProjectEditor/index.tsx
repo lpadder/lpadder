@@ -35,29 +35,35 @@ export default function ProjectEditor () {
 
   const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | undefined>(initialLaunchpadId);
   const handleLaunchpadSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
-    // Reset the page selector.
-    setCurrentLaunchpadPageSelected(undefined);
-
     const index = evt.target.value;
     if (!index) {
+      setCurrentLaunchpadPageSelected(undefined);
       setCurrentLaunchpadSelected(undefined);
       return;
     }
+
+    const launchpad_index_selected = parseInt(index);
+    const launchpad_inital_page_index = (
+      data.launchpads[launchpad_index_selected].pages.length > 0
+    ) ? 0 : undefined;
     
-    setCurrentLaunchpadSelected(parseInt(index));
+    setCurrentLaunchpadSelected(launchpad_index_selected);
+    setCurrentLaunchpadPageSelected(launchpad_inital_page_index);
     setCurrentPadSelected(undefined);
   };
 
   const [currentLaunchpadPageSelected, setCurrentLaunchpadPageSelected] = useState<number | undefined>(initialLaunchpadPageId);
   const handleLaunchpadPageSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
+    setCurrentPadSelected(undefined);
+
     const index = evt.target.value;
     if (!index) {
       setCurrentLaunchpadPageSelected(undefined);
       return;
     }
 
-    setCurrentLaunchpadPageSelected(parseInt(index));
-    setCurrentPadSelected(undefined);
+    const launchpad_page_index_selected = parseInt(index);
+    setCurrentLaunchpadPageSelected(launchpad_page_index_selected);
   };
 
   /** Add a new launchpad in the project. */

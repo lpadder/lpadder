@@ -65,12 +65,6 @@ export default function ProjectOverview () {
       console.info("✔️ Finished load of", projectSlug, "project.");
       console.groupEnd();
     })();
-
-    return () => {
-      log.effectGroup("[ProjectOverview][useEffect] Cleaning up.");
-
-      console.groupEnd();
-    };
   }, [projectSlug]);
 
   // Show a loader while loading data and metadata.
