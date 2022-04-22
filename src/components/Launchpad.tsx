@@ -64,71 +64,56 @@ function LaunchpadRaw ({
         >
           {rows.map(padId => (
             <div
-              data-note={padId}
               key={padId}
+              data-note={padId}
               id={launchpadId ? getPadElementId(padId, launchpadId) : undefined}
-              onContextMenu={(event) => {
-                // We prevent the context menu.
+              
+              onContextMenu={event => {
                 event.preventDefault();
 
                 // Execute the custom behaviour if it exists.
                 if (!onContextMenu) return;
                 return onContextMenu(padId, event, launchpadId);
               }}
-              onTouchStart={(event) => {
-                // By stopping propagation, we suppress
-                // the 'onMouseDown' event.
-                event.stopPropagation();
 
-                /** Debug. */ console.info(
-                  "[Launchpad][onTouchStart] (DOWN ↓): Pad", padId,
-                  "from Launchpad", launchpadId + "."
-                );
+              onTouchStart={down_event => {
+                /**
+                 * By stopping propagation, we suppress
+                 * the `onMouseDown` event.
+                 */
+                down_event.stopPropagation();
 
                 // We save the target pad HTML element.
-                const padElement = event.currentTarget;
+                const pad = down_event.currentTarget;
 
                 const handleTouchEnd = (up_event: TouchEvent) => {
                   up_event.preventDefault();
 
-                  /** Debug. */ console.info(
-                    "[Launchpad][handleTouchEnd] (UP ↑): Pad", padId,
-                    "from Launchpad", launchpadId + "."
-                  );
-
-                  onPadUp(padId, padElement, launchpadId);
+                  onPadUp(padId, pad, launchpadId);
                   document.removeEventListener("touchend", handleTouchEnd);
                 };
 
-                onPadDown(padId, padElement, launchpadId);
+                onPadDown(padId, pad, launchpadId);
                 document.addEventListener("touchend", handleTouchEnd);
               }}
-              onMouseDown={(event) => {
-                if (event.button === 2) return;
-
-                /** Debug. */ console.info(
-                  "[Launchpad][onMouseDown] (DOWN ↓): Pad", padId,
-                  "from Launchpad", launchpadId + "."
-                );
+              
+              onMouseDown={down_event => {
+                if (down_event.button === 2) return;
 
                 // We save the target pad HTML element.
-                const padElement = event.currentTarget;
+                const pad = down_event.currentTarget;
 
                 const handleMouseUp = (up_event: MouseEvent) => {
                   if (up_event.button === 2) return;
 
-                  /** Debug. */ console.info(
-                    "[Launchpad][handleMouseUp] (UP ↑): Pad", padId,
-                    "from Launchpad", launchpadId + "."
-                  );
-
-                  onPadUp(padId, padElement, launchpadId);
+                  onPadUp(padId, pad, launchpadId);
                   document.removeEventListener("mouseup", handleMouseUp);
                 };
 
-                onPadDown(padId, padElement, launchpadId);
+                onPadDown(padId, pad, launchpadId);
                 document.addEventListener("mouseup", handleMouseUp);
               }}
+
               className="w-full bg-gray-400 rounded-sm select-none aspect-square"
             />
           ))}
