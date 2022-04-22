@@ -1,3 +1,10 @@
+export interface ProjectDataSample {
+  /** Optionnal friendly name for this sample - because why not ?-? */
+  name?: string;
+
+  // TODO: Metadatas for the sample (audio and lightshow).
+}
+
 export interface ProjectData {
   /** Data used for launchpads handling. */
   launchpads: {
@@ -10,14 +17,8 @@ export interface ProjectData {
 
       /** Samples of the page. */
       samples: {
-        /** Optionnal friendly name for this sample - because why not ?-? */
-        name?: string;
-
-        /** Pad ID in **PROGRAMMER** layout. */
-        pad_id: number;
-
-        // TODO: Metadatas for the sample (audio and lightshow).
-      }[];
+        [pad_id: number]: ProjectDataSample;
+      }
     }[];
   }[];
 

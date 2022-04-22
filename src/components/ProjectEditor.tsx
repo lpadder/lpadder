@@ -1,11 +1,14 @@
-import type { ProjectData } from "@/types/Project";
+import type {
+  ProjectData,
+  ProjectDataSample
+} from "@/types/Project";
 
 import {
-  ChangeEvent, Fragment
-} from "react";
-
-import {
-  useState
+  ChangeEvent,
+  Fragment,
+  useState,
+  useEffect,
+  useRef
 } from "react";
 
 import logger from "@/utils/logger";
@@ -18,7 +21,7 @@ import Launchpad from "./Launchpad";
 import Select from "./Select";
 import Input from "./Input";
 
-import { HiOutlinePlus, HiOutlineTrash } from "react-icons/hi";
+import { HiArrowDown, HiArrowUp, HiOutlinePlus, HiOutlineTrash } from "react-icons/hi";
 
 export default function ProjectEditor () {
   const log = logger("/:slug~ProjectEditor");
@@ -28,7 +31,17 @@ export default function ProjectEditor () {
   if (!data) return <p>Loading...</p>;
 
   /** Index of the current used launchpad. */
-  const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | undefined>(data.launchpads.length > 0 ? 0 : undefined);
+  const initialLaunchpadId = (
+    data.launchpads.length > 0
+  ) ? 0 : undefined;
+
+  /** Index of the current page used in current launchpad. */
+  const initialLaunchpadPageId = (
+    data.launchpads.length > 0
+    && (data.launchpads[0].pages.length > 0)
+  ) ? 0 : undefined;
+
+  const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | undefined>(initialLaunchpadId);
   const handleLaunchpadSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
     // Reset the page selector.
     setCurrentLaunchpadPageSelected(undefined);
@@ -40,10 +53,10 @@ export default function ProjectEditor () {
     }
     
     setCurrentLaunchpadSelected(parseInt(index));
+    setCurrentPadSelected(undefined);
   };
-  
-  /** Index of the current page used in current launchpad. */
-  const [currentLaunchpadPageSelected, setCurrentLaunchpadPageSelected] = useState<number | undefined>(currentLaunchpadSelected && data.launchpads[currentLaunchpadSelected].pages.length > 0 ? 0 : undefined);
+
+  const [currentLaunchpadPageSelected, setCurrentLaunchpadPageSelected] = useState<number | undefined>(initialLaunchpadPageId);
   const handleLaunchpadPageSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
     const index = evt.target.value;
     if (!index) {
@@ -52,6 +65,7 @@ export default function ProjectEditor () {
     }
 
     setCurrentLaunchpadPageSelected(parseInt(index));
+    setCurrentPadSelected(undefined);
   };
 
   /** Add a new launchpad in the project. */
@@ -64,6 +78,7 @@ export default function ProjectEditor () {
     
     setData(data_copy);
     setCurrentLaunchpadPageSelected(undefined);
+    setCurrentPadSelected(undefined);
     setCurrentLaunchpadSelected(index);
   };
 
@@ -87,6 +102,7 @@ export default function ProjectEditor () {
       : data_copy.launchpads.length > 0 ? 0 : undefined; 
 
     setData(data_copy);
+    setCurrentPadSelected(undefined);
     setCurrentLaunchpadSelected(launchpad_to_use);
   };
 
@@ -99,7 +115,9 @@ export default function ProjectEditor () {
     const index = data_copy.launchpads[currentLaunchpadSelected].pages.length;
     const name = `Page ${index}`;
     data_copy.launchpads[currentLaunchpadSelected].pages.push({ name, samples: [] });
+    
     setData(data_copy);
+    setCurrentPadSelected(undefined);
     setCurrentLaunchpadPageSelected(index);
   };
 
@@ -123,10 +141,17 @@ export default function ProjectEditor () {
       : data_copy.launchpads[currentLaunchpadSelected].pages.length > 0 ? 0 : undefined; 
 
     setData(data_copy);
+    setCurrentPadSelected(undefined);
     setCurrentLaunchpadPageSelected(page_to_use);
   };
 
-  
+  const [currentPadSelected, setCurrentPadSelected] = useState<number | undefined>(undefined);
+  const handleLaunchpadClick = (pad_id: number) => {
+    if (!page || !launchpad) return;
+
+    console.log("Moving to", pad_id);
+    setCurrentPadSelected(pad_id);
+  };
 
   // Short-hands for the current launchpad and page.
   // We append the current index in the objects to avoid
@@ -141,103 +166,84 @@ export default function ProjectEditor () {
     id: currentLaunchpadPageSelected
   } : null;
 
-  const handleLaunchpadClick = (pad_id: number) => {
-    console.log("LP Click", launchpad, page, pad_id);
-  };
+  const sample = (launchpad && page && typeof currentPadSelected !== "undefined") ? {
+    ...page.samples[currentPadSelected],
+    id: currentPadSelected
+  } : null;
 
   return (
     <div>
-      <LaunchpadEditor
-        currentLaunchpadPageSelected={currentLaunchpadPageSelected}
-        handleLaunchpadSelection={handleLaunchpadSelection}
-        launchpad={launchpad}
+      <div className="flex flex-row flex-wrap gap-4">
+        <LaunchpadEditor
+          handleLaunchpadSelection={handleLaunchpadSelection}
+          launchpad={launchpad}
+          sample={sample}
 
-        addLaunchpad={addLaunchpad}
-        removeLaunchpad={removeLaunchpad}
+          addLaunchpad={addLaunchpad}
+          removeLaunchpad={removeLaunchpad}
 
-        handleLaunchpadClick={handleLaunchpadClick}
-      />
+          handleLaunchpadClick={handleLaunchpadClick}
+        />
 
-      {/* <div className="
-          flex gap-2 justify-around mb-4
-        "> */}
-      {/* <Select
-          value={currentLaunchpadSelected}
-          onChange={handleLaunchpadSelection}
-          placeholder="Select a launchpad"
-        >
-          {data.launchpads.map((launchpad, launchpadKey) =>
-            <option value={launchpadKey} key={launchpadKey}>
-              {launchpad.name}
-            </option>
-          )}
-        </Select>
-        <button
-          className="
-              whitespace-nowrap px-4 py-2 rounded-lg
-              text-gray-300
-              hover:bg-blue-600
-              bg-gray-900 bg-opacity-20
-              border border-gray-900 hover:border-blue-600
-              transition-all
-            "
-          onClick={addLaunchpad}
-        >
-          <HiOutlinePlus size={18} />
-        </button> */}
-      {/* </div> */}
+        {launchpad && (
+          <LaunchpadPageEditor
+            handleLaunchpadPageSelection={handleLaunchpadPageSelection}
+            launchpad={launchpad}
+            page={page}
+  
+            addLaunchpadPage={addLaunchpadPage}
+            removeLaunchpadPage={removeLaunchpadPage}
+          />
+        )}
+      </div>
 
-      
-
-      {/* {launchpad && page && (
-        <div>
-          <h3>Page {page.name} from {launchpad.name}</h3>
-        </div>
-      )} */}
-        
-      {/*
-          Idea: 
-Launchpad: [input:number=1]
-Page:      [input:number=4] 
-
-(launchpad-(id) from page (page))
-=> when clicking on buttons it shows the details about it
-
-(if(button_clicked)
-  (button (id) detail)
-  triggers: nothing
-  | triggers: { sample: wave_id }
-
-  if (triggers.sample)
-    (waveform with highlighted part)
-)
-        */}
+      {sample && (
+        <PadEditor
+          sample={sample}
+        />
+      )}
     </div>
   );
 }
 
-
 const LaunchpadEditor = ({
-  launchpad,
-  currentLaunchpadPageSelected,
   handleLaunchpadSelection,
+  launchpad,
+  sample,
 
   addLaunchpad,
   removeLaunchpad,
 
   handleLaunchpadClick
 }: {
-  launchpad: ProjectData["launchpads"][number] & { id: number } | null,
-  currentLaunchpadPageSelected: number | undefined,
   handleLaunchpadSelection: (evt: ChangeEvent<HTMLSelectElement>) => void,
-  
+  launchpad: ProjectData["launchpads"][number] & { id: number } | null,
+  sample: ProjectDataSample & { id: number } | null,
+
   addLaunchpad: () => void,
   removeLaunchpad: () => void,
 
   handleLaunchpadClick: (pad_id: number) => void;
 })  => {
+  const launchpadRef = useRef<HTMLDivElement>(null);
+
   const log = logger("/:slug~LaunchpadEditor");
   /** Debug. */ log.render();
+
+  useEffect(() => {
+    if (!sample) return;
+    if (!launchpadRef.current) return;
+    const launchpad = launchpadRef.current;
+
+    const pad_id = sample.id;
+    const pad = launchpad.querySelector(`[data-note="${pad_id}"]`);
+    if (!pad) return;
+
+    pad.classList.add("bg-blue-600");
+    return () => {
+      pad.classList.remove("bg-blue-600");
+    };
+  }, [sample]);
 
   const { data, setData } = useUnsavedProjectStore();
   if (!data) return <p>Loading...</p>;
@@ -271,7 +277,7 @@ const LaunchpadEditor = ({
               text-gray-300
               hover:bg-blue-600
               bg-gray-900 bg-opacity-20
-              border border-gray-900 hover:border-blue-600
+              border border-gray-900 hover:border-blue-500
               transition-all
             "
             onClick={addLaunchpad}
@@ -280,11 +286,14 @@ const LaunchpadEditor = ({
           </button>
         </div>
 
-        <Launchpad
-          layout="programmer"
-          onPadUp={() => null}
-          onPadDown={pad_id => handleLaunchpadClick(pad_id)}
-        />
+        {launchpad && (
+          <Launchpad
+            ref={launchpadRef}
+            layout="programmer"
+            onPadUp={() => null}
+            onPadDown={pad_id => handleLaunchpadClick(pad_id)}
+          />
+        )}
 
         <div className="
           flex gap-2 justify-around
@@ -327,55 +336,128 @@ const LaunchpadEditor = ({
           }
         </div>
       </div>
-      {/* /* <div className="
-            flex flex-col gap-4 w-full
-          ">
+    </div>
+  );
+
+};
+
+const LaunchpadPageEditor = ({
+  page,
+  launchpad,
+  handleLaunchpadPageSelection,
+
+  addLaunchpadPage,
+  removeLaunchpadPage,
+}: {
+  page: ProjectData["launchpads"][number]["pages"][number] & { id: number } | null,
+  launchpad: ProjectData["launchpads"][number] & { id: number },
+  handleLaunchpadPageSelection: (evt: ChangeEvent<HTMLSelectElement>) => void,
+
+  addLaunchpadPage: () => void,
+  removeLaunchpadPage: () => void
+}) => {
+  const log = logger("/:slug~LaunchpadPageEditor");
+  /** Debug. */ log.render();
+
+  const { data, setData } = useUnsavedProjectStore();
+  if (!data) return <p>Loading...</p>;
+
+  return (
+    <div className="
+      flex flex-col sm:flex-row gap-4 p-4
+      bg-gray-700 rounded-lg w-fit mx-auto
+    ">
+      <div className="
+        h-full max-w-xs sm:w-60 md:w-64 m-auto flex flex-col gap-4
+      ">
         <div className="
-              flex gap-2 justify-around mb-4
-            ">
+          flex gap-2
+        ">
           <Select
-            placeholder="Select a page"
-            value={currentLaunchpadPageSelected}
+            value={page?.id}
             onChange={handleLaunchpadPageSelection}
+            placeholder="Select a page"
           >
-            {data.launchpads[launchpad.id].pages.map((page, pageKey) =>
+            {launchpad?.pages.map((page, pageKey) =>
               <option value={pageKey} key={pageKey}>
                 {page.name}
               </option>
             )}
           </Select>
 
-          {page && (
-            <button
-              className="
-                    px-4 py-2 rounded-lg
-                    text-gray-300 hover:text-pink-600
-                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                    border border-gray-900 hover:border-pink-600
-                  "
-              onClick={removeLaunchpadPage}
-            >
-              <HiOutlineTrash size={18} />
-            </button>
-          )}
-
           <button
             className="
-                  whitespace-nowrap px-4 py-2 rounded-lg
-                  text-gray-300
-                  hover:bg-blue-600
-                  bg-gray-900 bg-opacity-20
-                  border border-gray-900 hover:border-blue-600
-                  transition-all
-                "
+              whitespace-nowrap px-4 py-2 rounded-lg
+              text-gray-300
+              hover:bg-blue-600
+              bg-gray-900 bg-opacity-20
+              border border-gray-900 hover:border-blue-600
+              transition-all
+            "
             onClick={addLaunchpadPage}
           >
             <HiOutlinePlus size={18} />
           </button>
         </div>
+
+        <div className="
+          flex gap-2 justify-around
+        ">
+          {page
+            ? (
+              <Fragment>
+                <button
+                  className="
+                  px-4 py-2 rounded-lg w-full flex justify-center
+                  text-gray-300 hover:text-blue-600
+                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                  border border-gray-900 hover:border-blue-600
+                "
+                  // onClick={removeLaunchpadPage}
+                >
+                  <HiArrowUp size={18} />
+                </button>
+
+                <button
+                  className="
+                  px-4 py-2 rounded-lg w-full flex justify-center
+                  text-gray-300 hover:text-pink-600
+                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                  border border-gray-900 hover:border-pink-600
+                "
+                  onClick={removeLaunchpadPage}
+                >
+                  <HiOutlineTrash size={18} />
+                </button>
+                <button
+                  className="
+                  px-4 py-2 rounded-lg w-full flex justify-center
+                  text-gray-300 hover:text-blue-600
+                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                  border border-gray-900 hover:border-blue-600
+                "
+                  // onClick={removeLaunchpadPage}
+                >
+                  <HiArrowDown size={18} />
+                </button>
+              </Fragment>
+            )
+            : (
+              <p className="
+                text-gray-300
+                px-4 py-2 rounded-lg
+                bg-gray-900 bg-opacity-40
+                h-fit my-auto
+              ">
+                No page selected
+              </p>
+            )
+          }
+        </div>
+
+
         {page && (
           <Input
-            labelName="Page name"
             placeholder={page.name}
             value={page.name}
             onChange={evt => {
@@ -384,9 +466,19 @@ const LaunchpadEditor = ({
               setData(data_copy);
             }}
           />
-        )} */}
-      {/* </div> */}
+        )}
+      </div>
     </div>
   );
+};
 
+const PadEditor = ({ sample }: { sample: ProjectDataSample & { id: number } }) => {
+
+  return (
+    <div>
+      <p>
+        Viewing sample from note {sample.id}
+      </p>
+    </div>
+  );
 };
