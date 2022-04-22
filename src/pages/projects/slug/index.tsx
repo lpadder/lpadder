@@ -16,6 +16,7 @@ import shallow from "zustand/shallow";
 // Components.
 import ProjectPlay from "@/components/ProjectPlay";
 import ProjectEditor from "@/components/ProjectEditor";
+import ProjectSampler from "@/components/ProjectSampler";
 
 export default function ProjectOverview () {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ export default function ProjectOverview () {
   return (
     <div className="p-4">
       <ProjectPlay />
+      <ProjectSampler />
       <ProjectEditor />
     </div>
   );

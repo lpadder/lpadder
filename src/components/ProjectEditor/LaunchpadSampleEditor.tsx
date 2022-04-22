@@ -27,12 +27,13 @@ export default function LaunchpadSampleEditor ({
 
   return (
     <div className="
-      w-full p-6 rounded-lg
+      w-full p-6 rounded-lg mb-8
 
-      bg-gray-700
+      bg-gray-700 max-w-md mx-auto
     ">
       <h4 className="
         font-medium text-xl text-center
+        mb-4
       ">
         Note {sample.id}
       </h4>
@@ -42,7 +43,7 @@ export default function LaunchpadSampleEditor ({
         </div>
       ) 
         : (
-          <div>
+          <div className="flex justify-center">
             <Button
               onClick={assignSampleToPad}
             >

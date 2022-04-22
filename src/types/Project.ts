@@ -33,8 +33,7 @@ export interface ProjectData {
       /** Used as a filter. */
       type:
         | "audio"
-        | "midi-json" // MIDI file rearanged to JSON.
-        | "midi-raw" // Raw `.mid` file.
+        | "light"
     }
   }
 }
