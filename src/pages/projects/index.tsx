@@ -25,6 +25,10 @@ import {
   useCurrentProjectStore
 } from "@/stores/current_project";
 
+import {
+  storedProjectsData
+} from "@/stores/projects_data";
+
 import { useModalsStore } from "@/stores/modals";
 import shallow from "zustand/shallow";
 import logger from "@/utils/logger";
@@ -133,8 +137,9 @@ export default function Projects () {
             {
               name: "Delete",
               action: async () => {
-                const wasRemoved = await storedProjectsMetadata.deleteProjectMetadata(slug);
-                if (!wasRemoved) return;
+                const wasRemovedFromMetadata = await storedProjectsMetadata.deleteProjectMetadata(slug);
+                const wasRemovedFromData = await storedProjectsData.deleteProjectData(slug);
+                if (!wasRemovedFromMetadata || !wasRemovedFromData) return;
 
                 const localProjectsUpdated = [ ...localProjectsMetadata as ProjectLoadedMetadata[] ];
                 setLocalProjectsMetadata([
