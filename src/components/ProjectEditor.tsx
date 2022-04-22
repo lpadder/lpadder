@@ -187,6 +187,7 @@ export default function ProjectEditor () {
 
         {launchpad && (
           <LaunchpadPageEditor
+            setCurrentLaunchpadPageSelected={setCurrentLaunchpadPageSelected}
             handleLaunchpadPageSelection={handleLaunchpadPageSelection}
             launchpad={launchpad}
             page={page}
@@ -338,19 +339,20 @@ const LaunchpadEditor = ({
       </div>
     </div>
   );
-
 };
 
 const LaunchpadPageEditor = ({
   page,
   launchpad,
   handleLaunchpadPageSelection,
+  setCurrentLaunchpadPageSelected,
 
   addLaunchpadPage,
   removeLaunchpadPage,
 }: {
   page: ProjectData["launchpads"][number]["pages"][number] & { id: number } | null,
   launchpad: ProjectData["launchpads"][number] & { id: number },
+  setCurrentLaunchpadPageSelected: (id: number) => void,
   handleLaunchpadPageSelection: (evt: ChangeEvent<HTMLSelectElement>) => void,
 
   addLaunchpadPage: () => void,
@@ -361,6 +363,47 @@ const LaunchpadPageEditor = ({
 
   const { data, setData } = useUnsavedProjectStore();
   if (!data) return <p>Loading...</p>;
+
+  /** Remove 1 to the page index.  */
+  const upLaunchpadPage = () => {
+    if (!page) return;
+    const data_copy = { ...data };
+    const launchpad_copy = { ...data_copy.launchpads[launchpad.id] };
+    const pages_copy = [...launchpad_copy.pages];
+    const page_copy = { ...pages_copy[page.id] };
+    const page_id = page.id;
+
+    if (page_id === 0) return;
+
+    pages_copy[page_id] = pages_copy[page_id - 1];
+    pages_copy[page_id - 1] = page_copy;
+
+    launchpad_copy.pages = pages_copy;
+    data_copy.launchpads[launchpad.id] = launchpad_copy;
+    setData(data_copy);
+
+    setCurrentLaunchpadPageSelected(page_id - 1);
+  };
+
+  const downLaunchpadPage = () => {
+    if (!page) return;
+    const data_copy = { ...data };
+    const launchpad_copy = { ...data_copy.launchpads[launchpad.id] };
+    const pages_copy = [...launchpad_copy.pages];
+    const page_copy = { ...pages_copy[page.id] };
+    const page_id = page.id;
+
+    if (page_id === pages_copy.length - 1) return;
+
+    pages_copy[page_id] = pages_copy[page_id + 1];
+    pages_copy[page_id + 1] = page_copy;
+
+    launchpad_copy.pages = pages_copy;
+    data_copy.launchpads[launchpad.id] = launchpad_copy;
+    setData(data_copy);
+
+    setCurrentLaunchpadPageSelected(page_id + 1);
+  };
 
   return (
     <div className="
@@ -406,17 +449,19 @@ const LaunchpadPageEditor = ({
           {page
             ? (
               <Fragment>
-                <button
-                  className="
-                  px-4 py-2 rounded-lg w-full flex justify-center
-                  text-gray-300 hover:text-blue-600
-                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                  border border-gray-900 hover:border-blue-600
-                "
-                  // onClick={removeLaunchpadPage}
-                >
-                  <HiArrowUp size={18} />
-                </button>
+                {page.id !== 0 && (
+                  <button
+                    className="
+                    px-4 py-2 rounded-lg w-full flex justify-center
+                    text-gray-300 hover:text-blue-600
+                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                    border border-gray-900 hover:border-blue-600
+                  "
+                    onClick={upLaunchpadPage}
+                  >
+                    <HiArrowUp size={18} />
+                  </button>
+                )}
 
                 <button
                   className="
@@ -429,17 +474,20 @@ const LaunchpadPageEditor = ({
                 >
                   <HiOutlineTrash size={18} />
                 </button>
-                <button
-                  className="
-                  px-4 py-2 rounded-lg w-full flex justify-center
-                  text-gray-300 hover:text-blue-600
-                  bg-gray-900 bg-opacity-20 hover:bg-opacity-60
-                  border border-gray-900 hover:border-blue-600
-                "
-                  // onClick={removeLaunchpadPage}
-                >
-                  <HiArrowDown size={18} />
-                </button>
+
+                {page.id !== (launchpad.pages.length - 1) && (
+                  <button
+                    className="
+                    px-4 py-2 rounded-lg w-full flex justify-center
+                    text-gray-300 hover:text-blue-600
+                    bg-gray-900 bg-opacity-20 hover:bg-opacity-60
+                    border border-gray-900 hover:border-blue-600
+                  "
+                    onClick={downLaunchpadPage}
+                  >
+                    <HiArrowDown size={18} />
+                  </button>
+                )}
               </Fragment>
             )
             : (
