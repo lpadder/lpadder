@@ -147,7 +147,7 @@ export default function ProjectSampler () {
       bg-gray-700
     ">
       <div className="
-        px-4 flex justify-between mb-4
+        px-8 flex justify-between items-center mb-4 
       ">
         <h3 className="font-medium text-lg">
           Sampler
@@ -174,6 +174,7 @@ export default function ProjectSampler () {
               });
             }}
           />
+
           <FileInput
             label="Import"
             accept="audio/*"
@@ -182,7 +183,6 @@ export default function ProjectSampler () {
           />
         </div>
       </div>
-
 
       <div className="px-6">
         <div className="flex gap-2 justify-around">
@@ -212,7 +212,7 @@ export default function ProjectSampler () {
 
           {selectedAudioFile && (
             <Button
-              className="hover:text-pink-600 hover:border-pink-600 w-full"
+              className="hover:text-pink-600 hover:border-pink-600"
               title="Remove the current audio file"
               onClick={removeCurrentAudioFile}
             >
