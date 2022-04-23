@@ -32,11 +32,11 @@ export default function AudioWave ({
    * we update the waveform.
    */
   useEffect(() => {
+    if (!file) return;
     if (!waveSurferRef.current) return;
 
     const blob = new Blob([file.data], { type: file.type });
     waveSurferRef.current.loadBlob(blob);
-    console.info("Create new wave.");
   }, [file]);
 
   return (
