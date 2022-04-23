@@ -12,7 +12,6 @@ import Select from "../Select";
 
 import { useCurrentProjectStore } from "@/stores/current_project";
 import { useUnsavedProjectStore } from "@/stores/unsaved_project";
-import { storedProjectsData } from "@/stores/projects_data";
 
 import Button from "../Button";
 import { HiOutlineTrash } from "react-icons/hi";
