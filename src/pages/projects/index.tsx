@@ -113,6 +113,10 @@ export default function Projects () {
       // and navigate to its page to load it.
       project.setSlug(slug);
       navigate(slug);
+
+      // Close the projects' menu.
+      toggleProjectsMenu();
+
       console.info("[handleProjectUpdate] Project slug updated and navigated to route.");
     };
   
