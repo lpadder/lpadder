@@ -1,20 +1,27 @@
 import type { ProjectData } from "@/types/Project";
-import type { ChangeEvent } from "react";
-
+import type { ChangeEvent } from "react"
+;
 import logger from "@/utils/logger";
 import { useEffect } from "react";
 import create from "zustand";
 
+// Components
 import FileInput from "@/components/FileInput";
+import Select from "@/components/Select";
+import Button from "@/components/Button";
 import Input from "@/components/Input";
 import AudioWave from "./AudioWave";
-import Select from "../Select";
 
+import { Region } from "wavesurfer-react";
+
+// Stores
 import { useCurrentProjectStore } from "@/stores/current_project";
 import { useUnsavedProjectStore } from "@/stores/unsaved_project";
 
-import Button from "../Button";
-import { HiOutlineTrash } from "react-icons/hi";
+// Icons
+import {
+  HiOutlineTrash
+} from "react-icons/hi";
 
 export const useProjectSamplerData = create<{
   /** Path of the file. */
@@ -185,7 +192,7 @@ export default function ProjectSampler () {
       </div>
 
       <div className="px-6">
-        <div className="flex gap-2 justify-around">
+        <div className="flex gap-2 justify-around mb-4">
           <Select
             placeholder="Select an audio file"
             title="Select an audio file"
@@ -222,11 +229,29 @@ export default function ProjectSampler () {
         </div>
 
         {selectedAudioFile && (
-          <AudioWave
-            file={data.files[selectedAudioFile]}
-          >
-            {/** TODO: Write here the grid for tempo, markers, and all the stuff. */}
-          </AudioWave>
+          <div className="bg-gray-900 p-4 rounded-md">
+            <AudioWave
+              file={data.files[selectedAudioFile]}
+              onSeek={time => {
+                console.log(time);
+              }}
+            >
+              <Region
+                onOver={(e) => {
+                  console.info("Region onOver", e);
+                }}
+
+                start={0}
+                end={6}
+                drag={true}
+                resize={true}
+
+                color="#00000050"
+              
+              />
+
+            </AudioWave>
+          </div>
         )}
       </div>
     </div>

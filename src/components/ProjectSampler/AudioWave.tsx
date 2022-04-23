@@ -4,15 +4,34 @@ import type WaveSuferType from "wavesurfer.js";
 import { useRef, useEffect } from "react";
 
 import { WaveSurfer, WaveForm } from "wavesurfer-react";
+import RegionsPlugin from "wavesurfer.js/src/plugin/regions";
+
+const waveSurferPlugins = [
+  {
+    plugin: RegionsPlugin,
+    options: {
+      dragSelection: true
+    }
+  }
+];
 
 interface AudioWaveProps {
   children: React.ReactNode;
   file: ProjectData["files"][string];
+
+  /**
+   * @param time - New position in seconds. 
+   * @param position - New position of the cursor in [0..1] format.
+   * @param duration - Duration in seconds.
+  */
+  onSeek: (time: number, position: number, duration: number) => void;
 }
 
 export default function AudioWave ({
   children,
-  file
+  file,
+
+  onSeek
 }: AudioWaveProps) {
   const waveSurferRef = useRef<WaveSuferType>();
 
@@ -21,6 +40,17 @@ export default function AudioWave ({
    * React's StrictMode.
    */
   useEffect(() => {
+    if (!waveSurferRef.current) return;
+    const wave = waveSurferRef.current;
+
+    // Subscribe to events.
+    wave.on("seek", (position: number) => {
+      const duration = wave.getDuration();
+      const time = position * duration;
+
+      return onSeek(time, position, duration);
+    });
+
     return () => {
       if (!waveSurferRef.current) return;
       waveSurferRef.current.destroy();
@@ -40,10 +70,13 @@ export default function AudioWave ({
   }, [file]);
 
   return (
-    <WaveSurfer onMount={(waveSurfer: WaveSuferType) => {
-      // Storing the WaveSurfer instance into ref.
-      waveSurferRef.current = waveSurfer;
-    }}>
+    <WaveSurfer
+      plugins={waveSurferPlugins}
+      onMount={(waveSurfer: WaveSuferType) => {
+        // Storing the WaveSurfer instance into ref.
+        waveSurferRef.current = waveSurfer;
+      }}
+    >
       <WaveForm
         id="waveform"
         hideCursor
