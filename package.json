@@ -57,7 +57,8 @@
   "license": "MIT",
   "release-it": {
     "git": {
-      "commitMessage": "Release v${version}",
+      "commitMessage": "chore: release v${version}",
+      "tagAnnotation": "Release v${version}",
       "tagName": "v${version}"
     },
     "github": {
