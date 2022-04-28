@@ -17,3 +17,8 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #182234;
 }
+
+/** Remove blue highlight on mobile. */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}

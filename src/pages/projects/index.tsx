@@ -37,7 +37,7 @@ import logger from "@/utils/logger";
 import { HiShare, HiOutlineDotsVertical } from "react-icons/hi";
 import { IoMdMenu, IoMdSave, IoMdHome } from "react-icons/io";
 
-export default function Projects () {
+function Projects () {
   const projectMenuRef = useRef<HTMLDivElement | null>(null);
   const projectSaveButtonRef = useRef<HTMLButtonElement | null>(null);
   const menuBarComponentsRef = useRef<HTMLUListElement | null>(null);
@@ -539,3 +539,6 @@ const NoCoverSelectedPage = () => {
     </main>
   );
 };
+
+Projects.whyDidYouRender = true;
+export default Projects;
