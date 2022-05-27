@@ -16,22 +16,21 @@ export default defineConfig({
         "favicon.ico",
         "apple-touch-icon.png"
       ],
+      
       workbox: {
         globPatterns: [
           "**/*.{js,css,html,svg,png,woff,woff2}"
         ]
       },
+
       manifest: {
-        // Global informations.
         name: "lpadder.",
         short_name: "lpadder.",
         description: "Web application that lets you play Launchpad covers directly from your browser.",
 
-        // Colors from Tailwind's color palette.
-        background_color: "#1E293B", // blueGray-800
-        theme_color: "#0F172A", // blueGray-900
+        background_color: "#1E293B", // slate.800
+        theme_color: "#0F172A", // slate.900
 
-        // Icons.
         icons: [
           {
             src: "icon-default.png",
@@ -59,16 +58,20 @@ export default defineConfig({
       }
     })
   ],
+  
   define: {
     APP_VERSION: JSON.stringify(process.env.npm_package_version)
   },
+  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src")
     }
   },
+
   server: {
     strictPort: true,
+    
     hmr: {
       clientPort: CLIENT_PORT
     }

@@ -62,13 +62,13 @@ You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types
 
 This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org) and [TypeScript](https://www.typescriptlang.org). Deployment is made with [Vercel](https://vercel.com).
 
-- `yarn dev`: Starts the Vite development server on port 3000.
+- `pnpm dev`: Starts the Vite development server on port 3000.
   - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
-- `yarn build`: Builds the app into `dist` directory.
-- `yarn serve`: Serves the builded app under `dist`.
-- `yarn lint`: Only runs `eslint`. Useful when used with `--fix`.
-- `yarn run check`: Runs `eslint` and `tsc` to check for errors.
-- `yarn release`: Runs `yarn run check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
+- `pnpm build`: Builds the app into `dist` directory.
+- `pnpm serve`: Serves the builded app under `dist`.
+- `pnpm lint`: Only runs `eslint`. You can fix errors by running `pnpm lint --fix`.
+- `pnpm check`: Runs `eslint` and `tsc` to check for errors.
+- `pnpm release`: Runs `pnpm check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
 
 ### Resources and credits

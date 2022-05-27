@@ -1,11 +1,13 @@
 {
   "version": 2,
   "public": false,
+  
   "github": {
     "enabled": false,
     "silent": true
-  }, 
-  "rewrites":  [
+  },
+
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/"

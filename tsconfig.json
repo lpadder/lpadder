@@ -20,6 +20,7 @@
       "@/*": ["./*"]
     },
     "types": [
+      "vite/client",
       "vite-plugin-pwa/client",
       "./node_modules/user-agent-data-types"
     ]
