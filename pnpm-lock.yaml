@@ -30,6 +30,7 @@ specifiers:
   vite-plugin-solid: ^2.2.6
   wavesurfer.js: ^6.1.0
   webmidi: ^3.0.19
+  workbox-window: ^6.5.3
 
 dependencies:
   '@fontsource/poppins': 4.5.8
@@ -63,6 +64,7 @@ devDependencies:
   vite: 2.9.9
   vite-plugin-pwa: 0.11.13_vite@2.9.9
   vite-plugin-solid: 2.2.6
+  workbox-window: 6.5.3
 
 packages:
 
