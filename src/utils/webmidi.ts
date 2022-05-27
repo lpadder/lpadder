@@ -2,13 +2,15 @@ import type { NoteMessageEvent, ControlChangeMessageEvent } from "webmidi";
 import type { InputsData, OutputsData } from "@/stores/webmidi";
 
 import { WebMidi, Input } from "webmidi";
-import { useWebMidiStore } from "@/stores/webmidi";
+import { setWebMidiStore } from "@/stores/webmidi";
 
 /**
  * Enables WebMidi and gets every Inputs and Outputs
  * then stores them in the WebMidi store.
  * 
- * Should be executed when the app starts, see `src/main.tsx`.
+ * Should be executed when the app is mounted, see `src/main.tsx`.
+ * Returns a Promise<boolean>, so if we can't setup an instance,
+ * we restrict some features that can't work without webmidi.
  */
 export const enableAndSetup = async () => {
   try {
@@ -21,13 +23,14 @@ export const enableAndSetup = async () => {
     // Store every Inputs and Outputs already connected.
     refreshDevices(midi);
     
-    const store = useWebMidiStore.getState();
-    store.setIsEnabled(true);
+    setWebMidiStore({ isEnabled: true });
 
     console.log("[WebMidi] Enabled and running !");
+    return true;
   }
   catch (e) {
     console.error("[WebMidi] Cannot setup an instance.", e);
+    return false;
   }
 };
 
@@ -36,7 +39,6 @@ export const enableAndSetup = async () => {
  * and `Outputs` of the `webMidiStore` with values of that instance.
  */
 export const refreshDevices = (midi: typeof WebMidi) => {
-  const store = useWebMidiStore.getState();
   const { inputs, outputs } = midi;
 
   // TODO: Find a one-liner.
@@ -52,7 +54,7 @@ export const refreshDevices = (midi: typeof WebMidi) => {
   }
 
   // We save the new devices in the store.
-  store.setIO({
+  setWebMidiStore({
     inputs: parsed_inputs,
     outputs: parsed_outputs
   });
