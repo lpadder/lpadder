@@ -1,57 +1,67 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-
-// Fonts
+/* @refresh reload */
 import "@fontsource/poppins/latin-300.css";
 import "@fontsource/poppins/latin-400.css";
 import "@fontsource/poppins/latin-500.css";
-
-// TailwindCSS
 import "@/styles/globals.css";
 
-// Routing
+import { Component, onMount, createSignal, Show } from "solid-js";
+
+import { render } from "solid-js/web";
+import { lazy } from "solid-js";
+
 import {
-  BrowserRouter,
   Navigate,
+  Router,
   Routes,
   Route
-} from "react-router-dom";
+} from "solid-app-router";
 
 // Pages
-import Home from "@/pages/index";
-import Projects from "@/pages/projects/index";
-import Utilities from "@/pages/utilities/index";
+const Home      = lazy(() => import("@/pages/index"));
+// const Projects  = lazy(() => import("@/pages/projects/index"));
+// const Utilities = lazy(() => import("@/pages/utilities/index"));
 
 // Modals
-import ReloadPrompt from "@/components/ReloadPrompt";
-import ImportProjectModal from "@/components/ImportProjectModal";
-import CreateProjectModal from "@/components/CreateProjectModal";
+// import ReloadPrompt from "@/components/ReloadPrompt";
+// import ImportProjectModal from "@/components/ImportProjectModal";
+// import CreateProjectModal from "@/components/CreateProjectModal";
 // import LpadderWrongVersionModal from "./components/LpadderWrongVersionModal";
 
 import { enableAndSetup } from "@/utils/webmidi";
 
-/** Mount point of the React app. */
-const container = document.getElementById("root");
-if (!container) throw new Error("Failed to find the root element.");
+const Main: Component = () => {
+  /** Know if `enableAndSetup` has been completed or not. */
+  const [webMidiTested, setWebMidiTest] = createSignal(false);
+  onMount(async () => {
+    const isWebMidiEnabled = await enableAndSetup();
+    console.log("main: result of webmidi,", isWebMidiEnabled);
 
-// Create the root and render the app.
-const root = ReactDOM.createRoot(container);
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="/projects/*" element={<Projects />} />
-        <Route path="/utilities/*" element={<Utilities />} />
+    setWebMidiTest(true);
+  });
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
-    
-    <ReloadPrompt />
-    <ImportProjectModal />
-    <CreateProjectModal />
-  </React.StrictMode>
+  return (
+    <>
+      <Show when={webMidiTested} fallback="Testing webmidi...">
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {/* <Route path="/projects/*" element={<Projects />} />
+            <Route path="/utilities/*" element={<Utilities />} /> */}
+
+            <Route path="*" element={<Navigate href="/" />} />
+          </Routes>
+
+          {/* <ImportProjectModal />
+          <CreateProjectModal /> */}
+        </Router>
+      </Show>
+      
+      {/* <ReloadPrompt /> */}
+    </>
+  );
+};
+
+render(
+  () => <Main />,
+  document.getElementById("root") as HTMLDivElement
 );
-
-requestIdleCallback(() => enableAndSetup());
