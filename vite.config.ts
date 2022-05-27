@@ -1,5 +1,5 @@
+import solidPlugin from "vite-plugin-solid";
 import { VitePWA } from "vite-plugin-pwa";
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import dotenv from "dotenv";
 import path from "path";
@@ -9,7 +9,7 @@ const CLIENT_PORT = parseInt(process.env.CLIENT_PORT) || 3000;
 
 export default defineConfig({
   plugins: [
-    react(),
+    solidPlugin(),
     VitePWA({
       includeAssets: [
         "robots.txt",
@@ -67,6 +67,11 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src")
     }
+  },
+
+  build: {
+    target: "esnext",
+    polyfillDynamicImport: false,
   },
 
   server: {
