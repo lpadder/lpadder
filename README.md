@@ -47,7 +47,7 @@ It can also help the contributors to know what they can work on.
 - [x] Utilities page
   - [x] Think how the pages will be displayed
   - [x] Code-splitting on every utilities routes (to reduce bundle size and then better performances)
-  - [ ] Design the utilities
+  - [x] Design the utilities
 
 ## Explaining the lpadder project structure
 
@@ -60,7 +60,7 @@ You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types
 
 ### Development
 
-This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org) and [TypeScript](https://www.typescriptlang.org). Deployment is made with [Vercel](https://vercel.com).
+This app was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com) and [TypeScript](https://www.typescriptlang.org). Deployment is powered with [Vercel](https://vercel.com).
 
 - `pnpm dev`: Starts the Vite development server on port 3000.
   - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
@@ -71,10 +71,8 @@ This app was made using [Vite](https://vitejs.dev), [React](https://reactjs.org)
 - `pnpm release`: Runs `pnpm check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
 
-### Resources and credits
+## Resources used
 
 I used these documentations to determine how `live` and `programmer` layouts were made.
 - Launchpad Pro MK2: [Programmer Documentation](https://d2xhy469pqj8rc.cloudfront.net/sites/default/files/novation/downloads/10598/launchpad-pro-programmers-reference-guide_0.pdf)
 - Launchpad Pro MK3: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
-
-### Thanks you for reading !
