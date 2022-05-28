@@ -5,7 +5,7 @@ import { useRegisterSW } from "virtual:pwa-register/solid";
 
 import Modal from "@/components/Modal";
 
-const ReloadPrompt: Component = () => {
+const LpadderUpdatePrompt: Component = () => {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -34,10 +34,10 @@ const ReloadPrompt: Component = () => {
         <Show
           when={offlineReady()}
           fallback={
-            <span>New content available, click on <span class="font-bold">Reload</span> button to update.</span>
+            <span>New version available, click on <span class="font-bold">Reload</span> button to update.</span>
           }
         >
-          <span>App ready to work offline !</span>
+          <span>lpadder is ready to work offline !</span>
         </Show>
       </div>
 
@@ -70,4 +70,4 @@ const ReloadPrompt: Component = () => {
   );
 };
 
-export default ReloadPrompt;
+export default LpadderUpdatePrompt;
