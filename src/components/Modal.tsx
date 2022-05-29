@@ -1,59 +1,48 @@
-import {
-  useRef,
-  useEffect,
-  Fragment
-} from "react";
+import type { ParentComponent } from "solid-js";
 
-import Portal from "@/components/Portal";
+import { onCleanup, onMount, Show, children } from "solid-js";
+import { Portal } from "solid-js/web";
 
-export type ModalProps = {
+const Modal: ParentComponent<{
   open: boolean;
   onClose: () => void;
-  children: React.ReactNode;
-}
+}> = (props) => {
+  let backdrop: HTMLDivElement | undefined;
 
-export default function Modal ({
-  open, onClose, children
-}: ModalProps) {
-  const backdrop = useRef<HTMLDivElement>(null);
+  /** Close modal on `Escape` key. */
+  const keyHandler = (e: KeyboardEvent) => e.code === "Escape" && props.onClose();
 
-  useEffect(() => {
-    const backdropElement = backdrop.current as HTMLDivElement;
+  /** Close modal on backdrop element click. */
+  const clickHandler = (e: MouseEvent) => e.target === backdrop && props.onClose();
 
-    // Close modal on ESC.
-    const keyHandler = (e: KeyboardEvent) => e.code === "Escape" && onClose();
+  onMount(() => {
+    if (!backdrop) return;
 
-    // Close modal on backdrop click.
-    const clickHandler = (e: MouseEvent) => e.target === backdropElement && onClose();
+    backdrop.addEventListener("click", clickHandler);
+    window.addEventListener("keyup", keyHandler);
+  });
 
-    if (backdrop.current) {
-      backdropElement.addEventListener("click", clickHandler);
-      window.addEventListener("keyup", keyHandler);
-    }
+  onCleanup(() => {
+    if (!backdrop) return;
 
-    return () => {
-      if (backdrop.current) {
-        backdrop.current.removeEventListener("click", clickHandler);
-      }
-
-      window.removeEventListener("keyup", keyHandler);
-    };
-  }, [open, onClose]);
+    backdrop.removeEventListener("click", clickHandler);
+    window.removeEventListener("keyup", keyHandler);
+  });
 
   return (
-    <Fragment>
-      {open && (
-        <Portal>
-          <div
-            ref={backdrop}
-            className={`${open && "flex fixed top-0 left-0 z-50 justify-center items-center w-screen h-screen bg-gray-900 bg-opacity-60"}`}
-          >
-            <div className="p-4 mx-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900 shadow-lg shadow-gray-900">
-              {children}
-            </div>
+    <Show when={props.open}>
+      <Portal>
+        <div
+          ref={backdrop}
+          class={`${props.open && "flex fixed top-0 left-0 z-50 justify-center items-center w-screen h-screen bg-gray-900 bg-opacity-60"}`}
+        >
+          <div class="p-4 mx-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900 shadow-lg shadow-gray-900">
+            {children(() => props.children)()}
           </div>
-        </Portal>
-      )}
-    </Fragment>
+        </div>
+      </Portal>
+    </Show>
   );
-}
+};
+
+export default Modal;
