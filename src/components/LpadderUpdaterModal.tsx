@@ -5,7 +5,7 @@ import { useRegisterSW } from "virtual:pwa-register/solid";
 
 import Modal from "@/components/Modal";
 
-const LpadderUpdatePrompt: Component = () => {
+const LpadderUpdaterModal: Component = () => {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -70,4 +70,4 @@ const LpadderUpdatePrompt: Component = () => {
   );
 };
 
-export default LpadderUpdatePrompt;
+export default LpadderUpdaterModal;
