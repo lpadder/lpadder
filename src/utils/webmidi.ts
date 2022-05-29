@@ -1,10 +1,32 @@
-import type { NoteMessageEvent, ControlChangeMessageEvent } from "webmidi";
-import type { InputsData, OutputsData } from "@/stores/webmidi";
-import type { Input, Output } from "webmidi";
-
+import type {
+  InputsData,
+  OutputsData
+} from "@/stores/webmidi";
 
 import { WebMidi } from "webmidi";
 import { setWebMidiStore } from "@/stores/webmidi";
+
+/**
+ * Takes a WebMidi instance in parameter and refresh every `Inputs`
+ * and `Outputs` of the `webMidiStore` with values of that instance.
+ */
+const refreshDevices = (midi: typeof WebMidi) => {
+  const { inputs, outputs } = midi;
+
+  /** Get inputs as an object of `input.id: input`. */
+  const parsed_inputs: InputsData = inputs.reduce(
+    (obj, input) => ({ ...obj, [input.id]: input }), {}
+  );
+
+  /** Get outputs as an object of `output.id: output`. */
+  const parsed_outputs: OutputsData = outputs.reduce(
+    (obj, output) => ({ ...obj, [output.id]: output }), {}
+  );
+
+  // We keep the refreshed inputs/outputs in the store.
+  setWebMidiStore({ inputs: parsed_inputs, outputs: parsed_outputs });
+  console.info("[utils/webmidi] Store and connections refreshed !");
+};
 
 /**
  * Enable WebMidi and get every Inputs and Outputs
@@ -34,26 +56,4 @@ export const enableAndSetup = async () => {
     setWebMidiStore({ isEnabled: false, wasRequested: true });
     return false;
   }
-};
-
-/**
- * Takes a WebMidi instance in parameter and refresh every `Inputs`
- * and `Outputs` of the `webMidiStore` with values of that instance.
- */
-export const refreshDevices = (midi: typeof WebMidi) => {
-  const { inputs, outputs } = midi;
-
-  /** Get inputs as an object of `input.id: input`. */
-  const parsed_inputs: InputsData = inputs.reduce(
-    (obj, input) => ({ ...obj, [input.id]: input }), {}
-  );
-
-  /** Get outputs as an object of `output.id: output`. */
-  const parsed_outputs: OutputsData = outputs.reduce(
-    (obj, output) => ({ ...obj, [output.id]: output }), {}
-  );
-
-  // We keep the refreshed inputs/outputs in the store.
-  setWebMidiStore({ inputs: parsed_inputs, outputs: parsed_outputs });
-  console.info("[utils/webmidi] Store and connections refreshed !");
 };
