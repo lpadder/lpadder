@@ -28,6 +28,6 @@ const FullLoader: Component<{
       </h2>
     </div>
   );
-}
+};
 
 export default FullLoader;

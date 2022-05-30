@@ -1,41 +1,46 @@
-import React, { useState } from "react";
+import type { Component } from "solid-js";
+import type { AvailableLayouts } from "@/utils/LaunchpadLayout";
+
+import { Show, createSignal } from "solid-js";
 import { Midi } from "@tonejs/midi";
 
 import downloadBlob from "@/utils/downloadBlob";
 
-export default function UtilitiesConvertMidiFile () {
-  const [fromLayout, setFromLayout] = useState("live");
-  const [toLayout, setToLayout] = useState("programmer");
+const UtilitiesConvertMidiFile: Component = () => {
+  const [fromLayout, setFromLayout] = createSignal<AvailableLayouts>("live");
+  const [toLayout, setToLayout] = createSignal<AvailableLayouts>("programmer");
 
-  const [uploadedFiles, setUploadedFiles] = useState<FileList | null>(null);
+  const [uploadedFiles, setUploadedFiles] = createSignal<FileList | null>(null);
   // const [convertedFiles, setConvertedFiles] = useState([]);
 
-  const handleMidiUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const files = evt.target.files;
+  const handleMidiUpload = (evt: Event & {
+    currentTarget: HTMLInputElement;
+  }) => {
+    const files = evt.currentTarget.files;
+    if (!files) return;
 
-    if (files) {
-      setUploadedFiles(files);
-    }
+    setUploadedFiles(files);
   };
 
   const startConvert = () => {
-    if (uploadedFiles && uploadedFiles.length > 0) {
-      for (let i = 0; i < uploadedFiles.length; i++) {
-        const file = uploadedFiles[i];
-        const reader = new FileReader();
+    const files = uploadedFiles();
+    if (!files || files.length <= 0) return;
 
-        reader.onload = () => {
-          const buffer = reader.result as ArrayBuffer;
-          const midi = new Midi(buffer);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const buffer = reader.result as ArrayBuffer;
+        const midi = new Midi(buffer);
           
-          // Convert midi object to array and download it.
-          const output = midi.toArray();
-          downloadBlob(output, file.name, "audio/midi");
-        };
+        // Convert midi object to array and download it.
+        const output = midi.toArray();
+        downloadBlob(output, file.name, "audio/midi");
+      };
         
-        // Read MIDI file as ArrayBuffer.
-        reader.readAsArrayBuffer(file);
-      }
+      // Read MIDI file as ArrayBuffer.
+      reader.readAsArrayBuffer(file);
     }
   };
 
@@ -57,8 +62,16 @@ export default function UtilitiesConvertMidiFile () {
         onChange={handleMidiUpload}
       />
 
-      <label htmlFor="midiLayoutFrom">From</label>
-      <select defaultValue={fromLayout} onChange={(e) => setFromLayout(e.target.value)} id="midiLayoutFrom">
+      <label
+        for="midiLayoutFrom"
+      >
+        From
+      </label>
+      <select
+        value={fromLayout()}
+        onChange={(e) => setFromLayout(e.currentTarget.value as AvailableLayouts)}
+        id="midiLayoutFrom"
+      >
         <option value="live">
           Live Layout
         </option>
@@ -67,8 +80,16 @@ export default function UtilitiesConvertMidiFile () {
         </option>
       </select>
 
-      <label htmlFor="midiLayoutTo">To</label>
-      <select defaultValue={toLayout} onChange={(e) => setToLayout(e.target.value)} id="midiLayoutTo">
+      <label
+        for="midiLayoutTo"
+      >
+        To
+      </label>
+      <select
+        value={toLayout()}
+        onChange={(e) => setToLayout(e.currentTarget.value as AvailableLayouts)}
+        id="midiLayoutTo"
+      >
         <option value="live">
           Live Layout
         </option>
@@ -77,11 +98,13 @@ export default function UtilitiesConvertMidiFile () {
         </option>
       </select>
 
-      {(uploadedFiles && uploadedFiles.length > 0) &&
+      <Show when={uploadedFiles && uploadedFiles.length > 0}>
         <button onClick={startConvert}>
-          Convert {uploadedFiles.length} MIDI files from {fromLayout} to {toLayout}.
+          Convert {uploadedFiles.length} MIDI files from {fromLayout()} to {toLayout()}.
         </button>
-      }
+      </Show>
     </div>
   );
-}
+};
+
+export default UtilitiesConvertMidiFile;

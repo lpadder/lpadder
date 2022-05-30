@@ -19,7 +19,7 @@ import {
 // Pages
 const Home      = lazy(() => import("@/pages/index"));
 // const Projects  = lazy(() => import("@/pages/projects/index"));
-// const Utilities = lazy(() => import("@/pages/utilities/index"));
+const Utilities = lazy(() => import("@/pages/utilities/index"));
 
 // Modals
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
@@ -38,8 +38,8 @@ const Main: Component = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/projects/*" element={<Projects />} />
-        <Route path="/utilities/*" element={<Utilities />} /> */}
+        {/* <Route path="/projects/*" element={<Projects />} />*/}
+        <Route path="/utilities/*all" element={<Utilities />} /> 
 
         <Route path="*" element={<Navigate href="/" />} />
       </Routes>
