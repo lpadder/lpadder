@@ -7,8 +7,5 @@
   // Indentation.
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
-  "editor.tabSize": 2,
-
-  // Linebreak style.
-  "files.eol": "\n"
+  "editor.tabSize": 2
 }

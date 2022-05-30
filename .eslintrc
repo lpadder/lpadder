@@ -10,9 +10,6 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "linebreak-style": [
-      "error", "unix"
-    ],
     "brace-style": [
       "error", "stroustrup"
     ],
