@@ -19,7 +19,11 @@ import {
 // Pages
 const Home      = lazy(() => import("@/pages/index"));
 // const Projects  = lazy(() => import("@/pages/projects/index"));
-const Utilities = lazy(() => import("@/pages/utilities/index"));
+const UtilitiesHome = lazy(() => import("@/pages/utilities/index"));
+const UtilitiesConvertMidi = lazy(() => import("@/pages/utilities/convert-midi"));
+
+// Components
+import UtilitiesHeader from "@/components/UtilitiesHeader";
 
 // Modals
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
@@ -38,14 +42,22 @@ const Main: Component = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        
         {/* <Route path="/projects/*" element={<Projects />} />*/}
-        <Route path="/utilities/*all" element={<Utilities />} /> 
+
+        <Route path="/utilities" element={<UtilitiesHeader />}>
+          <Route path="/" element={<UtilitiesHome />} />
+          <Route path="*" element={<Navigate href="/utilities" />} />
+
+          <Route path="/convert-midi" element={<UtilitiesConvertMidi />} />
+        </Route>
 
         <Route path="*" element={<Navigate href="/" />} />
       </Routes>
 
       {/* <ImportProjectModal />
       <CreateProjectModal /> */}
+      
       <LpadderUpdaterModal />
     </Router>
   );

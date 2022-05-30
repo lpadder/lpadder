@@ -6,7 +6,7 @@ import { Midi } from "@tonejs/midi";
 
 import downloadBlob from "@/utils/downloadBlob";
 
-const UtilitiesConvertMidiFile: Component = () => {
+const UtilitiesConvertMidi: Component = () => {
   const [fromLayout, setFromLayout] = createSignal<AvailableLayouts>("live");
   const [toLayout, setToLayout] = createSignal<AvailableLayouts>("programmer");
 
@@ -107,4 +107,4 @@ const UtilitiesConvertMidiFile: Component = () => {
   );
 };
 
-export default UtilitiesConvertMidiFile;
+export default UtilitiesConvertMidi;

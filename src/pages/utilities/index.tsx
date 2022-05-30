@@ -1,39 +1,30 @@
 import type { Component } from "solid-js";
 
-import { Routes, Route, Navigate, Link, useNavigate } from "solid-app-router";
-import { lazy, Suspense, For } from "solid-js";
+import { For } from "solid-js";
+import { Link } from "solid-app-router";
 
-// Components
-import FullLoader from "@/components/FullLoader";
-
-// Utilities
-// const AbletonParse   = lazy(() => import("./ableton-parse"));
-const ConvertMidi    = lazy(() => import("./convert-midi"));
-// const MidiChecker    = lazy(() => import("./midi-checker"));
-// const MidiVisualizer = lazy(() => import("./midi-visualizer"));
-
-// List all utilities available.
+/**
+ * List the description of the available utilities.
+ * The slugs are actually the routes mentionned in
+ * the `@/main.tsx` file.
+ */
 const utilities = [
-  // {
-  //   slug: "ableton-parse",
-  //   description: "Parse Ableton Live Set (.als) file.",
-  //   component: <AbletonParse />
-  // },
+  {
+    slug: "ableton-parse",
+    description: "Parse Ableton Live Set (.als) file.",
+  },
   {
     slug: "convert-midi",
     description: "Convert your MIDI files to Launchpad's programmer or live layout.",
-    element: ConvertMidi
   },
-  // {
-  //   slug: "midi-checker",
-  //   description: "Connect your MIDI device and listen to it's IO. You can also send input to them.",
-  //   component: <MidiChecker />
-  // },
-  // {
-  //   slug: "midi-visualizer",
-  //   description: "Parse any MIDI file and visualize it on an Launchpad. Useful when making lightshows.",
-  //   component: <MidiVisualizer />
-  // }
+  {
+    slug: "midi-checker",
+    description: "Connect your MIDI device and listen to it's IO. You can also send input to them.",
+  },
+  {
+    slug: "midi-visualizer",
+    description: "Parse any MIDI file and visualize it on an Launchpad. Useful when making lightshows.",
+  }
 ];
 
 const UtilitiesHome: Component = () => {
@@ -77,45 +68,4 @@ const UtilitiesHome: Component = () => {
   );
 };
 
-// Routes for `/utilities`.
-const Utilities: Component = () => {
-  const navigate = useNavigate();
-
-  return (
-    <div class="relative min-h-screen">
-      <header
-        class="flex justify-start items-center px-8 w-full h-24"
-      >
-        <button
-          onClick={() => navigate(-1)}
-          class="z-50 px-4 py-2 bg-gray-900 bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80"
-        >
-          Go back
-        </button>
-      </header>
-      
-      <main class="relative p-4 h-full">
-        <Suspense fallback={<FullLoader message="Loading the utility..." />}>
-          <Routes>
-            <Route path="/" element={<UtilitiesHome />} />
-
-            <For each={utilities}>
-              {({ slug, element: Element }) => {
-                console.log(slug); return (
-                  <Route
-                    path={`${slug}`}
-                    element={<Element />} 
-                  />
-                );
-              }}  
-            </For>
-
-            {/* <Route path="*all" element={<Navigate href="/utilities" />} /> */}
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
-  );
-};
-
-export default Utilities;
+export default UtilitiesHome;
