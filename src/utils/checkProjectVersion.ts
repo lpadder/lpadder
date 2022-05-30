@@ -31,7 +31,7 @@ export default async function checkProjectVersion (
     APP_VERSION !== "next" &&
     // We don't check if the project version is from the development environment.
     version !== "next" &&
-    // We don't check if the project version is matching with lpadder version.
+    // We check if the project version is not matching with lpadder version.
     version !== APP_VERSION
   ) {               
     const release_url = `https://api.github.com/repos/Vexcited/lpadder/releases/tags/v${version}`;

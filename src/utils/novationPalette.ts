@@ -130,6 +130,10 @@ export const defaultRgbPalette = [
   "4b1703"
 ];
 
+/**
+ * Get the HEX color of a specified velocity.
+ * Returned as `#RRGGBB`.
+ */
 export const getHexFromVelocity = (velocity: number) => {
   return "#" + defaultRgbPalette[velocity];
-}; 
+};
