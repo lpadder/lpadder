@@ -1,32 +1,12 @@
-interface SelectProps {
-  children: React.ReactNode;
+import type { ParentComponent, JSX } from "solid-js";
+import { children, splitProps } from "solid-js";
 
-  onChange: React.ChangeEventHandler<HTMLSelectElement>;
-  value?: string | number;
-  name?: string;
-  
-  placeholder: string;
-  title?: string;
-}
-
-export default function Select ({
-  children,
-  
-  onChange,
-  value,
-  name,
-  
-  placeholder,
-  title
-}: SelectProps) {
+const Select: ParentComponent<JSX.HTMLAttributes<HTMLSelectElement>> = (_props) => {
+  const [child, props] = splitProps(_props, ["children"]);
 
   return (
     <select
-      placeholder={placeholder}
-      title={title}
-
-      onChange={onChange}
-      className="
+      class="
         py-2 px-4 w-full rounded-lg outline-none
         bg-gray-900 bg-opacity-40
         transition-colors focus:bg-opacity-100
@@ -35,10 +15,11 @@ export default function Select ({
         border border-gray-900 hover:bg-opacity-60 focus:border-gray-400
       "
 
-      name={name}
-      value={value}
+      {...props}
     >
-      {children}
+      {children(() => child)()}
     </select>
   );
-}
+};
+
+export default Select;

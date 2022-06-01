@@ -1,14 +1,12 @@
+import type { Component } from "solid-js";
+
 import type {
   NoteMessageEvent,
   ControlChangeMessageEvent
 } from "webmidi";
 
-import { useEffect, useState } from "react";
-
-import { subscribeToInput, unsubscribeToInput } from "@/utils/webmidi";
-import { useWebMidiStore } from "@/stores/webmidi";
-
-import logger from "@/utils/logger";
+import { Show, createSignal, For, onCleanup, createEffect } from "solid-js";
+import { webMidiStore } from "@/stores/webmidi";
 
 // Components
 import Select from "@/components/Select";
@@ -19,45 +17,17 @@ type MidiEvent =
   | { type: "noteoff"; event: NoteMessageEvent }
   | { type: "controlchange"; event: ControlChangeMessageEvent }
 
-export default function UtilitiesMidiChecker () {
-  const log = logger("UtilitiesMidiChecker");
-  /** Debug. */ log.render();
-
-  return (
-    <div>
-      <header
-        className="mb-8 m-auto text-center max-w-xl"
-      >
-        <h1 className="font-medium text-2xl">
-          MIDI Checker
-        </h1>
-        <p className="text-gray-400">
-          This utility listens to all the events of
-          the available inputs and show them there.
-          You can also trigger events to the available outputs.
-        </p>
-      </header>
-
-      <MidiOutputSender />
-      <MidiInputChecker />
-    </div>
-  );
-}
-
 const MidiOutputSender = () => {
-  const log = logger("MidiOutputSender");
-  /** Debug. */ log.render();
+  const [selectedOutputId, setSelectedOutputId] = createSignal<string | null>(null);
+  // const [message, setMessage] = createSignal<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
 
-  const [selectedOutputId, setSelectedOutputId] = useState<string | null>(null);
-  const availableOutputs = useWebMidiStore(state => state.outputs);
-
-  // const [message, setMessage] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
-
-  const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSend = (e: Event) => {
     e.preventDefault();
-    if (!selectedOutputId) return;
 
-    const output = availableOutputs[selectedOutputId];
+    const output_id = selectedOutputId();
+    if (!output_id) return;
+
+    const output = webMidiStore.outputs[output_id];
     if (!output) return;
 
     // console.info("[midi-checker] Sending message", message, "to output:", output);
@@ -65,38 +35,38 @@ const MidiOutputSender = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mb-8 p-6 bg-gray-900 shadow-lg rounded-lg bg-opacity-40">
-      <h2 className="mb-4 text-xl text-gray-300">Send output to MIDI</h2>
+    <div class="max-w-xl mx-auto mb-8 p-6 bg-gray-900 shadow-lg rounded-lg bg-opacity-40">
+      <h2 class="mb-4 text-xl text-gray-300">Send output to MIDI</h2>
 
       <div>
-        <label htmlFor="midi-output-select" className="text-sm font-medium mb-1">
+        <label for="midi-output-select" class="text-sm font-medium mb-1">
           MIDI Output
         </label>
         <Select
-          name="midi-output-select"
+
+          id="midi-output-select"
           onChange={(evt) => {
-            const value = evt.target.value;
+            const value = evt.currentTarget.value;
 
             if (value === "none") setSelectedOutputId(null);
             else setSelectedOutputId(value);
           }}
-          placeholder="Select an output"
+          
+          title="Select an output"
         >
           <option value="none">None</option>
-          {Object.keys(availableOutputs).map(output_id => (
-            <option
-              key={output_id}
-              value={output_id}
-            >
-              {availableOutputs[output_id].name}
-            </option>
-          ))}
+
+          <For each={Object.keys(webMidiStore.outputs)}>
+            {output_id => (
+              <option value={output_id}>
+                {webMidiStore.outputs[output_id].name}
+              </option>
+            )}
+          </For>
         </Select>
       </div>
 
       {/* <div className="flex gap-2">
-
-      
         {[...Array(8).keys()].map(byte => (
           <InputElement
             key={byte}
@@ -122,7 +92,7 @@ const MidiOutputSender = () => {
 
 
       <button
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={handleSend}
       >
         Send
@@ -132,19 +102,13 @@ const MidiOutputSender = () => {
 };
 
 const MidiInputChecker = () => {
-  const log = logger("MidiInputChecker");
-  /** Debug. */ log.render();
-
-  const webMidiEnabled = useWebMidiStore(state => state.isEnabled);
-  const availableInputs = useWebMidiStore(state => state.inputs);
-
-  const [midiEventsLimit/**, setMidiEventsLimit*/] = useState(20);
-  const [midiEvents, setMidiEvents] = useState<MidiEvent[]>([]);
+  const [midiEventsLimit/**, setMidiEventsLimit*/] = createSignal(20);
+  const [midiEvents, setMidiEvents] = createSignal<MidiEvent[]>([]);
 
   /** Add an item to the midi events array. */
   const appendToMidiEvent = (midiEvent: MidiEvent) => setMidiEvents(events => {
     /** If we go more than the limit, remove last item. */
-    if (events.length >= midiEventsLimit) {
+    if (events.length >= midiEventsLimit()) {
       events.pop();
     }
 
@@ -152,6 +116,10 @@ const MidiInputChecker = () => {
     return [midiEvent, ...events];
   });
 
+  /**
+   * Callback of a listener on input.
+   * It adds the value from the input to the `midiEvents` array.
+   */
   const inputEventCallback = (event: NoteMessageEvent | ControlChangeMessageEvent) => {
     if (event.type === "noteon" || event.type === "noteoff") {
       return appendToMidiEvent({
@@ -168,46 +136,79 @@ const MidiInputChecker = () => {
     }
   };
 
-  useEffect(() => {
-    log.effectGroup("Subscribe to listeners.");
+  createEffect(() => {
+    console.group("[midi-checker/cleanup] Subscribe to listeners.");
+      
+    for (const input_id of Object.keys(webMidiStore.inputs)) {
+      const input = webMidiStore.inputs[input_id];
 
-    for (const [, input] of Object.entries(availableInputs)) {
-      subscribeToInput(input, inputEventCallback);
-      console.info("Subscribed to", input);
+      input.addListener("noteon", inputEventCallback);
+      input.addListener("noteoff", inputEventCallback);
+      input.addListener("controlchange", inputEventCallback);
+      
+      console.info("Unsubscribed from", input);
     }
-    
+      
     console.info("Done !");
     console.groupEnd();
-
-    return () => {
-      log.effectGroup("Unsubscribe to listeners.");
-      
-      for (const [, input] of Object.entries(availableInputs)) {
-        unsubscribeToInput(input, inputEventCallback);
+    
+    /** On cleanup, we unsubscribe from all the inputs. */
+    onCleanup(() => {
+      console.group("[midi-checker/cleanup] Unsubscribe to listeners.");
+        
+      for (const input_id of Object.keys(webMidiStore.inputs)) {
+        const input = webMidiStore.inputs[input_id];
+  
+        input.removeListener("noteon", inputEventCallback);
+        input.removeListener("noteoff", inputEventCallback);
+        input.removeListener("controlchange", inputEventCallback);
+        
         console.info("Unsubscribed from", input);
       }
-      
+        
       console.info("Done !");
       console.groupEnd();
-    };
-  }, [availableInputs]);
+    });
+  });
 
-  if (!webMidiEnabled) return(
-    <div>
-      <p>WebMidi is currently loading... Please wait !</p>
-    </div>
-  );
 
   return (
-    <div className="flex flex-col gap-4">
-      {midiEvents.map((event_info, event_index) => (
-        <div
-          className="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
-          key={event_index}
-        >
-          <p>[{event_info.event.port.name}]: {event_info.type} ({event_info.type === "controlchange" ? event_info.event.controller.number : event_info.event.note.number}) on channel {event_info.event.message.channel}.</p>
-        </div> 
-      ))}
+    <Show when={webMidiStore.isEnabled} fallback={<p>WebMidi is currently loading... Please wait !</p>}>
+      <div class="flex flex-col gap-4">
+        <For each={midiEvents()}>
+          {event_info => (
+            <div
+              class="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
+            >
+              <p>[{event_info.event.port.name}]: {event_info.type} ({event_info.type === "controlchange" ? event_info.event.controller.number : event_info.event.note.number}) on channel {event_info.event.message.channel}.</p>
+            </div>
+          )}
+        </For>
+      </div>
+    </Show>
+  );
+};
+
+const UtilitiesMidiChecker: Component = () => {
+  return (
+    <div>
+      <header
+        class="mb-8 m-auto text-center max-w-xl"
+      >
+        <h1 class="font-medium text-2xl">
+          MIDI Checker
+        </h1>
+        <p class="text-gray-400">
+          This utility listens to all the events of
+          the available inputs and show them there.
+          You can also trigger events to the available outputs.
+        </p>
+      </header>
+
+      <MidiOutputSender />
+      <MidiInputChecker />
     </div>
   );
 };
+
+export default UtilitiesMidiChecker;
