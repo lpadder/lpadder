@@ -7,6 +7,7 @@ import {
 } from "@/stores/webmidi";
 
 import { WebMidi } from "webmidi";
+import { batch } from "solid-js";
 
 /**
  * Takes a WebMidi instance in parameter and refresh the
@@ -25,9 +26,16 @@ const refreshDevices = (midi: typeof WebMidi) => {
     (obj, output) => ({ ...obj, [output.id]: output }), {}
   );
 
-  // We keep the refreshed inputs/outputs in the store.
-  setWebMidiInputs(parsed_inputs);
-  setWebMidiOutputs(parsed_outputs);
+  /**
+   * We keep the refreshed inputs/outputs in the store.
+   * 
+   * Usage of the `batch` method here is to update both at
+   * the same time, so it doesn't trigger 2 renders on every refresh.
+   */
+  batch(() => {
+    setWebMidiInputs(parsed_inputs);
+    setWebMidiOutputs(parsed_outputs);
+  });
 
   console.info("[utils/webmidi] Devices list refreshing...");
 };
