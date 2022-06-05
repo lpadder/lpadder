@@ -34,7 +34,6 @@ import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
 
 // WebMidi
 import { enableAndSetup } from "@/utils/webmidi";
-import { WebMidiProvider } from "@/contexts/webmidi";
 
 const Main: Component = () => {
   // Enable WebMidi when app is initialized.
@@ -69,10 +68,6 @@ const Main: Component = () => {
 };
 
 render(
-  () => (
-    <WebMidiProvider>
-      <Main />
-    </WebMidiProvider>
-  ),
+  () => <Main />,
   document.getElementById("root") as HTMLDivElement
 );
