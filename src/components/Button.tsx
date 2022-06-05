@@ -1,33 +1,20 @@
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  title?: string;
+import type { ParentComponent, JSX } from "solid-js";
 
-  className?: string;
-}
-
-export default function Button ({
-  children,
-  onClick,
-  title,
-
-  className
-}: ButtonProps) {
+const Button: ParentComponent<JSX.HTMLAttributes<HTMLButtonElement>> = (props) => {
   return (
     <button
-      className={`
+      class={`
         whitespace-nowrap px-4 py-2 rounded-lg
         text-gray-300 flex justify-center items-center
         bg-gray-900 bg-opacity-20
         border border-gray-900 
         transition-all
-        ${className ? className : ""}
+        ${props.class ? props.class : ""}
       `}
-
-      onClick={onClick}
-      title={title}
-    >
-      {children}
-    </button>
+      
+      {...props}
+    />
   );
-}
+};
+
+export default Button;

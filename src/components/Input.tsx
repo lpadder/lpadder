@@ -1,62 +1,47 @@
-export type InputProps = {
-  type?: "text" | "number";
-  className?: string;
-  labelName?: string;
-  placeholder: string;
-  smallTipText?: string;
+import type { ParentComponent, JSX } from "solid-js";
+import { Show } from "solid-js";
 
-  value?: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+/**
+ * Use the HTML attributes of the input element
+ * and also add a required `label` prop.
+ */
+type InputProps = ParentComponent<
+  JSX.HTMLAttributes<HTMLInputElement> & {
+    label?: string,
+    tip?: string
+  }
+>;
 
-  max?: number;
-  min?: number;
-};
-
-export default function Input ({
-  type = "text",
-  className,
-  labelName,
-  placeholder,
-  smallTipText,
-  value,
-  onChange,
-
-  max, min
-}: InputProps) {
+const Input: InputProps = (props) => {
   return (
     <div>
-      {labelName && (
-        <label htmlFor={labelName} className="text-sm font-medium mb-1">
-          {labelName}
+      <Show when={props.label}>
+        <label
+          for={`__input_label_${props.label}`}
+          class="text-sm font-medium mb-1"
+        >
+          {props.label}
         </label>
-      )}
+      </Show>
       <input
-        type={type}
-        value={value}
-        name={labelName}
-        onChange={onChange}
-        placeholder={placeholder}
-
-        min={min}
-        max={max}
-
-        autoComplete="off"
-        autoCapitalize="off"
-        autoCorrect="off"
-
-        className={`
+        id={`__input_label_${props.label}`}
+        class={`
           py-2 px-4 w-full rounded-lg outline-none
           bg-gray-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
-          ${className ? className : ""}
+          ${props.class ? props.class : ""}
         `}
+
+        {...props}
       />
 
-      {smallTipText &&
-        <p className="mt-2 text-sm text-gray-600 text-opacity-60">
-          {smallTipText}
+      <Show when={props.tip}>
+        <p class="mt-2 text-sm text-gray-600 text-opacity-60">
+          {props.tip}
         </p>
-      }
+      </Show>
     </div>
   );
-}
+};
+
+export default Input;
