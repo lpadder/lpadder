@@ -6,7 +6,7 @@ import type {
 } from "webmidi";
 
 import { Show, createSignal, For, onCleanup, createEffect } from "solid-js";
-import { webMidiStore } from "@/stores/webmidi";
+import { useWebMidiContext } from "@/contexts/webmidi";
 
 // Components
 import Select from "@/components/Select";
@@ -21,13 +21,15 @@ const MidiOutputSender = () => {
   const [selectedOutputId, setSelectedOutputId] = createSignal<string | null>(null);
   // const [message, setMessage] = createSignal<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
 
+  const { outputs } = useWebMidiContext();
+
   const handleSend = (e: Event) => {
     e.preventDefault();
 
     const output_id = selectedOutputId();
     if (!output_id) return;
 
-    const output = webMidiStore.outputs[output_id];
+    const output = outputs.get()[output_id];
     if (!output) return;
 
     // console.info("[midi-checker] Sending message", message, "to output:", output);
@@ -56,10 +58,10 @@ const MidiOutputSender = () => {
         >
           <option value="none">None</option>
 
-          <For each={Object.keys(webMidiStore.outputs)}>
+          <For each={Object.keys(outputs.get())}>
             {output_id => (
               <option value={output_id}>
-                {webMidiStore.outputs[output_id].name}
+                {outputs.get()[output_id].name}
               </option>
             )}
           </For>
@@ -102,6 +104,8 @@ const MidiOutputSender = () => {
 };
 
 const MidiInputChecker = () => {
+  const webMidi = useWebMidiContext();
+
   const [midiEventsLimit/**, setMidiEventsLimit*/] = createSignal(20);
   const [midiEvents, setMidiEvents] = createSignal<MidiEvent[]>([]);
 
@@ -137,16 +141,16 @@ const MidiInputChecker = () => {
   };
 
   createEffect(() => {
-    console.group("[midi-checker/cleanup] Subscribe to listeners.");
+    console.group("[midi-checker/mount] Subscribe to listeners.");
       
-    for (const input_id of Object.keys(webMidiStore.inputs)) {
-      const input = webMidiStore.inputs[input_id];
+    for (const input_id of Object.keys(webMidi.inputs.get())) {
+      const input = webMidi.inputs.get()[input_id];
 
       input.addListener("noteon", inputEventCallback);
       input.addListener("noteoff", inputEventCallback);
       input.addListener("controlchange", inputEventCallback);
       
-      console.info("Unsubscribed from", input);
+      console.info("Subscribed to", input);
     }
       
     console.info("Done !");
@@ -156,8 +160,8 @@ const MidiInputChecker = () => {
     onCleanup(() => {
       console.group("[midi-checker/cleanup] Unsubscribe to listeners.");
         
-      for (const input_id of Object.keys(webMidiStore.inputs)) {
-        const input = webMidiStore.inputs[input_id];
+      for (const input_id of Object.keys(webMidi.inputs.get())) {
+        const input = webMidi.inputs.get()[input_id];
   
         input.removeListener("noteon", inputEventCallback);
         input.removeListener("noteoff", inputEventCallback);
@@ -173,7 +177,7 @@ const MidiInputChecker = () => {
 
 
   return (
-    <Show when={webMidiStore.isEnabled} fallback={<p>WebMidi is currently loading... Please wait !</p>}>
+    <Show when={webMidi.informations.get.isEnabled} fallback={<p>WebMidi is currently loading... Please wait !</p>}>
       <div class="flex flex-col gap-4">
         <For each={midiEvents()}>
           {event_info => (
