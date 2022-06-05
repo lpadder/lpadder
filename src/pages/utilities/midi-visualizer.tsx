@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { createStore } from "solid-js/store";
+
+import { Show, For } from "solid-js";
+
 import { Midi, MidiJSON } from "@tonejs/midi";
 
 import Launchpad from "@/components/Launchpad";
@@ -9,63 +12,63 @@ import LaunchpadLayout from "@/utils/LaunchpadLayout";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 import chroma from "chroma-js";
 
-import { useWebMidiStore } from "@/stores/webmidi";
-import { useRef } from "react";
+import { webMidiOutputs, webMidiInformations } from "@/stores/webmidi";
+import { JSX } from "solid-js";
 
 interface GroupedNotes {
   notes: {
-    /** in MS. */
+    /** In MS. */
     duration: number;
     /** Between 0 and 1. */
     velocity: number;
+    /** MIDI note. */
     midi: number;
   }[];
   
-  /** in MS. */
+  /** In MS. */
   start_time: number;
 }
 
 export default function UtilitiesMidiVisualizer () {
-  const [loaded, setLoaded] = useState(false);
-  const [midi, setMidi] = useState<null | Midi>(null);
-  const [notes, setNotes] = useState<null | GroupedNotes[]>(null);
-  const launchpadRef = useRef<HTMLDivElement>(null);
+  let launchpad_ref: HTMLDivElement | undefined;
 
-  const [selectedOutputId, setSelectedOutput] = useState<string>("none");
-  
-  const webMidiEnabled = useWebMidiStore(state => state.isEnabled);
-  const [availableOutputs, setAvailableOutputs] = useState(useWebMidiStore.getState().outputs);
-  useEffect(() => useWebMidiStore.subscribe(
-    state => setAvailableOutputs(state.outputs)
-  ), []);
+  const [state, setState] = createStore<{
+    loaded: boolean,
+    midi: Midi | null,
+    notes: GroupedNotes[] | null,
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Reset the loaded state (to prepare the new one).
-    setLoaded(false);
-    setMidi(null);
+    /** Defaults to `none`. */
+    selectedOutputId: string 
+  }>({
+    loaded: false,
+    midi: null,
+    notes: null,
+    selectedOutputId: "none"
+  });
+
+  /** When a file is uploaded, parse and load it.  */
+  const onFileChange: JSX.EventHandler<HTMLInputElement, Event> = (event) => {
+    /** Reset the state to prepare the new one. */
+    setState({ loaded: false, midi: null });
 
     // Check if a MIDI file was given.
-    if (!e.target.files || !e.target.files[0]) return;
+    if (!event.currentTarget.files || !event.currentTarget.files[0]) return;
 
     // Get the MIDI file.
-    const file = e.target.files[0];
+    const file = event.currentTarget.files[0];
 
     // Parse the MIDI file.
     const reader = new FileReader();
     reader.onload = () => {
       const midiBuffer = reader.result as ArrayBuffer;
       const midiObject = new Midi(midiBuffer);
+      
+      // Parse the notes.
       const midi_data = midiObject.toJSON();
-
       const notesData = loadMidiData(midi_data);
 
-      // Store the MIDI object.
-      setMidi(midiObject);
-
-      // Store the parsed MIDI data.
-      setNotes(notesData);
-
-      setLoaded(true);
+      // Store the MIDI object and the parsed notes.
+      setState({ midi: midiObject, notes: notesData, loaded: true });
     };
     
     reader.readAsArrayBuffer(file);
@@ -127,13 +130,14 @@ export default function UtilitiesMidiVisualizer () {
     return grouped_notes;
   };
 
+  /** Play the MIDI file on the selected output. */
   const playMidi = () => {
-    if (!notes) return;
+    if (!state.notes) return;
 
-    // Get the output device if choosen.
-    const output = selectedOutputId ? availableOutputs[selectedOutputId] : null;
+    /** Get the output choosen. */
+    const output = state.selectedOutputId ? webMidiOutputs()[state.selectedOutputId] : null;
 
-    notes.forEach(group => {
+    state.notes.forEach(group => {
       const start_time = group.start_time;
       
       /** Setup the timing for all the `noteon`s at `start_time`. */
@@ -143,8 +147,8 @@ export default function UtilitiesMidiVisualizer () {
           const duration = note.duration;
   
           // Get the Launchpad element.
-          if (!launchpadRef.current) return;
-          const launchpad = launchpadRef.current;
+          if (!launchpad_ref) return;
+          const launchpad = launchpad_ref;
           
           // Get the pad element from the Launchpad.
           const pad: HTMLDivElement | null = launchpad.querySelector(`[data-note="${note.midi}"]`);
@@ -182,19 +186,19 @@ export default function UtilitiesMidiVisualizer () {
   return (
     <div>
       <header
-        className="mb-8 m-auto text-center max-w-xl"
+        class="mb-8 m-auto text-center max-w-xl"
       >
-        <h1 className="font-medium text-2xl">
+        <h1 class="font-medium text-2xl">
           Launchpad MIDI Visualizer
         </h1>
-        <p className="text-gray-400">
+        <p class="text-gray-400">
           This utility takes any MIDI file and shows a preview of
           it on the browser and on a selected Launchpad output.
         </p>
       </header>
 
       <form
-        className="mb-8 mx-auto max-w-fit p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
+        class="mb-8 mx-auto max-w-fit p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
         onSubmit={(e) => e.preventDefault()}
       >
         <FileInput
@@ -205,36 +209,34 @@ export default function UtilitiesMidiVisualizer () {
         />
       </form>
 
-      {loaded && midi && (
-        <div className="max-w-xl mx-auto text-center space-y-4 mb-8">
-          <h3 className="font-medium text-xl">
-            <b className="font-bold">MIDI</b>: {midi.header.name || "Untitled"}
+      <Show when={state.loaded && state.midi}>
+        <div class="max-w-xl mx-auto text-center space-y-4 mb-8">
+          <h3 class="font-medium text-xl">
+            <b class="font-bold">MIDI</b>: {state.midi?.header.name || "Untitled"}
           </h3>
 
-          {webMidiEnabled && (
+          <Show when={webMidiInformations.isEnabled}>
             <Select
-              placeholder="Select an output..."
-              value={selectedOutputId}
-              onChange={(e) => setSelectedOutput(e.target.value)}
+              title="Select an output..."
+              onChange={(e) => setState({ selectedOutputId: e.currentTarget.value })}
             >
               <option value="none">
-                None
+                  None
               </option>
 
-              {Object.keys(availableOutputs).map(output_id => (
-                <option
-                  key={output_id}
-                  value={output_id}
-                > {availableOutputs[output_id].name} </option>
-              ))}
+              <For each={Object.keys(webMidiOutputs())}>{output_id => (
+                <option value={output_id}>
+                  {webMidiOutputs()[output_id].name}
+                </option>
+              )}</For>
             </Select>
-          )}
+          </Show>
 
           <div
-            className="max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-4 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg"
+            class="max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-4 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg"
           >
             <Launchpad
-              ref={launchpadRef}
+              ref={launchpad_ref}
               layout="programmer"
               onPadDown={() => null}
               onPadUp={() => null}
@@ -242,13 +244,13 @@ export default function UtilitiesMidiVisualizer () {
           </div>
 
           <button
-            className="px-4 py-2 rounded-lg bg-gray-900 font-medium"
+            class="px-4 py-2 rounded-lg bg-gray-900 font-medium"
             onClick={playMidi}
           >
             Play MIDI
           </button>
         </div> 
-      )}
+      </Show>
     </div>
   );
 }

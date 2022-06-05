@@ -17,12 +17,13 @@ import {
 } from "solid-app-router";
 
 // Pages
-const Home                  = lazy(() => import("@/pages/index"));
+const Home                    = lazy(() => import("@/pages/index"));
 // const Projects  = lazy(() => import("@/pages/projects/index"));
-const UtilitiesHome         = lazy(() => import("@/pages/utilities/index"));
-const UtilitiesConvertMidi  = lazy(() => import("@/pages/utilities/convert-midi"));
-const UtilitiesMidiChecker  = lazy(() => import("@/pages/utilities/midi-checker"));
-const UtilitiesAbletonParse = lazy(() => import("@/pages/utilities/ableton-parse"));
+const UtilitiesHome           = lazy(() => import("@/pages/utilities/index"));
+const UtilitiesConvertMidi    = lazy(() => import("@/pages/utilities/convert-midi"));
+const UtilitiesMidiChecker    = lazy(() => import("@/pages/utilities/midi-checker"));
+const UtilitiesAbletonParse   = lazy(() => import("@/pages/utilities/ableton-parse"));
+const UtilitiesMidiVisualizer = lazy(() => import("@/pages/utilities/midi-visualizer"));
 
 // Components
 import UtilitiesHeader from "@/components/UtilitiesHeader";
@@ -55,6 +56,7 @@ const Main: Component = () => {
             <Route path="/convert-midi" element={<UtilitiesConvertMidi />} />
             <Route path="/midi-checker" element={<UtilitiesMidiChecker />} />
             <Route path="/ableton-parse" element={<UtilitiesAbletonParse />} />
+            <Route path="/midi-visualizer" element={<UtilitiesMidiVisualizer />} />
           </Route>
 
           <Route path="*" element={<Navigate href="/" />} />
