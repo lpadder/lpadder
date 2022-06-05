@@ -6,19 +6,19 @@
 application - **still in development** - that lets you play
 Launchpad covers directly from your web browser.
 
-It feature project editing, playing, saving current project ...
-It also have some utilities like an Ableton parser
-that will give you more informations about an Ableton
-Launchpad project.
+This is currently a work in progress. You can still
+preview the latest release version by going to <https://lpadder.vercel.app>.
 
-In the future, we want to make this able to
-convert Ableton projects to Unipad projects
-or lpadder projects.
+If you have any feature to add, head on the [issues](https://github.com/Vexcited/lpadder/issues) and
+create a new issue with the `feature request` template.
 
 ## What is missing ?
 
 There's lists of what I need to work on to make this app better !
 It can also help the contributors to know what they can work on.
+
+### Refactor
+- [ ] React => Solid (1/4 of the transition is done)
 
 ### App Structure
 - [x] Think about a way to store projects (structure of the `.zip`).
@@ -42,12 +42,16 @@ It can also help the contributors to know what they can work on.
 
 ### Design
 - [ ] Responsive launchpads on projects.
-- [x] Responsive menus for `/projects`. 
+  - Maybe use canvas for a fullscreen and small view ? Like something draggable.
+- [ ] Responsive menus for `/projects`.
+  - The close button is still having some issues.
 - [x] Launchpad component is "responsive" (using full width and aspect ratio 1/1 on pads).
+  - Depends on the parent component... Needs more digging.
 - [x] Utilities page
-  - [x] Think how the pages will be displayed
+  - [ ] Think how the pages will be displayed
+    - do a `UtilitiesHeader` component or include it in the <Route> directly ?-?
   - [x] Code-splitting on every utilities routes (to reduce bundle size and then better performances)
-  - [x] Design the utilities
+  - [ ] Design the utilities (most of it is done but it's really draft)
 
 ## Explaining the lpadder project structure
 
@@ -71,8 +75,7 @@ This app was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.co
 - `pnpm release`: Runs `pnpm check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
 
-## Resources used
+## Resources
 
-I used these documentations to determine how `live` and `programmer` layouts were made.
 - Launchpad Pro MK2: [Programmer Documentation](https://d2xhy469pqj8rc.cloudfront.net/sites/default/files/novation/downloads/10598/launchpad-pro-programmers-reference-guide_0.pdf)
 - Launchpad Pro MK3: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
