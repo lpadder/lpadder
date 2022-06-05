@@ -25,13 +25,15 @@ const [informations, setInformations] = createStore<{
   isEnabled: false
 });
 
-const [inputs, setInputs] = createSignal<InputsData>({});
-const [outputs, setOutputs] = createSignal<OutputsData>({});
+const [devices, setDevices] = createSignal<{
+  inputs: InputsData, outputs: OutputsData
+}>({
+  inputs: {}, outputs: {}
+});
 
 const store = {
-  informations: { get: informations, set: setInformations },
-  inputs: { get: inputs, set: setInputs },
-  outputs: { get: outputs, set: setOutputs }
+  informationsStore: { get: informations, set: setInformations },
+  devicesSignal: { get: devices, set: setDevices }
 } as const;
 
 type WebMidiContextType = typeof store;
