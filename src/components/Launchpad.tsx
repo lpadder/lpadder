@@ -1,8 +1,9 @@
-import type { AvailableLayouts } from "../utils/LaunchpadLayout";
-import LaunchpadLayout from "../utils/LaunchpadLayout";
+import type { Component } from "solid-js";
 
-import logger from "@/utils/logger";
-import { forwardRef } from "react";
+import type { AvailableLayouts } from "@/utils/LaunchpadLayout";
+import LaunchpadLayout from "@/utils/LaunchpadLayout";
+
+import { For } from "solid-js";
 
 export function getPadElementId (padId: number, launchpadId = 0) {
   const elementId = `launchpad-${launchpadId}-pad-${padId}`;
@@ -17,11 +18,21 @@ export type ClickEventFunctionProps = (
   
 export type ContextEventFunctionProps = (
   padId: number,
-  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  event: MouseEvent & {
+    currentTarget: HTMLDivElement;
+    target: Element;
+  },
   launchpadId?: number
 ) => void;
 
-type LaunchpadProps = {
+/**
+ * We create a new launchpad with the given layout.
+ * 'launchpadId' is used when using multiples launchpad
+ * on the same page. We will use it in the HTML "id" to
+ * access the pad later.
+ */
+const Launchpad: Component<{
+  ref?: HTMLDivElement;
   launchpadId?: number;
   layout?: AvailableLayouts;
 
@@ -30,98 +41,80 @@ type LaunchpadProps = {
   onPadUp: ClickEventFunctionProps;
 
   /** Optional ustom behaviour on right click. */
-  onContextMenu?: ContextEventFunctionProps;
-}
-
-/**
- * We create a new launchpad with the given layout.
- * 'launchpadId' is used when using multiples launchpad
- * on the same page. We will use it in the HTML "id" to
- * access the pad later.
- */
-function LaunchpadRaw ({
-  launchpadId,
-  layout = "live",
-  onPadDown,
-  onPadUp,
-  onContextMenu
-}: LaunchpadProps, ref: React.Ref<HTMLDivElement>) {
+  onContextMenu?: ContextEventFunctionProps; 
+}> = (props) => {
   const launchpadLayouts = new LaunchpadLayout();
-  const currentLayout = launchpadLayouts.layouts[layout];
-
-  const log = logger("~Launchpad");
-  /** Debug. */ log.render();
+  const currentLayout = launchpadLayouts.layouts[props.layout || "programmer"];
 
   return (
     <div
-      ref={ref}
-      className="flex flex-col gap-1"
+      ref={props.ref}
+      class="flex flex-col gap-1"
     >
-      {currentLayout.map((rows, rowIndex) => (
-        <div
-          key={rowIndex}
-          className="flex flex-row gap-1"
-        >
-          {rows.map(padId => (
-            <div
-              key={padId}
-              data-note={padId}
-              id={launchpadId ? getPadElementId(padId, launchpadId) : undefined}
+      <For each={currentLayout}>
+        {rows => (
+          <div class="flex flex-row gap-1">
+            <For each={rows}>
+              {(padId) => (
+                <div
+                  data-note={padId}
+                  id={props.launchpadId ? getPadElementId(padId, props.launchpadId) : undefined}
+                  
+                  onContextMenu={event => {
+                    event.preventDefault();
+
+                    // Execute the custom behaviour if it exists.
+                    if (!props.onContextMenu) return;
+                    return props.onContextMenu(padId, event, props.launchpadId);
+                  }}
+
+                  onTouchStart={down_event => {
+                    /**
+                     * By stopping propagation, we suppress
+                     * the `onMouseDown` event.
+                     */
+                    down_event.stopPropagation();
+
+                    // We save the target pad HTML element.
+                    const pad = down_event.currentTarget;
+
+                    const handleTouchEnd = (up_event: TouchEvent) => {
+                      up_event.preventDefault();
+
+                      props.onPadUp(padId, pad, props.launchpadId);
+                      document.removeEventListener("touchend", handleTouchEnd);
+                    };
+
+                    props.onPadDown(padId, pad, props.launchpadId);
+                    document.addEventListener("touchend", handleTouchEnd);
+                  }}
               
-              onContextMenu={event => {
-                event.preventDefault();
+                  onMouseDown={down_event => {
+                    if (down_event.button === 2) return;
 
-                // Execute the custom behaviour if it exists.
-                if (!onContextMenu) return;
-                return onContextMenu(padId, event, launchpadId);
-              }}
+                    // We save the target pad HTML element.
+                    const pad = down_event.currentTarget;
 
-              onTouchStart={down_event => {
-                /**
-                 * By stopping propagation, we suppress
-                 * the `onMouseDown` event.
-                 */
-                down_event.stopPropagation();
+                    const handleMouseUp = (up_event: MouseEvent) => {
+                      if (up_event.button === 2) return;
 
-                // We save the target pad HTML element.
-                const pad = down_event.currentTarget;
+                      props.onPadUp(padId, pad, props.launchpadId);
+                      document.removeEventListener("mouseup", handleMouseUp);
+                    };
 
-                const handleTouchEnd = (up_event: TouchEvent) => {
-                  up_event.preventDefault();
+                    props.onPadDown(padId, pad, props.launchpadId);
+                    document.addEventListener("mouseup", handleMouseUp);
+                  }}
 
-                  onPadUp(padId, pad, launchpadId);
-                  document.removeEventListener("touchend", handleTouchEnd);
-                };
-
-                onPadDown(padId, pad, launchpadId);
-                document.addEventListener("touchend", handleTouchEnd);
-              }}
-              
-              onMouseDown={down_event => {
-                if (down_event.button === 2) return;
-
-                // We save the target pad HTML element.
-                const pad = down_event.currentTarget;
-
-                const handleMouseUp = (up_event: MouseEvent) => {
-                  if (up_event.button === 2) return;
-
-                  onPadUp(padId, pad, launchpadId);
-                  document.removeEventListener("mouseup", handleMouseUp);
-                };
-
-                onPadDown(padId, pad, launchpadId);
-                document.addEventListener("mouseup", handleMouseUp);
-              }}
-
-              className="w-full bg-gray-400 rounded-sm select-none aspect-square"
-            />
-          ))}
-        </div>
-      ))}
+                  class="w-full bg-gray-400 rounded-sm select-none aspect-square"
+                />
+              )}
+            </For>
+          </div>
+        )}
+      </For>
     </div>
   );
-}
+};
 
-const Launchpad = forwardRef<HTMLDivElement, LaunchpadProps>(LaunchpadRaw); 
 export default Launchpad;
