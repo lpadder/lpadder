@@ -5,7 +5,7 @@ import type { ParentComponent, JSX } from "solid-js";
  * and also add a `label` prop.
  */
 type FileInputProps = ParentComponent<
-  JSX.HTMLAttributes<HTMLInputElement> & { label?: string }
+  JSX.InputHTMLAttributes<HTMLInputElement> & { label?: string }
 >;
 
 const FileInput: FileInputProps = (props) => {
