@@ -1,10 +1,10 @@
 import type {
   InputsData,
   OutputsData
-} from "@/stores/webmidi";
+} from "@/contexts/webmidi";
 
 import { WebMidi } from "webmidi";
-import { setWebMidiStore } from "@/stores/webmidi";
+import { useWebMidiContext } from "@/contexts/webmidi";
 
 /**
  * Takes a WebMidi instance in parameter and refresh every `Inputs`
@@ -12,6 +12,10 @@ import { setWebMidiStore } from "@/stores/webmidi";
  */
 const refreshDevices = (midi: typeof WebMidi) => {
   const { inputs, outputs } = midi;
+  const {
+    inputs: { set: setInputs },
+    outputs: { set: setOuputs }
+  } = useWebMidiContext();
 
   /** Get inputs as an object of `input.id: input`. */
   const parsed_inputs: InputsData = inputs.reduce(
@@ -24,7 +28,8 @@ const refreshDevices = (midi: typeof WebMidi) => {
   );
 
   // We keep the refreshed inputs/outputs in the store.
-  setWebMidiStore({ inputs: parsed_inputs, outputs: parsed_outputs });
+  setInputs(parsed_inputs);
+  setOuputs(parsed_outputs);
   console.info("[utils/webmidi] Store and connections refreshed !");
 };
 
@@ -37,6 +42,8 @@ const refreshDevices = (midi: typeof WebMidi) => {
  * we restrict some features that requires webmidi.
  */
 export const enableAndSetup = async () => {
+  const { informations: webMidiInformations } = useWebMidiContext();
+  
   try {
     const midi = await WebMidi.enable();
 
@@ -48,12 +55,12 @@ export const enableAndSetup = async () => {
     refreshDevices(midi);
 
     console.info("[utils/webmidi] Succesfully enabled !");
-    setWebMidiStore({ isEnabled: true, wasRequested: true });
+    webMidiInformations.set({ isEnabled: true, wasRequested: true });
     return true;
   }
   catch (error) {
     console.error("[utils/webmidi] Not able to enable webmidi. Try to check if your browser supports webmidi.", error);
-    setWebMidiStore({ isEnabled: false, wasRequested: true });
+    webMidiInformations.set({ isEnabled: false, wasRequested: true });
     return false;
   }
 };
