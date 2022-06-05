@@ -1,13 +1,17 @@
+import type { ParsedAbletonData } from "@/types/AbletonData";
+
 import type {
-  ParsedAbletonData,
   MidiDeviceSampleData,
   MidiDeviceDrumRackData,
   MidiDeviceInstrumentRackData,
   MidiTrackData
-} from "@/utils/parseAbletonData";
+} from "@/types/AbletonData";
 
-import type { ChangeEvent } from "react";
-import { useState, useRef, useEffect } from "react";
+import { Component, For, JSX, Switch, Match, createEffect, onCleanup } from "solid-js";
+import { Show, createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
+
+// import { useState, useRef, useEffect } from "react";
 
 import FileInput from "@/components/FileInput";
 import Launchpad from "@/components/Launchpad";
@@ -17,42 +21,264 @@ import {
   parseAbletonData
 } from "@/utils/parseAbletonData";
 
-import logger from "@/utils/logger";
+const AbletonParsedResults: Component<{
+  abletonData: ParsedAbletonData
+}> = (props) => {
+  return (
+    <div>
+      <h2 class="text-center font-medium text-2xl">
+        MIDI tracks
+      </h2>
 
-export default function UtilitiesAbletonParse () {
-  const [abletonData, setAbletonData] = useState<ParsedAbletonData | null>(null);
-  const [error, setError] = useState(false);
+      <div class="flex flex-col gap-4 my-6">
+        <For each={props.abletonData.tracksData}>
+          {track => (track.type === "midi") && (
+            <div
+              class="p-4 bg-gray-900 rounded-lg"
+            >
+              <div class="mb-4">
+                <h4 class="font-medium text-lg text-gray-300">{track.name}</h4>
+                <p class="text-gray-400">This track is made of {track.devices.length} device(s).</p>
+              </div>
 
-  const log = logger("UtilitiesAbletonParse");
-  /** Debug. */ log.render();
+              <For each={track.devices}>
+                {track => (
+                  <MidiDevice device={track} />
+                )}
+              </For>
+            </div>
+          )}
+        </For>
+      </div>
 
-  const alsImportHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    evt.preventDefault();
+      <h2 class="text-center font-medium text-2xl">
+        Audio tracks
+      </h2>
+
+      <div class="flex flex-col gap-4 my-6">
+        <For each={props.abletonData.tracksData}>
+          {track => (track.type === "audio") && (
+            <div>
+              <h4>{track.name}</h4>
+            </div>  
+          )}
+        </For>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * General `MidiDevice` component.
+ * 
+ * You only need to pass the `device` prop and
+ * it will automatically decides whose component to mount.
+ * 
+ * TODO: Maybe more optimizations about the `when` prop ?
+ * Help was already
+ */
+const MidiDevice: Component<{
+  device: MidiTrackData["devices"][number]
+}> = (props) => (
+  <Switch>
+    <Match when={props.device.type === "sample" && props.device}>
+      {device => <MidiDeviceSample sample={device} />}
+    </Match>
+
+    <Match when={props.device.type === "drum_rack" && props.device}>
+      {device => <MidiDeviceDrumRack drum_rack={device} />}
+    </Match>
+
+    <Match when={props.device.type === "instrument_rack" && props.device}>
+      {device => <MidiDeviceInstrumentRack instrument_rack={device} />}
+    </Match>
+  </Switch>
+);
+
+const MidiDeviceSample: Component<{
+  sample: MidiDeviceSampleData
+}> = (props) => {
+  const [state, setState] = createStore({
+    duration_percent: 0,
+    start_time_percent: 0
+  });
+
+  createEffect(() => {
+    setState({
+      duration_percent: (props.sample.duration / props.sample.sample_length) * 100,
+      start_time_percent: (props.sample.start_time / props.sample.sample_length) * 100
+    });
+  });
+
+  return (
+    <div class="bg-gray-600 p-2 rounded-lg">
+      <h4>Sample: {props.sample.name} ({props.sample.relative_path})</h4>
+
+      <div class="relative w-full bg-gray-200 h-4 dark:bg-gray-700 rounded-md">
+        <div
+          class="absolute bg-blue-600 h-full rounded-sm"
+          style={{
+            width: `${state.duration_percent}%`,
+            left: `${state.start_time_percent}%`
+          }}></div>
+      </div>
+    </div>
+  );
+};
+/**
+ * Renders a Drum Rack with a Launchpad preview.
+ * 
+ * TODO: Optimize the effect and cleanup, if possible (?)
+ */
+const MidiDeviceDrumRack: Component<{
+  drum_rack: MidiDeviceDrumRackData
+}> = (props) => {
+  const [selectedBranch, setSelectedBranch] = createSignal(0);
+  let launchpad_ref: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    if (!launchpad_ref) return;
+    const launchpad = launchpad_ref;
+
+    props.drum_rack.branches.forEach((branch, currentBranchIndex) => {
+      const note = branch.receivingNote;
+
+      const padElement = launchpad.querySelector(`[data-note="${note}"]`);
+      if (!padElement) return;
+
+      /** Disable the default color. */
+      padElement.classList.toggle("bg-gray-400", false);
+
+      /** Highlight the pads. Highlight the selected pad in a lighter color. */
+      padElement.classList.toggle(
+        selectedBranch() === currentBranchIndex ? "bg-blue-400" : "bg-blue-800",
+        true
+      );
+    });
+
+    onCleanup(() => {
+      props.drum_rack.branches.forEach(branch => {
+        const note = branch.receivingNote;
+
+        const padElement = launchpad.querySelector(`[data-note="${note}"]`);
+        if (!padElement) return;
+
+        /** Disable any highlighted pad. */
+        padElement.classList.toggle("bg-blue-400", false);
+        padElement.classList.toggle("bg-blue-800", false);
+
+        /** Restore the default color to the pad. */
+        padElement.classList.toggle("bg-gray-400", true);
+      });
+    });
+  });
+
+
+  return (
+    <div class="flex justify-between items-center gap-4 flex-col md:flex-row">
+      <div class="w-full max-w-60 sm:w-64">
+        <Launchpad
+          ref={launchpad_ref}
+          layout="drum_rack"
+          onPadDown={() => null}
+          onPadUp={(note_id) => {
+            const branch = props.drum_rack.branches.findIndex(branch => branch.receivingNote === note_id);
+            if (branch === -1) return;
+
+            setSelectedBranch(branch);
+          }}
+        />
+      </div>
+
+      <div class="w-full text-center">
+        <h4>Preview of a Drum Rack with {props.drum_rack.branches.length} branches.</h4>
+        <p>Viewing branch {selectedBranch()} (receivedNote: {props.drum_rack.branches[selectedBranch()].receivingNote})</p>
+
+        <For each={props.drum_rack.branches[selectedBranch()].devices}>
+          {device => <MidiDevice device={device}/>}
+        </For>
+      </div>
+    </div>
+  );
+};
+
+const MidiDeviceInstrumentRack: Component<{
+  instrument_rack: MidiDeviceInstrumentRackData
+}> = (props) => {
+  const [selectedBranch, setSelectedBranch] = createSignal(0);
+
+  return (
+    <div>
+      <h5>InstrumentRack: {props.instrument_rack.name}</h5>
+
+      <div class="bg-gray-600 flex flex-wrap mb-5">
+        <For each={props.instrument_rack.branches}>
+          {(branch, branch_index) => (
+            <button
+              class={`
+                px-4 py-2 ${selectedBranch() === branch_index()
+              ? "bg-blue-600"
+              : "bg-gray-800 hover:bg-opacity-60"
+            }
+              `}
+              onClick={() => setSelectedBranch(branch_index())}
+            >
+              {branch.name}
+            </button>
+          )}
+        </For>
+      </div>
+
+      <For each={props.instrument_rack.branches[selectedBranch()].devices}>
+        {device => <MidiDevice device={device}/>}
+      </For>
+    </div>
+  );
+};
+
+const UtilitiesAbletonParse: Component = () => {
+  const [state, setState] = createStore<{
+    abletonData: ParsedAbletonData | null,
+    error: string | null
+  }>({
+    abletonData: null,
+    error: null
+  });
+
+  const alsImportHandler: JSX.EventHandler<HTMLInputElement, Event> = (event) => {
+    event.preventDefault();
 
     // Reset every states.
-    setAbletonData(null);
-    setError(false);
+    setState({
+      abletonData: null, 
+      error: null
+    });
 
     // Check if a file has been uploaded.
-    const files = evt.target.files;
+    const files = event.currentTarget.files;
     if (!files || files.length <= 0) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const buffer = reader.result as ArrayBuffer;
-      const ableton_file = readAbletonFile(buffer);
-
+      
       try {
-        const parsed_ableton_file = parseAbletonData(ableton_file);
+        const ableton_file = await readAbletonFile(buffer);
+
+        const parsedAbletonFile = await parseAbletonData(ableton_file);
         
-        setAbletonData(parsed_ableton_file);
-        setError(false);
+        setState({
+          abletonData: parsedAbletonFile,
+          error: null
+        });
       }
-      catch (e) {
-        log.log("Error while parsing Ableton file.", e);
-        
-        setAbletonData(null);
-        setError(true);
+      catch (error) {
+        console.error("Error while parsing Ableton file.", error);
+
+        setState({
+          abletonData: null,
+          error: "An error was thrown while parsing the file."
+        });
       }      
     };
 
@@ -75,217 +301,22 @@ export default function UtilitiesAbletonParse () {
         onChange={alsImportHandler}
       />
 
-      {abletonData && (
-        <AbletonParsedResults
-          abletonData={abletonData}
-        />
-      )}
-
-      {(!abletonData && !error) && (
-        <h2>Not loaded.</h2>
-      )}
-
-      {(!abletonData && error) && (
-        <p>
-          Sorry, but something went wrong.
-          Please try again.
-        </p>
-      )}
-    </div>
-  );
-}
-
-function AbletonParsedResults ({ abletonData }: { abletonData: ParsedAbletonData }) {
-  const log = logger("AbletonParsedResults");
-  /** Debug. */ log.render();
-
-  const midiTracks = abletonData.tracksData.filter(trackData => trackData.type === "midi");
-  const audioTracks = abletonData.tracksData.filter(trackData => trackData.type === "audio");
-
-  return (
-    <div>
-      <h2
-        className="text-center font-medium text-2xl"
+      <Show when={state.abletonData}
+        fallback={
+          <Show when={state.error} fallback={<p>Not loaded.</p>}>
+            <p>
+              Sorry, but something went wrong.
+              Please try again.
+            </p>
+          </Show>
+        }
       >
-        MIDI tracks
-      </h2>
-
-      <div className="flex flex-col gap-4 my-6">
-        {midiTracks.map((track, track_index) => track.type === "midi" && (
-          <div
-            className="p-4 bg-gray-900 rounded-lg"
-            key={track_index}
-          >
-            <div className="mb-4">
-              <h4 className="font-medium text-lg text-gray-300">{track.name}</h4>
-              <p className="text-gray-400">This track is made of {track.devices.length} device(s).</p>
-            </div>
-
-            {track.devices.map((track, track_index) =>
-              <MidiDevice
-                key={track_index}
-                device={track}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      <h2>Audio tracks</h2>
-
-      {audioTracks.map((track, track_index) => (
-        <div key={track_index}>
-          <h4>{track.name}</h4>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const MidiDevice = ({ device }: {
-  device: MidiTrackData["devices"][number]
-}) => {
-  return device.type === "sample" ? (
-    <MidiDeviceSample
-      sample={device}
-    />
-  ) : device.type === "drum_rack" ? (
-    <MidiDeviceDrumRack
-      drum_rack={device}
-    />
-  ) : (
-    <MidiDeviceInstrumentRack
-      instrument_rack={device}
-    />
-  );
-};
-
-const MidiDeviceSample = ({ sample }: {
-  sample: MidiDeviceSampleData
-}) => {
-  const durationInPercent = (sample.duration / sample.sample_length) * 100;
-  const startTimeInPercent = (sample.start_time / sample.sample_length) * 100;
-
-  return (
-    <div className="bg-gray-600 p-2 rounded-lg">
-      <h4>Sample: {sample.name} ({sample.relative_path})</h4>
-
-      <div className="relative w-full bg-gray-200 h-4 dark:bg-gray-700 rounded-md">
-        <div
-          className="absolute bg-blue-600 h-full rounded-sm"
-          style={{
-            width: `${durationInPercent}%`,
-            left: `${startTimeInPercent}%`
-          }}></div>
-      </div>
-    </div>
-  );
-};
-
-const MidiDeviceDrumRack = ({ drum_rack }: {
-  drum_rack: MidiDeviceDrumRackData
-}) => {
-  const [selectedBranch, setSelectedBranch] = useState(0);
-  const launchpadRef = useRef<HTMLDivElement>(null);
-
-  const log = logger("MidiDeviceDrumRack");
-  /** Debug. */ log.render();
-
-  /** Function to toggle preview buttons on the Launchpad. */
-  const toggleLaunchpadPads = (enable: boolean) => {
-    if (!launchpadRef.current) return;
-    const launchpad = launchpadRef.current;
-
-    drum_rack.branches.forEach((branch, currentBranchIndex) => {
-      const note = branch.receivingNote;
-
-      const padElement = launchpad.querySelector(`[data-note="${note}"]`);
-      if (!padElement) return;
-
-      padElement.classList.toggle(
-        /** This is the default color of pads. */ "bg-gray-400",
-        !enable
-      );
-
-      padElement.classList.toggle(
-        selectedBranch === currentBranchIndex ? "bg-blue-400" : "bg-blue-800",
-        enable
-      );
-    });
-  };
-
-  /** Update the highlights on the Launchpad. */
-  useEffect(() => {
-    log.log("Update Launchpad highlights.", drum_rack);
-    
-    toggleLaunchpadPads(true);
-    return () => toggleLaunchpadPads(false);
-  }, [drum_rack, selectedBranch]);
-
-  return (
-    <div className="flex justify-between items-center gap-4 flex-col md:flex-row">
-      <div className="w-full max-w-60 sm:w-64">
-        <Launchpad
-          ref={launchpadRef}
-          layout="drum_rack"
-          onPadDown={() => null}
-          onPadUp={(note_id) => {
-            const branch = drum_rack.branches.findIndex(branch => branch.receivingNote === note_id);
-            if (branch === -1) return;
-
-            setSelectedBranch(branch);
-          }}
+        <AbletonParsedResults
+          abletonData={state.abletonData as ParsedAbletonData}
         />
-      </div>
-
-      <div className="w-full text-center">
-        <h4>Preview of a Drum Rack with {drum_rack.branches.length} branches.</h4>
-        <p>Viewing branch {selectedBranch} (receivedNote: {drum_rack.branches[selectedBranch].receivingNote})</p>
-
-        {drum_rack.branches[selectedBranch].devices.map((device, device_index) => (
-          <MidiDevice
-            key={device_index}
-            device={device}
-          />
-        ))}
-      </div>
+      </Show>
     </div>
   );
 };
 
-const MidiDeviceInstrumentRack = ({ instrument_rack }: {
-  instrument_rack: MidiDeviceInstrumentRackData
-}) => {
-  const [selectedBranch, setSelectedBranch] = useState(0);
-
-  return (
-    <div>
-      <h5>InstrumentRack: {instrument_rack.name}</h5>
-
-      <div className="bg-gray-600 flex flex-wrap mb-5">
-        {instrument_rack.branches.map((branch, branch_index) => (
-          <button
-            key={branch_index}
-            className={`
-              px-4 py-2 ${selectedBranch === branch_index
-            ? "bg-blue-600"
-            : "bg-gray-800 hover:bg-opacity-60"
-          }
-            `}
-            onClick={() => setSelectedBranch(branch_index)}
-          >
-            {branch.name}
-          </button>
-        ))}
-      </div>
-        
-
-      {instrument_rack.branches[selectedBranch].devices.map((device, device_index) => (
-        <MidiDevice
-          key={device_index}
-          device={device}
-        />
-      ))}
-    </div>
-  );
-};
+export default UtilitiesAbletonParse;

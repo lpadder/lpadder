@@ -1,23 +1,46 @@
+import type {
+  ParsedAbletonData,
+
+  AudioTrackData,
+  MidiTrackData,
+
+  MidiDeviceSampleData,
+
+  MidiDeviceDrumRackData,
+  MidiDeviceDrumRackBranchData,
+
+  MidiDeviceInstrumentRackData,
+  MidiDeviceInstrumentRackBranchData
+} from "@/types/AbletonData";
+
 import pako from "pako";
 
-export function readAbletonFile (buffer: ArrayBuffer) {
-  const array = new Uint8Array(buffer);
-
-  // Ungzip the file and store it as a UTF-8 string.
-  const ungzipped_file = pako.ungzip(array);
-  const raw_file_content = new TextDecoder("utf-8").decode(ungzipped_file);
-
-  // Transform the file content from string to XML.
-  const xml_parser = new DOMParser();
-  const file_content = xml_parser.parseFromString(raw_file_content, "text/xml");
-
-  return file_content;
-}
-
-export type ParsedAbletonData = ReturnType<typeof parseAbletonData>;
+/**
+ * Read an Ableton Live Set (.als) and returns its data in XML.
+ * @param buffer - File buffer containing the `.als` file.
+ */
+export const readAbletonFile = (buffer: ArrayBuffer) => new Promise<Document>((resolve, reject) => {
+  try {
+    const array = new Uint8Array(buffer);
+  
+    // Ungzip the file and store it as a UTF-8 string.
+    const ungzipped_file = pako.ungzip(array);
+    const raw_file_content = new TextDecoder("utf-8").decode(ungzipped_file);
+  
+    // Transform the file content from string to XML.
+    const xml_parser = new DOMParser();
+    const file_content = xml_parser.parseFromString(raw_file_content, "text/xml");
+  
+    resolve(file_content);
+  }
+  catch (error) {
+    console.error("[utils/readAbletonFile] Error while reading the file.", error);
+    reject("Error while reading the file.");
+  }
+});
 
 /** Parse an .als (Ableton Live Set) project. */
-export function parseAbletonData (project: Document) {
+export const parseAbletonData = (project: Document) => new Promise<ParsedAbletonData>((resolve, reject) => {
   const getFirstElementByTag = (tag: string) => {
     const element = project.getElementsByTagName(tag)[0];
     if (!element) {
@@ -27,32 +50,24 @@ export function parseAbletonData (project: Document) {
     return element;
   };
 
-  // Get Ableton version (ex.: "Ableton Live 11.0.11").
-  const abletonVersion = getFirstElementByTag("Ableton").getAttribute("Creator") as string;
-
-  // Get tracks data (in JSON).
-  const tracksData = getTracksData(getFirstElementByTag("Tracks"));
-
-  return {
-    abletonVersion,
-    tracksData
-  };
-}
-
-export interface AudioTrackData {
-  type: "audio";
-  name: string;
-}
-
-export interface MidiTrackData {
-  type: "midi";
-  name: string;
-  devices: (
-    | MidiDeviceInstrumentRackData
-    | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
-  )[];
-}
+  try {
+    /** Ableton version (ex.: "Ableton Live 11.0.1"). */
+    const abletonVersion = getFirstElementByTag("Ableton")
+      .getAttribute("Creator") as string;
+  
+    /** Get tracks data in project. */
+    const tracksData = getTracksData(getFirstElementByTag("Tracks"));
+  
+    resolve({
+      abletonVersion,
+      tracksData
+    });
+  }
+  catch (error) {
+    console.error("[utils/parseAbletonData] Error while parsing the file.", error);
+    reject(error);
+  }
+});
 
 /** Parse the tracks of the project. */
 function getTracksData (tracks: Element) {
@@ -100,54 +115,6 @@ function getTracksData (tracks: Element) {
   return tracksData;
 }
 
-export interface MidiDeviceInstrumentRackData {
-  name: string;
-  type: "instrument_rack";
-
-  branches: MidiDeviceInstrumentRackBranchData[];
-}
-
-export interface MidiDeviceInstrumentRackBranchData {
-  name: string;
-  devices: (
-    | MidiDeviceInstrumentRackData
-    | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
-  )[];
-}
-
-export interface MidiDeviceDrumRackData {
-  name: string;
-  type: "drum_rack";
-
-  branches: MidiDeviceDrumRackBranchData[];
-}
-
-export interface MidiDeviceDrumRackBranchData {
-  name: string;
-  devices: (
-    | MidiDeviceInstrumentRackData
-    | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
-  )[];
-
-  /** MIDI note assigned to the drum pad. */
-  receivingNote: number;
-}
-
-export interface MidiDeviceSampleData {
-  name: string;
-  type: "sample";
-
-  /** Length of the entire sample. */
-  sample_length: number;
-  start_time: number;
-  end_time: number;
-  duration: number;
-
-  relative_path: string;
-}
-
 function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
   // `DeviceChain` => Contains the list of the list of devices in the group.
   const deviceChainGlobal = group.getElementsByTagName("DeviceChain")[0];
@@ -169,7 +136,7 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
     /** We get the type of the device. */
     const deviceType = device.tagName;
 
-    /** We only care about `InstrumentGroupDevice`s and `DrumGroupDevice`s. */
+    /** We only care about these devices. */
     if (!(
       deviceType === "InstrumentGroupDevice"
       || deviceType === "DrumGroupDevice"
@@ -177,16 +144,22 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
     )) continue;
 
     switch (deviceType) {
+    
+    /** This is the instrument rack. */
     case "InstrumentGroupDevice": {
       const instrumentRackData = parseInstrumentRack(device);
       parsed_devices.push(instrumentRackData);
       break;
     }
+
+    /** This is the drum rack. */
     case "DrumGroupDevice": {
       const drumRackData = parseDrumRack(device);
       parsed_devices.push(drumRackData);
       break;
     }
+
+    /** This is the sampler. */
     case "OriginalSimpler": {
       const sample_data = device.getElementsByTagName("MultiSamplePart")[0];
       const sample_name = sample_data.getElementsByTagName("Name")[0].getAttribute("Value") || "";
@@ -212,7 +185,7 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
       const sample_file_relative_path_element = sample_file_ref.getElementsByTagName("RelativePath")[0];
       let sample_file_relative_path = "";
 
-      /** Beaviour on Ableton Live <11 */
+      /** Behaviour on Ableton Live <11 */
       if (sample_file_relative_path_element.children.length > 0) {
         for (const relativePathElement of sample_file_relative_path_element.children) {
           if (relativePathElement.tagName !== "RelativePathElement") continue;
