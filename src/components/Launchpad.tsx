@@ -43,8 +43,10 @@ const Launchpad: Component<{
   /** Optional ustom behaviour on right click. */
   onContextMenu?: ContextEventFunctionProps; 
 }> = (props) => {
-  const launchpadLayouts = new LaunchpadLayout();
-  const currentLayout = launchpadLayouts.layouts[props.layout || "programmer"];
+  const { layouts } = new LaunchpadLayout();
+
+  const layout = () => props.layout || "programmer";
+  const currentLayout = layouts[layout()];
 
   return (
     <div

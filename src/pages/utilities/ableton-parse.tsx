@@ -1,3 +1,4 @@
+import type { Component } from "solid-js";
 import type { ParsedAbletonData } from "@/types/AbletonData";
 
 import type {
@@ -7,11 +8,8 @@ import type {
   MidiTrackData
 } from "@/types/AbletonData";
 
-import { Component, For, JSX, Switch, Match, createEffect, onCleanup } from "solid-js";
-import { Show, createSignal } from "solid-js";
+import { Show, For, JSX, Switch, Match, createSignal, createEffect, onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
-
-// import { useState, useRef, useEffect } from "react";
 
 import FileInput from "@/components/FileInput";
 import Launchpad from "@/components/Launchpad";
@@ -98,17 +96,13 @@ const MidiDevice: Component<{
 const MidiDeviceSample: Component<{
   sample: MidiDeviceSampleData
 }> = (props) => {
-  const [state, setState] = createStore({
-    duration_percent: 0,
-    start_time_percent: 0
-  });
+  /** Get a percentage of the `value` depending on `sample_length`. */
+  const inPercent = (value: number) =>  (value / props.sample.sample_length) * 100;
 
-  createEffect(() => {
-    setState({
-      duration_percent: (props.sample.duration / props.sample.sample_length) * 100,
-      start_time_percent: (props.sample.start_time / props.sample.sample_length) * 100
-    });
-  });
+  /** Duration of the sample in percent. */
+  const duration_percent = () => inPercent(props.sample.duration);
+  /** Start time of the sample in percent. */
+  const start_time_percent = () => inPercent(props.sample.start_time);
 
   return (
     <div class="bg-gray-600 p-2 rounded-lg">
@@ -118,8 +112,8 @@ const MidiDeviceSample: Component<{
         <div
           class="absolute bg-blue-600 h-full rounded-sm"
           style={{
-            width: `${state.duration_percent}%`,
-            left: `${state.start_time_percent}%`
+            width: `${duration_percent()}%`,
+            left: `${start_time_percent()}%`
           }}></div>
       </div>
     </div>
