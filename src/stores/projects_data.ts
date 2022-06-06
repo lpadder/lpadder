@@ -1,22 +1,10 @@
 import type { ProjectData } from "@/types/Project";
+import type { Response } from "@/types/Globals";
 
 import localforage from "localforage";
 
-interface SuccessResponse<T> {
-  success: true;
-  data: T;
-}
-
-interface FailResponse {
-  success: false;
-  message: string;
-  debug?: unknown;
-}
-
-type Response<T> = Promise<SuccessResponse<T> | FailResponse>;
-
-/** localForage store for persistance of projects. */
-class StoredProjectsDataStore {
+/** localForage store for persistance of projects' data. */
+class ProjectsDataLocalStore {
   private store: LocalForage;
 
   constructor (databaseName: string) {
@@ -26,9 +14,9 @@ class StoredProjectsDataStore {
     });
   }
 
-  async getProjectDataFromSlug (projectSlug: string): Response<ProjectData> {
+  async get (slug: string): Response<ProjectData> {
     try {
-      const data: ProjectData | null = await this.store.getItem(projectSlug);
+      const data: ProjectData | null = await this.store.getItem(slug);
       if (data) return {
         success: true,
         data
@@ -36,24 +24,20 @@ class StoredProjectsDataStore {
 
       return {
         success: false,
-        message: "Project not found."
+        message: `Project data of "${slug}" not found.`
       };
     }
-    catch (e) {
-      console.error("[stores][projects_data][getProjectData]", e);
-
+    catch (error) {
       return {
         success: false,
         message: "An error occured.",
-        debug: {
-          error: e
-        }
+        debug: { error }
       };
     }
   }
 
-  /** Update or create an entry in the local database. */
-  async updateProjectData (
+  /** Updates, or creates if not found, a project data in localForage. */
+  async update (
     slug: string,
     data: ProjectData
   ): Response<ProjectData> {
@@ -65,57 +49,34 @@ class StoredProjectsDataStore {
         data: stored_data
       };
     }
-    catch (e) {
-      console.error("[stores][projects_data][updateProjectData]", e);
-
+    catch (error) {
       return {
         success: false,
-        message: `Error while saving the project data of "${slug}"`,
-        debug: {
-          error: e
-        }
+        message: `Error while updating the data of "${slug}"`,
+        debug: { error }
       };
     }
   }
 
-  async createEmptyProjectData (slug: string): Response<ProjectData> {
-    try {
-      const empty_project_data: ProjectData = {
-        launchpads: [],
-        files: {},
-        
-        /** 120 is the default BPM. */
-        global_bpm: 120
-      };
-
-      const stored_data: ProjectData = await this.store.setItem(slug, empty_project_data);
-      return {
-        success: true,
-        data: stored_data
-      };
-    }
-    catch (e) {
-      console.error("[stores][projects_data][createEmptyProjectData]", e);
-      return {
-        success: false,
-        message: `Error while creating the project data of "${slug}".`,
-        debug: {
-          error: e
-        }
-      };
-    }
-  }
-
-  async deleteProjectData (slug: string) {
+  /** Deletes a project's data in localForage. */
+  async delete (slug: string): Response<undefined> {
     try {
       await this.store.removeItem(slug);
-      return true;
+
+      return {
+        success: true,
+        data: undefined
+      };
     }
-    catch (e) {
-      console.error("[stores][projects_data][deleteProjectData]", e);
-      return false;
+    catch (error) {
+      return {
+        success: false,
+        message: `Error while deleting the data of "${slug}".`,
+        debug: { error }
+      };
     }
   }
 }
 
-export const storedProjectsData = new StoredProjectsDataStore("lpadder");
+/** localForage store wrapped with some utility functions. */
+export const projectsDataLocal = new ProjectsDataLocalStore("lpadder");

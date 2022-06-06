@@ -3,13 +3,13 @@ import type { ProjectStructure } from "@/types/Project";
 import JSZip from "jszip";
 
 // Stores
-import { useCurrentProjectStore } from "@/stores/current_project";
+import { currentProjectStore } from "@/stores/current_project";
 
 // Utilities
 import downloadBlob from "@/utils/downloadBlob";
 
 export default async function exportCurrentCoverToZip ( ) {
-  const current_project = useCurrentProjectStore.getState();
+  const current_project = currentProjectStore;
 
   const project_metadata = current_project.metadata;
   const project_data = current_project.data;

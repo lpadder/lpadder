@@ -1,26 +1,15 @@
+import type { Response } from "@/types/Globals";
+
 import type {
   ProjectLoadedMetadata,
   ProjectMetadata
-} from "../types/Project";
+} from "@/types/Project";
 
 import localforage from "localforage";
-import create from "zustand";
+import { createStore } from "solid-js/store";
 
-interface SuccessResponse<T> {
-  success: true;
-  data: T;
-}
-
-interface FailResponse {
-  success: false;
-  message: string;
-  debug?: unknown;
-}
-
-type Response<T> = Promise<SuccessResponse<T> | FailResponse>;
-
-/** localForage store for persistance of projects. */
-class StoredProjectsMetadataStore {
+/** localForage store for persistance of projects' metadata. */
+class ProjectsMetadataLocalStore {
   private store: LocalForage;
 
   constructor (databaseName: string) {
@@ -30,11 +19,8 @@ class StoredProjectsMetadataStore {
     });
   }
 
-  /**
-   * Get every project from the
-   * local database in an array.
-   */
-  public async getProjectsMetadata () {
+  /** Gets all the projects metadata */
+  async getAll () {
     const projects: ProjectLoadedMetadata[] = [];
 
     // Iterate every key/value from the database.
@@ -48,9 +34,9 @@ class StoredProjectsMetadataStore {
     return projects;
   }
 
-  async getProjectMetadataFromSlug (projectSlug: string): Response<ProjectMetadata> {
+  async get (slug: string): Response<ProjectMetadata> {
     try {
-      const data: ProjectMetadata | null = await this.store.getItem(projectSlug);
+      const data: ProjectMetadata | null = await this.store.getItem(slug);
       if (data) return {
         success: true,
         data
@@ -58,20 +44,20 @@ class StoredProjectsMetadataStore {
 
       return {
         success: false,
-        message: "Project not found."
+        message: `Project metadata of "${slug}" not found.`
       };
     }
     catch (error) {
       return {
         success: false,
         message: "An error occured.",
-        debug: error
+        debug: { error }
       };
     }
   }
 
-  /** Update or create an entry in the local database. */
-  async updateProjectMetdata (
+  /** Updates, or creates if not found, a project metadata in localForage. */
+  async update (
     slug: string,
     data: ProjectMetadata
   ): Response<ProjectLoadedMetadata> {
@@ -99,7 +85,8 @@ class StoredProjectsMetadataStore {
     }
   }
 
-  async deleteProjectMetadata (slug: string) {
+  /** Deletes a project's metadata in localForage. */
+  async delete (slug: string) {
     try {
       await this.store.removeItem(slug);
       return true;
@@ -109,68 +96,14 @@ class StoredProjectsMetadataStore {
       return false;
     }
   }
-
-  async createEmptyProjectMetdata (slug: string, {
-    name,
-    authors = [],
-    launchpadders = []
-  }: {
-    name: string;
-    authors?: string[];
-    launchpadders?: string[];
-  }): Response<ProjectLoadedMetadata> {
-    if (!name || !slug) return {
-      success: false,
-      message: "Name and slug are required."
-    };
-    
-    // Defining an empty project.
-    const project: ProjectMetadata = {
-      // Version of lpadder is defined globally, see `global.d.ts`.
-      version: import.meta.env.DEV ? "next" : APP_VERSION,
-
-      name,
-      authors,
-      launchpadders
-    };
-
-    // Check if the slug already exists.
-    const { success: alreadyExists } = await this.getProjectMetadataFromSlug(slug);
-    if (alreadyExists) return {
-      success: false,
-      message: "A project with this slug already exists."
-    };
-
-    // Store the new project.
-    const created_project = await this.updateProjectMetdata(slug, project);
-    if (!created_project.success) return {
-      success: false,
-      message: "Error while creating the project.",
-      debug: {
-        response: created_project
-      }
-    };
-
-    return {
-      success: true,
-      data: created_project.data
-    };
-  }
 }
 
 /** localForage store wrapped with some utility functions. */
-export const storedProjectsMetadata = new StoredProjectsMetadataStore("lpadder");
+export const projectsMetadataLocal = new ProjectsMetadataLocalStore("lpadder");
 
-interface LocalProjectsStore {
-  localProjectsMetadata: ProjectLoadedMetadata[] | null;
-  setLocalProjectsMetadata: (data: ProjectLoadedMetadata[] | null) => void;
-}
 
 /**
- * This store is used to store every projects
- * that was in the localForage.
+ * This store is used to preload
+ * every metadata from localForage.
  */
-export const useLocalProjectsStore = create<LocalProjectsStore>((set) => ({
-  localProjectsMetadata: null,
-  setLocalProjectsMetadata: (data) => set({ localProjectsMetadata: data })
-}));
+export const [projectsMetadataStore, setProjectsMetadataStore] = createStore<ProjectLoadedMetadata[]>([]);
