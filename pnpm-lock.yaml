@@ -20,6 +20,7 @@ specifiers:
   postcss: ^8.4.14
   release-it: ^14.14.0
   solid-app-router: ^0.3.3
+  solid-headless: ^0.11.0
   solid-icons: ^0.4.11
   solid-js: ^1.4.3
   tailwindcss: ^3.0.24
@@ -40,6 +41,7 @@ dependencies:
   localforage: 1.10.0
   pako: 2.0.4
   solid-app-router: 0.3.3_solid-js@1.4.3
+  solid-headless: 0.11.0_solid-js@1.4.3
   solid-icons: 0.4.11_solid-js@1.4.3
   solid-js: 1.4.3
   wavesurfer.js: 6.2.0
@@ -4970,6 +4972,16 @@ packages:
       solid-js: 1.4.3
     dev: false
 
+  /solid-headless/0.11.0_solid-js@1.4.3:
+    resolution: {integrity: sha512-ZAwstHK61dHrKxNycI7UMiMGZn4i5wsorCtnGTygioT5S7Yo8Wq5gyvsDt86kvfdn55KF7lyHFFypV2jcE5F5A==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
+    dependencies:
+      solid-js: 1.4.3
+      solid-use: 0.3.4_solid-js@1.4.3
+    dev: false
+
   /solid-icons/0.4.11_solid-js@1.4.3:
     resolution: {integrity: sha512-NniSmCTCkd+H30/UAXvJV8cCTpPS3P35+FfV8ZmuvtwqylR/LOAkQzYlSaUCfj0UUDb+iiLgaFeaEE1j1NGIqg==}
     peerDependencies:
@@ -4991,6 +5003,15 @@ packages:
       '@babel/types': 7.18.2
       solid-js: 1.4.3
     dev: true
+
+  /solid-use/0.3.4_solid-js@1.4.3:
+    resolution: {integrity: sha512-6i/OgufY6NAhYkB/1d5gU2lROTM9nIMo08qVyaTDp4RjDONf2HgceaEYhvRrQc31IAOBU6xnZ9d6S4rRsLdj9w==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
+    dependencies:
+      solid-js: 1.4.3
+    dev: false
 
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}

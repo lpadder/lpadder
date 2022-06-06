@@ -18,7 +18,7 @@ import {
 
 // Pages
 const Home                    = lazy(() => import("@/pages/index"));
-// const Projects  = lazy(() => import("@/pages/projects/index"));
+const ProjectsHome            = lazy(() => import("@/pages/projects/index"));
 const UtilitiesHome           = lazy(() => import("@/pages/utilities/index"));
 const UtilitiesConvertMidi    = lazy(() => import("@/pages/utilities/convert-midi"));
 const UtilitiesMidiChecker    = lazy(() => import("@/pages/utilities/midi-checker"));
@@ -26,12 +26,13 @@ const UtilitiesAbletonParse   = lazy(() => import("@/pages/utilities/ableton-par
 const UtilitiesMidiVisualizer = lazy(() => import("@/pages/utilities/midi-visualizer"));
 
 // Components
-import UtilitiesHeader from "@/components/UtilitiesHeader";
+import UtilitiesLayout from "@/components/utilities/Layout";
+import ProjectsLayout from "@/components/projects/Layout";
 
 // Modals
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
 // import ImportProjectModal from "@/components/ImportProjectModal";
-// import CreateProjectModal from "@/components/CreateProjectModal";
+import CreateProjectModal from "@/components/CreateProjectModal";
 // import LpadderWrongVersionModal from "./components/LpadderWrongVersionModal";
 
 // WebMidi
@@ -46,10 +47,17 @@ const Main: Component = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-        
-          {/* <Route path="/projects/*" element={<Projects />} />*/}
 
-          <Route path="/utilities" element={<UtilitiesHeader />}>
+          {/* <Route path="/collab" element={<CollabLayout />}>
+
+          </Route> */}
+        
+          <Route path="/projects" element={<ProjectsLayout />}>
+            <Route path="/" element={<ProjectsHome />} />
+            {/* <Route path="/:slug" element={<ProjectsSlug />} /> */}
+          </Route>
+
+          <Route path="/utilities" element={<UtilitiesLayout />}>
             <Route path="/" element={<UtilitiesHome />} />
             <Route path="*" element={<Navigate href="/utilities" />} />
 
@@ -62,8 +70,8 @@ const Main: Component = () => {
           <Route path="*" element={<Navigate href="/" />} />
         </Routes>
 
-        {/* <ImportProjectModal />
-      <CreateProjectModal /> */}
+        {/* <ImportProjectModal />*/}
+        <CreateProjectModal />
       
         <LpadderUpdaterModal />
       </Router>
