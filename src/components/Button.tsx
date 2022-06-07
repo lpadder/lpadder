@@ -1,6 +1,6 @@
 import type { ParentComponent, JSX } from "solid-js";
 
-const Button: ParentComponent<JSX.HTMLAttributes<HTMLButtonElement>> = (props) => {
+const Button: ParentComponent<JSX.IntrinsicElements["button"]> = (props) => {
   return (
     <button
       class={`

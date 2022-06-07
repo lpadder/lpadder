@@ -6,7 +6,7 @@ import { Show } from "solid-js";
  * and also add a required `label` prop.
  */
 type InputProps = ParentComponent<
-  JSX.HTMLAttributes<HTMLInputElement> & {
+  JSX.IntrinsicElements["input"] & {
     label?: string,
     tip?: string
   }

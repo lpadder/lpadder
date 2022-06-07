@@ -1,6 +1,6 @@
 import type { ParentComponent, JSX } from "solid-js";
 
-const Select: ParentComponent<JSX.HTMLAttributes<HTMLSelectElement>> = (props) => {
+const Select: ParentComponent<JSX.IntrinsicElements["select"]> = (props) => {
   return (
     <select
       class="
