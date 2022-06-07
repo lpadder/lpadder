@@ -1,6 +1,8 @@
 import type { JSX } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import { DialogTitle } from "solid-headless";
+
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 
@@ -36,9 +38,9 @@ export default function CreateProjectModal () {
 
   return (
     <Modal open={modalsStore.createProjectModal} onClose={resetAndClose}>
-      <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-200">
+      <DialogTitle as="h2" class="mt-6 text-3xl font-extrabold text-center text-gray-200">
         Create a cover
-      </h2>
+      </DialogTitle>
 
       <form class="px-4 mt-8 space-y-6" onSubmit={handleCreation}>
         <Input
@@ -53,7 +55,7 @@ export default function CreateProjectModal () {
           class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
           label="Personal slug"
           placeholder="some-amazing-cover"
-          smallTipText="Slug used to identify the cover more easily from URL."
+          tip="Slug used to identify the cover more easily from URL."
           onChange={(e) => {
             const cleanedValue = e.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
             return setState({ ...state, slug: cleanedValue });

@@ -1,35 +1,41 @@
 import type { Component } from "solid-js";
-
-import { mergeProps } from "solid-js";
 import { useNavigate } from "solid-app-router";
+
+import DropdownButton from "@/components/DropdownButton";
+
+import {
+  currentProjectStore,
+  setCurrentProjectStore
+} from "@/stores/current_project";
+
+import { deleteProject } from "@/utils/projects";
+
+import { HiOutlineDotsVertical } from "solid-icons/hi";
 
 const NavbarItem: Component<{
   name: string,
   slug: string,
 
-  /** Defaults to false. */
   selected?: boolean
-}> = (_props) => {
-  const props = mergeProps({ selected: false }, _props);
+}> = (props) => {
   const navigate = useNavigate();
 
   const handleProjectUpdate = () => {
-    if (project_slug.current === props.slug) return;
-    console.info("[handleProjectUpdate] Switching from", project_slug.current, "to", props.slug);
+    if (currentProjectStore.slug === props.slug) return;
+    console.info("[handleProjectUpdate] Switching from", currentProjectStore.slug, "to", props.slug);
 
     // We remove any currently opened project.
-    project.setIsGloballySaved(true);
-    project.setData(null);
-    project.setMetadata(null);
+    setCurrentProjectStore({
+      data: null,
+      metadata: null
+    });
+    
     console.info("[handleProjectUpdate] Project data and metadata cleared.");
 
     // We update the current project slug
     // and navigate to its page to load it.
-    project.setSlug(props.slug);
+    setCurrentProjectStore({ slug: props.slug });
     navigate(props.slug);
-
-    // Close the projects' menu.
-    toggleProjectsMenu();
 
     console.info("[handleProjectUpdate] Project slug updated and navigated to route.");
   };
@@ -55,35 +61,28 @@ const NavbarItem: Component<{
           {
             name: "Delete",
             action: async () => {
-              const wasRemovedFromMetadata = await storedProjectsMetadata.deleteProjectMetadata(props.slug);
-              const wasRemovedFromData = await storedProjectsData.deleteProjectData(props.slug);
-              if (!wasRemovedFromMetadata || !wasRemovedFromData) return;
-
-              const localProjectsUpdated = [ ...localProjectsMetadata as ProjectLoadedMetadata[] ];
-              setLocalProjectsMetadata([
-                ...localProjectsUpdated.filter(
-                  project => project.slug !== props.slug
-                )
-              ]);
+              const response = await deleteProject(props.slug);
+              if (!response.success) return;
 
               // If the current project was removed, we redirect
               // to root because project will be inexistant.
               // Also remove the useless components.
-              if (project_slug.current === props.slug) {
+              if (currentProjectStore.slug === props.slug) {
                 navigate("/projects");
                 
                 // We remove any currently opened project.
-                project.setIsGloballySaved(true);
-                project.setData(null);
-                project.setMetadata(null);
-                project.setSlug(null);
+                setCurrentProjectStore({
+                  slug: null,
+                  data: null,
+                  metadata: null
+                });
               }
             }
           }
         ]}
-      >
-        <HiOutlineDotsVertical size={24} />
-      </DropdownButton>
+
+        buttonIcon={<HiOutlineDotsVertical size={24} />}
+      /> 
     </div>
   );
 };

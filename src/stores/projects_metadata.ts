@@ -86,14 +86,21 @@ class ProjectsMetadataLocalStore {
   }
 
   /** Deletes a project's metadata in localForage. */
-  async delete (slug: string) {
+  async delete (slug: string): Response<undefined> {
     try {
       await this.store.removeItem(slug);
-      return true;
+
+      return {
+        success: true,
+        data: undefined
+      };
     }
-    catch (e) {
-      /** Debug */ console.error("[stores][projects_metadata][deleteProjectMetadata]", e);
-      return false;
+    catch (error) {
+      return {
+        success: false,
+        message: `Error while deleting the metadata of "${slug}".`,
+        debug: { error }
+      };
     }
   }
 }

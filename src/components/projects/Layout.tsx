@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, ParentComponent } from "solid-js"; 
+import { Component, createEffect, createSignal } from "solid-js"; 
 import type { ProjectStructure } from "@/types/Project";
 
 import { Show, For, onMount, onCleanup } from "solid-js";
@@ -35,7 +35,7 @@ import { setModalsStore } from "@/stores/modals";
 import { syncProjectDataGlobally } from "@/utils/projects";
 
 // Icons
-import { HiOutlineShare, HiOutlineDotsVertical } from "solid-icons/hi";
+import { HiOutlineShare, HiOutlineDotsVertical, HiOutlineSave, HiSolidShare } from "solid-icons/hi";
 import { IoMenu, IoSave, IoHome } from "solid-icons/io";
 
 const Projects: Component = () => {
@@ -197,61 +197,61 @@ const Projects: Component = () => {
         errorMessage={lpadderWrongVersionModalData().errorMessage}
       />
 
-      <div
-        class="h-screen overflow-y-hidden"
-        onContextMenu={(e) => /** Prevent context menu. */ e.preventDefault()}
-      >
+      <div class="h-screen overflow-y-hidden">
         <div class="h-20 flex px-8 bg-gray-900 justify-between items-center">
+          {/* Mobile->HeaderTopLeft */}
           <button
             onClick={() => setMobileHeaderVisibility(show => !show)}
             class="md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
           >
             <IoMenu size={28} />
           </button>
-            
-          <Link
-            class="flex md:flex flex-row justify-center gap-2 items-center p-2 text-gray-400 bg-opacity-20 rounded transition-colors hover:text-gray-200 hover:bg-opacity-60"
-            href="/"
-          >
-            <IoHome size={28} /> Home
-          </Link>
 
-          <ul class="hidden flex-row-reverse gap-4">
-            <HeaderItem>
-              <DropdownButton
-                items={[
-                  {
-                    name: "Export to .zip",
-                    action: async () => await exportCurrentCoverToZip()
-                  },
-                  { isSeparator: true },
-                  {
-                    name: "Collaborate online",
-                    action: () => console.info("Collaborate")
-                  },
-                ]}
+          {/* Desktop->HeaderTopLeft */}
+          <p class="hidden md:block font-medium text-lg text-gray-200">
+            lpadder.
+          </p>
 
-                buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
-                buttonIcon={<HiOutlineShare size={28} />}
-              />
-            </HeaderItem>
-            <HeaderItem>
-              <button
-                class="py-2 px-4 bg-opacity-60 rounded-full"
-                onClick={syncProjectDataGlobally}
-              >
-                <IoSave size={28} />
-              </button>
-            </HeaderItem>
-          </ul>
+          {/* HeaderTopRight */}
+          <Show when={currentProjectStore.slug}>
+            <ul class="flex flex-row-reverse gap-4">
+              <HeaderItem>
+                <DropdownButton
+                  items={[
+                    {
+                      name: "Export to .zip",
+                      action: async () => await exportCurrentCoverToZip()
+                    },
+                    { isSeparator: true },
+                    {
+                      name: "Collaborate online",
+                      action: () => console.info("Collaborate")
+                    },
+                  ]}
+
+                  buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                  buttonIcon={<HiSolidShare size={28} />}
+                />
+              </HeaderItem>
+              <HeaderItem>
+                <button
+                  class="py-2 px-4 bg-opacity-60 rounded-full"
+                  onClick={syncProjectDataGlobally}
+                >
+                  <HiOutlineSave size={28} />
+                </button>
+              </HeaderItem>
+            </ul>
+          </Show>
         </div>
 
         {/** Projects Navigation */}
-        <nav class="z-20 hidden md:block fixed h-full top-0 md:top-20 left-0 md:w-72 w-full bg-gray-700">
-          {/* <HeaderNavigation */}
-          {/* // class="md:hidden"
-            // showHomeButtonOnMobile={true} */}
-          {/* /> */}
+        <nav
+          class="z-20 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
+          classList={{
+            "hidden": !showMobileHeader()
+          }}
+        >
           
           {/** Import / Create */}
           <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
@@ -264,7 +264,7 @@ const Projects: Component = () => {
           </div>
 
           {/** Projects List */}
-          <div class="overflow-auto fixed bottom-0 top-32 w-full md:w-72">
+          <div class="overflow-auto fixed md:bottom-16 bottom-20 top-32 w-full md:w-72">
             <Show when={projectsMetadataStore.length > 0} fallback={
               <div class="flex flex-col gap-8 justify-center items-center px-4 h-full">
                 <p class="text-lg font-medium">
@@ -298,7 +298,16 @@ const Projects: Component = () => {
                 )}
               </For>
             </Show>
+
           </div>
+
+
+          <Link
+            href="/"
+            class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-gray-500 hover:bg-pink-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
+          >
+            EXIT
+          </Link>
         </nav>
 
         <div class="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">

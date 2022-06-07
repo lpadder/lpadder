@@ -86,3 +86,31 @@ export const createNewProject = async (
     data: undefined
   };
 };
+/** Takes a `slug` parameter and deletes the corresponding project. */
+export const deleteProject = async (slug: string): Promise<Response<undefined>> => {
+  if (!slug) return {
+    success: false,
+    message: "Slug is required."
+  };
+
+  // Update the data localForage.    
+  const data_response = await projectsDataLocal.delete(slug);
+  if (!data_response.success) return data_response;
+  
+  // Update the metadata localForage.    
+  const metadata_response = await projectsMetadataLocal.delete(slug);
+  if (!metadata_response.success) return metadata_response;
+  
+  // Update the metadata store.    
+  setProjectsMetadataStore(
+    produce((metadatas => {
+      const index = metadatas.findIndex(metadata => metadata.slug === slug);
+      if (index !== -1) metadatas.splice(index, 1);
+    }))
+  );
+
+  return {
+    success: true,
+    data: undefined
+  };
+};
