@@ -76,8 +76,8 @@ export const createNewProject = async (
   
   // Update the metadata store.    
   setProjectsMetadataStore(
-    produce((metadatas => {
-      metadatas.push({ slug, metadata });
+    produce((store => {
+      store.metadatas.push({ slug, metadata });
     }))
   );
 
@@ -103,9 +103,9 @@ export const deleteProject = async (slug: string): Promise<Response<undefined>> 
   
   // Update the metadata store.    
   setProjectsMetadataStore(
-    produce((metadatas => {
-      const index = metadatas.findIndex(metadata => metadata.slug === slug);
-      if (index !== -1) metadatas.splice(index, 1);
+    produce((store => {
+      const index = store.metadatas.findIndex(metadata => metadata.slug === slug);
+      if (index !== -1) store.metadatas.splice(index, 1);
     }))
   );
 

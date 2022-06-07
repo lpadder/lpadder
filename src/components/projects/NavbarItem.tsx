@@ -3,41 +3,30 @@ import { useNavigate } from "solid-app-router";
 
 import DropdownButton from "@/components/DropdownButton";
 
+import { deleteProject } from "@/utils/projects";
+
+// Stores
 import {
   currentProjectStore,
   setCurrentProjectStore
 } from "@/stores/current_project";
 
-import { deleteProject } from "@/utils/projects";
-
+// Icons
 import { HiOutlineDotsVertical } from "solid-icons/hi";
 
 const NavbarItem: Component<{
   name: string,
-  slug: string,
-
-  selected?: boolean
+  slug: string
 }> = (props) => {
   const navigate = useNavigate();
-
+  const current_slug = () => currentProjectStore.slug;
+  
   const handleProjectUpdate = () => {
-    if (currentProjectStore.slug === props.slug) return;
-    console.info("[handleProjectUpdate] Switching from", currentProjectStore.slug, "to", props.slug);
+    /** When the project is already selected, skip. */
+    if (current_slug() === props.slug) return;
 
-    // We remove any currently opened project.
-    setCurrentProjectStore({
-      data: null,
-      metadata: null
-    });
-    
-    console.info("[handleProjectUpdate] Project data and metadata cleared.");
-
-    // We update the current project slug
-    // and navigate to its page to load it.
-    setCurrentProjectStore({ slug: props.slug });
-    navigate(props.slug);
-
-    console.info("[handleProjectUpdate] Project slug updated and navigated to route.");
+    console.info("[PROJECT_UPDATE] Switching from", current_slug(), "to", props.slug);
+    navigate(`/projects/${props.slug}`);
   };
 
   return (
@@ -46,7 +35,7 @@ const NavbarItem: Component<{
       class={`
         flex flex-row items-center justify-between
         w-full px-4 py-6 cursor-pointer
-        ${props.selected ? "bg-gray-600" : "bg-gray-700"}
+        ${current_slug() === props.slug ? "bg-gray-600" : "bg-gray-700"}
         hover:bg-gray-800 hover:bg-opacity-40
         border-solid border-t-2 border-gray-800
       `}
@@ -67,12 +56,11 @@ const NavbarItem: Component<{
               // If the current project was removed, we redirect
               // to root because project will be inexistant.
               // Also remove the useless components.
-              if (currentProjectStore.slug === props.slug) {
+              if (current_slug() === props.slug) {
                 navigate("/projects");
                 
                 // We remove any currently opened project.
                 setCurrentProjectStore({
-                  slug: null,
                   data: null,
                   metadata: null
                 });

@@ -2,6 +2,7 @@ import type { JSX } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { DialogTitle } from "solid-headless";
+import { useNavigate } from "solid-app-router";
 
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
@@ -11,6 +12,7 @@ import { modalsStore, setModalsStore } from "@/stores/modals";
 import { createNewProject } from "@/utils/projects";
 
 export default function CreateProjectModal () {
+  const navigate = useNavigate();
   const [state, setState] = createStore({
     name: "",
     slug: ""
@@ -23,6 +25,7 @@ export default function CreateProjectModal () {
     const response = await createNewProject(state.slug, state.name);
     if (!response.success) return;
 
+    navigate(`/projects/${state.slug}`);
     resetAndClose();
   };
 
@@ -56,7 +59,7 @@ export default function CreateProjectModal () {
           label="Personal slug"
           placeholder="some-amazing-cover"
           tip="Slug used to identify the cover more easily from URL."
-          onChange={(e) => {
+          onInput={(e) => {
             const cleanedValue = e.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
             return setState({ ...state, slug: cleanedValue });
           }}

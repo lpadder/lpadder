@@ -19,6 +19,7 @@ import {
 // Pages
 const Home                    = lazy(() => import("@/pages/index"));
 const ProjectsHome            = lazy(() => import("@/pages/projects/index"));
+const ProjectsEditor          = lazy(() => import("@/pages/projects/slug/index"));
 const UtilitiesHome           = lazy(() => import("@/pages/utilities/index"));
 const UtilitiesConvertMidi    = lazy(() => import("@/pages/utilities/convert-midi"));
 const UtilitiesMidiChecker    = lazy(() => import("@/pages/utilities/midi-checker"));
@@ -54,7 +55,7 @@ const Main: Component = () => {
         
           <Route path="/projects" element={<ProjectsLayout />}>
             <Route path="/" element={<ProjectsHome />} />
-            {/* <Route path="/:slug" element={<ProjectsSlug />} /> */}
+            <Route path="/:slug" element={<ProjectsEditor />} />
           </Route>
 
           <Route path="/utilities" element={<UtilitiesLayout />}>

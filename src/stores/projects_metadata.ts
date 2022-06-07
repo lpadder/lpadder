@@ -113,4 +113,10 @@ export const projectsMetadataLocal = new ProjectsMetadataLocalStore("lpadder");
  * This store is used to preload
  * every metadata from localForage.
  */
-export const [projectsMetadataStore, setProjectsMetadataStore] = createStore<ProjectLoadedMetadata[]>([]);
+export const [projectsMetadataStore, setProjectsMetadataStore] = createStore<{
+  loaded: boolean,
+  metadatas: ProjectLoadedMetadata[]
+}>({
+  loaded: false,
+  metadatas: []
+});

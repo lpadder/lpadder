@@ -1,7 +1,4 @@
-import {
-  ChangeEvent,
-  useState
-} from "react";
+import { Show } from { } from "solid-js";
 
 import logger from "@/utils/logger";
 
@@ -31,7 +28,7 @@ export default function ProjectEditor () {
   ) ? 0 : undefined;
 
   const [currentLaunchpadSelected, setCurrentLaunchpadSelected] = useState<number | undefined>(initialLaunchpadId);
-  const handleLaunchpadSelection = (evt: ChangeEvent<HTMLSelectElement>) => {
+  const handleLaunchpadSelection = (evt: InputEvent) => {
     const index = evt.target.value;
     if (!index) {
       setCurrentLaunchpadPageSelected(undefined);
@@ -169,7 +166,7 @@ export default function ProjectEditor () {
 
   return (
     <div>
-      <div className="flex flex-row flex-wrap gap-4 mb-4">
+      <div class="flex flex-row flex-wrap gap-4 mb-4">
         <LaunchpadEditor
           setCurrentLaunchpadSelected={setCurrentLaunchpadSelected}
           handleLaunchpadSelection={handleLaunchpadSelection}
@@ -182,26 +179,22 @@ export default function ProjectEditor () {
           handleLaunchpadClick={handleLaunchpadClick}
         />
 
-        {launchpad && (
-          <LaunchpadPageEditor
-            setCurrentLaunchpadPageSelected={setCurrentLaunchpadPageSelected}
-            handleLaunchpadPageSelection={handleLaunchpadPageSelection}
-            launchpad={launchpad}
-            page={page}
+        {<Show when={launchpad}>{<LaunchpadPageEditor
+          setCurrentLaunchpadPageSelected={setCurrentLaunchpadPageSelected}
+          handleLaunchpadPageSelection={handleLaunchpadPageSelection}
+          launchpad={launchpad}
+          page={page}
   
-            addLaunchpadPage={addLaunchpadPage}
-            removeLaunchpadPage={removeLaunchpadPage}
-          />
-        )}
+          addLaunchpadPage={addLaunchpadPage}
+          removeLaunchpadPage={removeLaunchpadPage}
+        />}</Show>}
       </div>
 
-      {launchpad && sample && page && (
-        <LaunchpadSampleEditor
-          page={page}
-          sample={sample}
-          launchpad={launchpad}
-        />
-      )}
+      {<Show when={launchpad && sample && page}>{<LaunchpadSampleEditor
+        page={page}
+        sample={sample}
+        launchpad={launchpad}
+      />}</Show>}
     </div>
   );
 }

@@ -1,9 +1,8 @@
-import { Component, createEffect, createSignal } from "solid-js"; 
+import type { Component } from "solid-js"; 
 import type { ProjectStructure } from "@/types/Project";
 
-import { Show, For, onMount, onCleanup } from "solid-js";
-
-import { Link, Outlet, useParams } from "solid-app-router";
+import { Show, For, onMount, onCleanup, createSignal } from "solid-js";
+import { Link, Outlet } from "solid-app-router";
 import JSZip from "jszip";
 
 import HeaderItem from "@/components/projects/HeaderItem";
@@ -12,15 +11,13 @@ import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
+import { syncProjectDataGlobally } from "@/utils/projects";
 
-// Components in the layout.
-// import ProjectOverview from "@/pages/projects/slug/index";
+import DropdownButton from "@/components/DropdownButton";
 
 import LpadderWrongVersionModal, {
   LpadderWrongVersionModalData
 } from "@/components/LpadderWrongVersionModal";
-
-import DropdownButton from "@/components/DropdownButton";
 
 import {
   projectsMetadataLocal,
@@ -30,91 +27,40 @@ import {
 
 import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
 
-import { setModalsStore } from "@/stores/modals";
-
-import { syncProjectDataGlobally } from "@/utils/projects";
+import { setModalsStore } from   "@/stores/modals";
 
 // Icons
-import { HiOutlineShare, HiOutlineDotsVertical, HiOutlineSave, HiSolidShare } from "solid-icons/hi";
-import { IoMenu, IoSave, IoHome } from "solid-icons/io";
+import { HiOutlineSave, HiSolidShare } from "solid-icons/hi";
+import { IoMenu } from "solid-icons/io";
 
 const Projects: Component = () => {
-  const params = useParams();
-
   /**
-   * On page load, we take every cover in the localForage
-   * and we store it in a global state that'll be shared
-   * with children components.
-   * 
-   * We also check if a project slug was specified.
+   * On page load, we take every projects in the localForage
+   * and we store them in a global metadata store.
    */
   onMount(async () => {
-    console.group("[projects/Layout] onMount");
-    console.info("⌛ Fetching every stored projects' metadatas...");
+    if (projectsMetadataStore.loaded) {
+      console.info("[@projects/layout:mount] already preloaded every projects' metadata, skipping...");
+      return;
+    }
+
+    console.info("[@projects/layout:mount] fetching every projects' metadata...");
 
     const projects_metadatas = await projectsMetadataLocal.getAll();
-    setProjectsMetadataStore(projects_metadatas);
+    setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
 
-    /** Debug. */ console.info(
-      "✔️ Stored every projects' metadatas in local store: 'projectsMetadataStore' !"
-    );
-
-    /**
-     * Initial slug defined in the URL.
-     * An initial slug is when you go directly to `/projects/my_slug`
-     * and press enter in your browser address bar.
-     * 
-     * When an initial slug is set in the URL params,
-     * we need to load the project, if exists, linked to it.
-     */
-    const initialUrlSlug = params.slug;
-
-    // Check if the project's slug exists.
-    const initialUrlProject = projects_metadatas.find(
-      project => project.slug === initialUrlSlug
-    );
-
-    // If the project is found from slug.
-    if (initialUrlProject) {
-      console.info("→ Found matching project from slug in URL: ", initialUrlSlug);
-      console.groupEnd();
-
-      // Save slug in current project store.
-      setCurrentProjectStore({ slug: initialUrlSlug });
-    }
-    else console.groupEnd();
+    console.info("[@projects/layout:mount] done.");
   });
   
   onCleanup(() => {
-    console.info("[projects/onCleanup] ⌛ Clearing current project store...");
-    
+    console.info("[@projects/layout:cleanup] clearing stores...");
+
     setCurrentProjectStore({
       data: null,
-      metadata: null,
-      slug: null
+      metadata: null
     });
-  });
 
-  /** CTRL/CMD+S => Save globally the project. */
-  createEffect(() => {
-    console.info("[projects/effect] ⌛ Configure shortcuts.");
-
-    const platform = navigator.userAgentData?.platform || navigator.platform;
-    const saveShortcut = (e: KeyboardEvent) => {
-      if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-        e.preventDefault();
-
-        if (!currentProjectStore.slug) return;
-
-        console.info(`[CTRL+S] Save for ${currentProjectStore.slug}.`);
-        syncProjectDataGlobally();
-      }
-    };
-
-    onCleanup(() => {
-      console.info("[projects/effect:onCleanup] ⌛ Unconfigure shortcuts.");
-      window.removeEventListener("keydown", saveShortcut);
-    });
+    console.info("[@projects/layout:cleanup] done.");
   });
 
   const [showMobileHeader, setMobileHeaderVisibility] = createSignal(false);
@@ -185,9 +131,8 @@ const Projects: Component = () => {
     fileInput.remove();
   };
 
-
   return (
-    <>
+    <Show when={projectsMetadataStore.loaded} fallback={<p>Preloading the launchpad projects...</p>}>
       <LpadderWrongVersionModal
         open={lpadderWrongVersionModalOpen()}
         closeModal={() => setLpadderWrongVersionModalOpen(false)}
@@ -265,7 +210,7 @@ const Projects: Component = () => {
 
           {/** Projects List */}
           <div class="overflow-auto fixed md:bottom-16 bottom-20 top-32 w-full md:w-72">
-            <Show when={projectsMetadataStore.length > 0} fallback={
+            <Show when={projectsMetadataStore.metadatas.length > 0} fallback={
               <div class="flex flex-col gap-8 justify-center items-center px-4 h-full">
                 <p class="text-lg font-medium">
                     Nothing to play here...
@@ -288,19 +233,16 @@ const Projects: Component = () => {
               </div>
             }>
               
-              <For each={projectsMetadataStore}>
+              <For each={projectsMetadataStore.metadatas}>
                 {local_project => (
                   <NavbarItem
                     slug={local_project.slug}
                     name={local_project.metadata.name}
-                    selected={local_project.slug === currentProjectStore.slug}
                   />
                 )}
               </For>
             </Show>
-
           </div>
-
 
           <Link
             href="/"
@@ -314,7 +256,7 @@ const Projects: Component = () => {
           <Outlet />
         </div>
       </div>
-    </>
+    </Show>
   );
 };
 
