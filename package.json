@@ -3,11 +3,10 @@
   "version": "0.0.4",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview",
-    "lint": "eslint .",
-    "check": "pnpm lint && tsc",
-    "release": "pnpm check && dotenv -e .env.local release-it --"
+    "lint": "eslint . --fix && tsc",
+    "build": "pnpm lint && vite build",
+    "serve": "node ./build/server.js",
+    "release": "pnpm lint && dotenv -e .env.local release-it --"
   },
   "dependencies": {
     "@fontsource/poppins": "^4.5.0",
