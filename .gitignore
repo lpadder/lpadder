@@ -6,9 +6,10 @@ node_modules
 
 # Production
 dist
+build
 
-# Used for Vite HMR `CLIENT_PORT`.
+# Variables
 .env.local
 
 # Vercel
-.vercel
+.vercel*

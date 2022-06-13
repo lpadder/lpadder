@@ -1,15 +1,28 @@
-import solidPlugin from "vite-plugin-solid";
+import solid from "vite-plugin-solid";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vite";
+import mix, { nodeAdapter, vercelAdapter } from "vite-plugin-mix";
 import dotenv from "dotenv";
 import path from "path";
+import pkg from "./package.json";
 
-dotenv.config({ path: path.resolve(__dirname, ".env.local") });
+dotenv.config({
+  path: path.resolve(__dirname, ".env.local")
+});
+
+// Loaded from ".env.local".
 const CLIENT_PORT = parseInt(process.env.CLIENT_PORT) || 3000;
 
 export default defineConfig({
   plugins: [
-    solidPlugin(),
+    mix({
+      handler: path.resolve(__dirname, "./src/api/index.ts"),
+      adapter: process.env.VERCEL
+        ? vercelAdapter()
+        : nodeAdapter()
+    }),
+
+    solid(),
     VitePWA({
       includeAssets: [
         "robots.txt",
@@ -60,7 +73,7 @@ export default defineConfig({
   ],
   
   define: {
-    APP_VERSION: JSON.stringify(process.env.npm_package_version)
+    APP_VERSION: JSON.stringify(pkg.version)
   },
   
   resolve: {

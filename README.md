@@ -3,8 +3,9 @@
 ![GitHub - Social Banner](https://user-images.githubusercontent.com/59152884/162007722-4f9df4b9-b293-4ae2-bcfa-4b4b8e25ce70.png)
 
 `lpadder` (pronounced `el padder` or `launchpadder`) is a web
-application - **still in development** - that lets you play
-Launchpad covers directly from your web browser.
+application - **still in development** - that lets you play Launchpad covers directly from your web browser.
+
+In the future, [mini-games](https://github.com/Vexcited/lpadder/issues/26) will be available.
 
 This is currently a work in progress. You can still
 preview the latest release version by going to <https://lpadder.vercel.app>.
@@ -27,11 +28,11 @@ Deployment is powered with [Vercel](https://vercel.com).
 I also use [PNPm](https://pnpm.io/) as my main package manager.
 Database comes from [MongoDB Atlas](https://www.mongodb.com/atlas/database) and file hosting from my own Raspberry PI server.
 
-- `pnpm dev`: Starts the Vite development server on port 3000.
-  - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
-- `pnpm build`: Builds the app into `dist` directory and functions for Vercel.
-  - Note: when running `pnpm build --local`, it will not create functions for Vercel but bundles the server in `build` folder. There, you can run `pnpm serve`.
-- `pnpm serve`: Runs the server built using `pnpm build --local`.
+- `pnpm dev`: Starts the Vite development server on port `3000`.
+  - Note: if you use a reverse proxy to access the development server, you'll need to change the `CLIENT_PORT` environment variable in `.env.local` (a sample is available under `.env.sample`. The default value is `3000`.
+- `pnpm build`: Builds the app into `dist` and `build` directories.
+  - Note: when running build script on Vercel, it will use the Vercel adapter to create serverless functions.
+- `pnpm serve`: Runs the server built using `pnpm build`.
 - `pnpm lint`: Runs `eslint` and `tsc`.
 - `pnpm release`: Runs `pnpm lint`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
