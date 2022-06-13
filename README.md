@@ -30,7 +30,7 @@ Database comes from [MongoDB Atlas](https://www.mongodb.com/atlas/database) and 
 - `pnpm dev`: Starts the Vite development server on port 3000.
   - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
 - `pnpm build`: Builds the app into `dist` directory and functions for Vercel.
-  - Note: when running `pnpm build --local`, it will not create functions for Vercel and bundles the server in `server` folder. There, you can run `pnpm serve`.
+  - Note: when running `pnpm build --local`, it will not create functions for Vercel but bundles the server in `build` folder. There, you can run `pnpm serve`.
 - `pnpm serve`: Runs the server built using `pnpm build --local`.
 - `pnpm lint`: Runs `eslint` and `tsc`.
 - `pnpm release`: Runs `pnpm lint`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
