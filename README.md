@@ -12,47 +12,6 @@ preview the latest release version by going to <https://lpadder.vercel.app>.
 If you have any feature to add, head on the [issues](https://github.com/Vexcited/lpadder/issues) and
 create a new issue with the `feature request` template.
 
-## What is missing ?
-
-There's lists of what I need to work on to make this app better !
-It can also help the contributors to know what they can work on.
-
-### Refactor
-- [ ] React => Solid (1/4 of the transition is done)
-
-### App Structure
-- [x] Think about a way to store projects (structure of the `.zip`).
-  - [x] Add `assets` key to interface that will contain nor the path of the asset (in zipped cover.json) nor the Uint8Array of the asset (in localForage when parsed).
-  - [x] Think how I can implement the pages and samples (+ multi-launchpad support).
-    - A sample can maybe look like this `{ padId: number, onPadDown: ActionTrigger | null, onPadUp: ActionTrigger | null }`
-    - ActionTrigger interface can look like this: `{ audio: any (?), midi: any (?) }`.
-    - **This is just brainstorm** to know how it can be good and the most optimized to run smoothly.
-- [x] Support project imports/exports.
-  - [x] Can export through menu (share->Export to .zip)
-  - [x] Can import a cover through 'import' button
-    - [x] Can read the zip content imported
-    - [x] Can get content of cover.json + check if file exists
-    - [x] Show a modal to choose a slug to save the cover in localForage.
-- [ ] Metadata for samples (how to create them ?)
-  - I think to use wavesurfer, so maybe I need to dig in before starting to think about samples interface.
-- [ ] Make everything editable
-  - [ ] Add inputs and selects for launchpads and pages.
-  - [ ] Add audio imports and MIDI/JSON imports.
-  - [ ] Create a timeline (using wavesurfer)
-
-### Design
-- [ ] Responsive launchpads on projects.
-  - Maybe use canvas for a fullscreen and small view ? Like something draggable.
-- [ ] Responsive menus for `/projects`.
-  - The close button is still having some issues.
-- [x] Launchpad component is "responsive" (using full width and aspect ratio 1/1 on pads).
-  - Depends on the parent component... Needs more digging.
-- [x] Utilities page
-  - [ ] Think how the pages will be displayed
-    - do a `UtilitiesHeader` component or include it in the <Route> directly ?-?
-  - [x] Code-splitting on every utilities routes (to reduce bundle size and then better performances)
-  - [ ] Design the utilities (most of it is done but it's really draft)
-
 ## Explaining the lpadder project structure
 
 Each covers is bundled into a `.zip` file that contains a single `cover.json` file.
@@ -60,20 +19,24 @@ This file contains the project's global configuration and data.
 
 You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types/Project.ts) file.
 
-## Contribute
+## Development
 
-### Development
-
-This app was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com) and [TypeScript](https://www.typescriptlang.org). Deployment is powered with [Vercel](https://vercel.com).
+This app was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com) and [TypeScript](https://www.typescriptlang.org).
+To provide API routes, I use [vite-plugin-mix](https://github.com/egoist/vite-plugin-mix).
+Deployment is powered with [Vercel](https://vercel.com).
+I also use [PNPm](https://pnpm.io/) as my main package manager.
+Database comes from [MongoDB Atlas](https://www.mongodb.com/atlas/database) and file hosting from my own Raspberry PI server.
 
 - `pnpm dev`: Starts the Vite development server on port 3000.
   - Note: if you use a reverse proxy to access the development server, you'll need to create a `.env.local` file based on `.env.sample` and modify `CLIENT_PORT` from `3000` to the port you're using in your reverse proxy. This will make Vite HMR work.
-- `pnpm build`: Builds the app into `dist` directory.
-- `pnpm serve`: Serves the builded app under `dist`.
-- `pnpm lint`: Only runs `eslint`. You can fix errors by running `pnpm lint --fix`.
-- `pnpm check`: Runs `eslint` and `tsc` to check for errors.
-- `pnpm release`: Runs `pnpm check`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
+- `pnpm build`: Builds the app into `dist` directory and functions for Vercel.
+  - Note: when running `pnpm build --local`, it will not create functions for Vercel and bundles the server in `server` folder. There, you can run `pnpm serve`.
+- `pnpm serve`: Runs the server built using `pnpm build --local`.
+- `pnpm lint`: Runs `eslint` and `tsc`.
+- `pnpm release`: Runs `pnpm lint`, bumps the `version` in `package.json`, commits the changes and tag, then creates a GitHub Release.
   - Note: the published GitHub release will trigger a GitHub Action that will run a Vercel build. On successful deploy, it will update the published GitHub Release and append `Deployment URL: <VERCEL_DEPLOY_URL>\n\n` at the top of the release body.
+
+If you want to contribute, please check [the roadmap](https://github.com/Vexcited/lpadder/projects/1).
 
 ## Resources
 
