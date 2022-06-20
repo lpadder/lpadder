@@ -8,7 +8,7 @@ import {
   setProjectsMetadataStore
 } from "@/stores/projects_metadata";
 
-import { produce } from "solid-js/store";
+import { produce, unwrap } from "solid-js/store";
 
 /** Saves the current project to localForage. */
 export const syncProjectDataGlobally = async () => {
@@ -21,7 +21,10 @@ export const syncProjectDataGlobally = async () => {
   }
 
   /** Saved data into localForage. */
-  const response = await projectsDataLocal.update(current_project.slug, current_project.data);
+  const response = await projectsDataLocal.update(
+    // Here, we use `Object.assign` to get rid of the SolidJS proxy.
+    current_project.slug, unwrap(current_project.data)
+  );
 
   if (!response.success) {
     console.error("[syncProjectDataGlobally] An error was thrown while saving to localForage.", response.debug);
