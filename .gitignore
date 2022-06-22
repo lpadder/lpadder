@@ -3,10 +3,11 @@ node_modules
 
 # Miscallaneous
 .DS_Store
+auto-imports.d.ts
+.eslintrc-auto-import.json
 
 # Production
-dist
-build
+.solid
 
 # Variables
 .env.local

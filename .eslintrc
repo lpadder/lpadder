@@ -1,4 +1,8 @@
 {
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "solid",
@@ -7,7 +11,8 @@
   "extends": [
     "eslint:recommended",
     "plugin:solid/typescript",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "./.eslintrc-auto-import.json"
   ],
   "rules": {
     "brace-style": [
