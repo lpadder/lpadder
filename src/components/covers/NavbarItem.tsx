@@ -1,12 +1,12 @@
 import type { Component } from "solid-js";
 
 import DropdownButton from "@/components/DropdownButton";
-import { deleteProject } from "@/utils/projects";
+import { deleteProject } from "@/utils/covers";
 
 import {
   currentProjectStore,
   setCurrentProjectStore
-} from "@/stores/current_project";
+} from "@/stores/current_cover";
 
 const NavbarItem: Component<{
   name: string,
@@ -39,8 +39,8 @@ const NavbarItem: Component<{
         <span class="font-light text-md">{props.slug}</span>
       </div>
       <DropdownButton
-        buttonClassName="p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
-        items={[
+        buttonClassName="text-lg p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
+        items={[[
           {
             name: "Delete",
             action: async () => {
@@ -61,9 +61,9 @@ const NavbarItem: Component<{
               }
             }
           }
-        ]}
+        ]]}
 
-        buttonIcon={<button />}
+        buttonIcon={<IconMdiDotsVertical  />}
       /> 
     </div>
   );

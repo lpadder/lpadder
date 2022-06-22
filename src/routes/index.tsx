@@ -8,7 +8,7 @@ const SubMenu: Component<{
   href: string
 }> = (props) => {
   return (
-    <Link href={props.href} class="flex-1">
+    <Link href={props.href} class="w-full max-w-80 sm:w-96">
       <div class="p-4 bg-gray-500 bg-opacity-40 rounded-md backdrop-filter backdrop-blur transition-colors hover:bg-opacity-60">
         <h2 class="text-xl font-medium text-blue-50">{props.title}</h2>
         <p class="font-thin text-blue-100 opacity-80">{props.description}</p>
@@ -38,6 +38,12 @@ const Home: Component = () => {
             title="Utilities"
             description="Want to do some crazy stuff ?"
             href="/utilities"
+          />
+
+          <SubMenu
+            title="Games"
+            description="Here is some cool games, try them !"
+            href="/games"
           />
         </div>
 

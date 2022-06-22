@@ -12,7 +12,7 @@ import NavbarHeadItem from "@/components/covers/NavbarHeadItem";
 
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
-import { syncProjectDataGlobally } from "@/utils/projects";
+import { syncProjectDataGlobally } from "@/utils/covers";
 
 import DropdownButton from "@/components/DropdownButton";
 
@@ -26,7 +26,7 @@ import {
   setProjectsMetadataStore,
 } from "@/stores/projects_metadata";
 
-import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
+import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_cover";
 
 import { setModalsStore } from   "@/stores/modals";
 
@@ -148,9 +148,11 @@ const Projects: Component = () => {
             {/* Mobile->HeaderTopLeft */}
             <button
               onClick={() => setMobileHeaderVisibility(show => !show)}
-              class="md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
+              class="flex text-2xl md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
             >
-              menu
+              <Show when={showMobileHeader()} fallback={<IconMdiMenu />}>
+                <IconMdiClose />
+              </Show>
             </button>
 
             {/* Desktop->HeaderTopLeft */}
@@ -164,19 +166,22 @@ const Projects: Component = () => {
                 <HeaderItem>
                   <DropdownButton
                     items={[
-                      {
-                        name: "Export to .zip",
-                        action: async () => await exportCurrentCoverToZip()
-                      },
-                      { isSeparator: true },
-                      {
-                        name: "Collaborate online",
-                        action: () => console.info("Collaborate")
-                      },
+                      [
+                        {
+                          name: "Export to .zip",
+                          action: async () => await exportCurrentCoverToZip()
+                        }
+                      ],
+                      [
+                        {
+                          name: "Collaborate online",
+                          action: () => console.info("Collaborate")
+                        },
+                      ]
                     ]}
 
                     buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
-                    buttonIcon={<button />}
+                    buttonIcon={<IconMdiDotsVertical />}
                   />
                 </HeaderItem>
                 <HeaderItem>
@@ -202,7 +207,7 @@ const Projects: Component = () => {
             {/** Import / Create */}
             <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
               <NavbarHeadItem onClick={handleImportCover}>
-              Import
+                Import
               </NavbarHeadItem>
               <NavbarHeadItem onClick={() => setModalsStore({ createProjectModal: true })}>
                 Create

@@ -8,7 +8,7 @@ import logger from "@/utils/logger";
 
 import {
   useCurrentProjectStore
-} from "@/stores/current_project";
+} from "@/stores/current_cover";
 
 export default function ProjectPlay () {
   const project = useCurrentProjectStore(state => state.data);
@@ -30,21 +30,21 @@ export default function ProjectPlay () {
   );
 
   return (
-    <div className="
+    <div class="
       w-full bg-gray-700 bg-opacity-60 h-64 p-6 mb-6
       rounded-lg overflow-y-auto
     "> 
-      <div className="
+      <div class="
         flex justify-start items-center 
         w-fit h-full gap-2
       ">
         {project.launchpads.map((_, launchpadId) =>
           <div
             key={launchpadId}
-            className="flex gap-2 items-start flex-row h-full"
+            class="flex gap-2 items-start flex-row h-full"
           >
             <div
-              className="h-full w-full aspect-square"
+              class="h-full w-full aspect-square"
             >
               <Launchpad
                 launchpadId={launchpadId}
@@ -53,7 +53,7 @@ export default function ProjectPlay () {
                 onPadUp={handlePadUp}
               />
             </div>
-            <button className="rounded-full bg-gray-600 p-2"></button>
+            <button class="rounded-full bg-gray-600 p-2"></button>
           </div>
         )}
       </div>

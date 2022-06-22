@@ -13,7 +13,7 @@ import solid from "solid-start";
 import vercel from "solid-start-vercel";
 
 import Icons from "unplugin-icons/vite";
-// import IconsResolver from "unplugin-icons/resolver";
+import IconsResolver from "unplugin-icons/resolver";
 import AutoImport from "unplugin-auto-import/vite";
 
 dotenv.config({
@@ -78,6 +78,13 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
     AutoImport({
       dts: "./src/auto-imports.d.ts",
       eslintrc: { enabled: true },
+
+      resolvers: [
+        IconsResolver({
+          prefix: "Icon",
+          extension: "jsx"
+        })
+      ],
       
       imports: [
         "solid-app-router",

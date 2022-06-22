@@ -1,15 +1,14 @@
-import { Component, JSX, Match, Switch } from "solid-js";
+import type { Component, JSX } from "solid-js";
 import { Menu, Transition, MenuItem, Popover, PopoverButton, PopoverPanel } from "solid-headless";
-import { For } from "solid-js";
 
 const Separator: Component = () => (
   <div class="flex items-center" aria-hidden="true">
-    <div class="w-full border-t mb-1 border-gray-600" />
+    <div class="w-full h-[1px] rounded mb-1 bg-gray-600" />
   </div>
 );
 
 const DropdownButton: Component<{
-  items: { name?: string, action?: () => unknown, isSeparator?: boolean }[],
+  items: { name?: string, action?: () => unknown }[][],
   buttonIcon: JSX.Element,
   buttonClassName: string
 }> = (props) => {
@@ -18,7 +17,7 @@ const DropdownButton: Component<{
       {({ isOpen }) => (
         <>
           <PopoverButton
-            class={props.buttonClassName}
+            class={`flex ${props.buttonClassName}`}
           >
             {props.buttonIcon}
           </PopoverButton>
@@ -33,23 +32,22 @@ const DropdownButton: Component<{
             leaveTo="opacity-0 -translate-y-1 scale-50"
           >
             <PopoverPanel unmount={false} class="absolute z-10 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
-              <Menu class="p-2 z-50 absolute right-0 mt-2 w-56 bg-gray-800 rounded-md shadow-lg origin-top-right">
+              <Menu class="bg-gray-800 p-2 rounded-lg shadow-lg flex flex-col gap-1 z-50 absolute right-0 mt-2 w-56 origin-top-right">
                 <For each={props.items}>
-                  {item => (
-                    <Switch>
-                      <Match when={!item.isSeparator}>
-                        <MenuItem
-                          as="button"
-                          onClick={item.action}
-                          class="hover:bg-gray-600 hover:bg-opacity-60 bg-gray-600 bg-opacity-40 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
-                        >
-                          {item.name}
-                        </MenuItem>
-                      </Match>
-                      <Match when={item.isSeparator}>
-                        <Separator />
-                      </Match>
-                    </Switch>
+                  {group_items => (
+                    <div class="bg-gray-900 rounded-md p-2">
+                      <For each={group_items}>
+                        {item => (
+                          <MenuItem
+                            as="button"
+                            onClick={item.action}
+                            class="hover:bg-gray-600 hover:bg-opacity-60 bg-gray-600 bg-opacity-40 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
+                          >
+                            {item.name}
+                          </MenuItem>
+                        )}
+                      </For>
+                    </div>
                   )}
                 </For>
               </Menu>

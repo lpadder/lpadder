@@ -7,7 +7,7 @@ import Input from "@/components/Input";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
 
-import { createNewProject } from "@/utils/projects";
+import { createNewProject } from "@/utils/covers";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const CreateProjectModal: Component = () => {
     const response = await createNewProject(state.slug, state.name);
     if (!response.success) return;
 
-    navigate(`/projects/${state.slug}`);
+    navigate(`/covers/${state.slug}`);
     resetAndClose();
   };
 
@@ -45,6 +45,7 @@ const CreateProjectModal: Component = () => {
 
       <form class="px-4 mt-8 space-y-6" onSubmit={handleCreation}>
         <Input
+          autocomplete="off"
           class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
           label="Cover's name"
           placeholder="Author - Title (Launchpad Cover)"
@@ -53,6 +54,7 @@ const CreateProjectModal: Component = () => {
         />
 
         <Input
+          autocomplete="off"
           class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
           label="Personal slug"
           placeholder="some-amazing-cover"

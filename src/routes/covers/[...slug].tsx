@@ -4,11 +4,11 @@ import { Show, onCleanup } from "solid-js";
 import { useParams, useNavigate } from "solid-app-router";
 
 // Stores.
-import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
+import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_cover";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
-import { syncProjectDataGlobally } from "@/utils/projects";
+import { syncProjectDataGlobally } from "@/utils/covers";
 
 // Components.
 // import ProjectPlay from "@/components/ProjectPlay";

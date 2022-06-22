@@ -1,7 +1,7 @@
 import type { ProjectData, ProjectMetadata } from "@/types/Project";
 import type { Response } from "@/types/Globals";
 
-import { currentProjectStore } from "@/stores/current_project";
+import { currentProjectStore } from "@/stores/current_cover";
 import { projectsDataLocal } from "@/stores/projects_data";
 import {
   projectsMetadataLocal,
@@ -34,11 +34,13 @@ export const syncProjectDataGlobally = async () => {
   return true;
 };
 
-/** Takes a `slug` parameter and creates a new project with that slug. */
+/**
+ * Takes a `slug` parameter and creates a new project with that slug.
+ * @param extra - When string, it's the project's name; else, it's the project's data and metadata.
+ */
 export const createNewProject = async (
   slug: string,
-  name = "Untitled",
-  options?: { data: ProjectData, metadata: ProjectMetadata }
+  extra: string | { data: ProjectData, metadata: ProjectMetadata }
 ): Promise<Response<undefined>> => {
   if (!slug) return {
     success: false,
@@ -52,7 +54,7 @@ export const createNewProject = async (
     message: "A project with this slug already exists."
   };
 
-  const data: ProjectData = options?.data || {
+  const data: ProjectData = typeof extra !== "string" ? extra.data : {
     launchpads: [],
     files: {},
     
@@ -60,8 +62,8 @@ export const createNewProject = async (
     global_bpm: 120
   };
   
-  const metadata: ProjectMetadata = options?.metadata || {
-    name,
+  const metadata: ProjectMetadata = typeof extra !== "string" ? extra.metadata : {
+    name: extra, // Here, we use `extra` as the project's name.
     authors: [],
     launchpadders: [],
 

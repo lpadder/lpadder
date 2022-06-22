@@ -15,7 +15,7 @@ import AudioWave from "./AudioWave";
 import { Region } from "wavesurfer-react";
 
 // Stores
-import { useCurrentProjectStore } from "@/stores/current_project";
+import { useCurrentProjectStore } from "@/stores/current_cover";
 import { useUnsavedProjectStore } from "@/stores/unsaved_project";
 
 // Icons
@@ -148,19 +148,19 @@ export default function ProjectSampler () {
   );
 
   return (
-    <div className="
+    <div class="
       w-full rounded-lg
       mb-8 py-4
       bg-gray-700
     ">
-      <div className="
+      <div class="
         px-8 flex justify-between items-center mb-4 
       ">
-        <h3 className="font-medium text-lg">
+        <h3 class="font-medium text-lg">
           Sampler
         </h3>
 
-        <div className="flex items-center gap-2">
+        <div class="flex items-center gap-2">
           <Input
             type="number"
             
@@ -191,8 +191,8 @@ export default function ProjectSampler () {
         </div>
       </div>
 
-      <div className="px-6">
-        <div className="flex gap-2 justify-around mb-4">
+      <div class="px-6">
+        <div class="flex gap-2 justify-around mb-4">
           <Select
             placeholder="Select an audio file"
             title="Select an audio file"
@@ -217,42 +217,38 @@ export default function ProjectSampler () {
             ))}
           </Select>
 
-          {selectedAudioFile && (
-            <Button
-              className="hover:text-pink-600 hover:border-pink-600"
-              title="Remove the current audio file"
-              onClick={removeCurrentAudioFile}
-            >
-              <HiOutlineTrash size={18} />
-            </Button>
-          )}
+          {<Show when={selectedAudioFile}>{<Button
+            class="hover:text-pink-600 hover:border-pink-600"
+            title="Remove the current audio file"
+            onClick={removeCurrentAudioFile}
+          >
+            <HiOutlineTrash size={18} />
+          </Button>}</Show>}
         </div>
 
-        {selectedAudioFile && (
-          <div className="bg-gray-900 p-4 rounded-md">
-            <AudioWave
-              file={data.files[selectedAudioFile]}
-              onSeek={time => {
-                console.log(time);
+        {<Show when={selectedAudioFile}>{<div class="bg-gray-900 p-4 rounded-md">
+          <AudioWave
+            file={data.files[selectedAudioFile]}
+            onSeek={time => {
+              console.log(time);
+            }}
+          >
+            <Region
+              onOver={(e) => {
+                console.info("Region onOver", e);
               }}
-            >
-              <Region
-                onOver={(e) => {
-                  console.info("Region onOver", e);
-                }}
 
-                start={0}
-                end={6}
-                drag={true}
-                resize={true}
+              start={0}
+              end={6}
+              drag={true}
+              resize={true}
 
-                color="#00000050"
+              color="#00000050"
               
-              />
+            />
 
-            </AudioWave>
-          </div>
-        )}
+          </AudioWave>
+        </div>}</Show>}
       </div>
     </div>
   );

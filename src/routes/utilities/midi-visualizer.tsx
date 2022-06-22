@@ -195,7 +195,7 @@ export default function UtilitiesMidiVisualizer () {
       </header>
 
       <form
-        class="mb-8 mx-auto max-w-fit p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
+        class="mb-8 mx-auto w-max p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
         onSubmit={(e) => e.preventDefault()}
       >
         <FileInput
