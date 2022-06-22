@@ -1,4 +1,3 @@
-import { For } from "solid-js";
 import type { Component } from "solid-js";
 
 /**

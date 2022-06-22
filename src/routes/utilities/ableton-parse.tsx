@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import type { JSX, Component } from "solid-js";
 import type { ParsedAbletonData } from "@/types/AbletonData";
 
 import type {
@@ -8,7 +8,6 @@ import type {
   MidiTrackData
 } from "@/types/AbletonData";
 
-import { Show, For, JSX, Switch, Match, createSignal, createEffect, onCleanup } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import FileInput from "@/components/FileInput";

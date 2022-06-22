@@ -5,7 +5,6 @@ import type {
   ControlChangeMessageEvent
 } from "webmidi";
 
-import { Show, createSignal, For, onCleanup, createEffect } from "solid-js";
 import {
   webMidiInformations,
   webMidiInputs,

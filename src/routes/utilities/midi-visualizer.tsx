@@ -1,7 +1,4 @@
 import { createStore } from "solid-js/store";
-
-import { Show, For } from "solid-js";
-
 import { Midi, MidiJSON } from "@tonejs/midi";
 
 import Launchpad from "@/components/Launchpad";

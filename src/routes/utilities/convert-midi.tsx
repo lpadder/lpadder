@@ -1,7 +1,6 @@
 import type { Component } from "solid-js";
 import type { AvailableLayouts } from "@/utils/LaunchpadLayout";
 
-import { Show, createSignal } from "solid-js";
 import { Midi } from "@tonejs/midi";
 
 import downloadBlob from "@/utils/downloadBlob";

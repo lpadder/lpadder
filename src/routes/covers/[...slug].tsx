@@ -33,16 +33,16 @@ const ProjectEditor: Component = () => {
   createEffect(() => {
     (async () => {
       /** CTRL/CMD+S => Save globally the project. */
-      console.info(`[/projects/${slug()}:mount] configure shortcuts.`);
+      console.info(`[covers/${slug()}:mount] configure shortcuts.`);
       window.addEventListener("keydown", saveShortcut);
   
-      console.info(`[/projects/${slug()}:mount] loading "${slug()}" from metadata and data stores.`);
+      console.info(`[covers/${slug()}:mount] loading "${slug()}" from metadata and data stores.`);
       const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug());
       const projectData = await projectsDataLocal.get(slug());
       
       if (!projectLoadedMetadata || !projectData.success) {
-        console.error(`! Project "${slug()}" not found ! Redirecting to "/projects".`);
-        navigate("/projects");
+        console.error(`! Cover "${slug()}" not found ! Redirecting to '/covers'.`);
+        navigate("/covers");
         return;
       }
     
@@ -52,11 +52,11 @@ const ProjectEditor: Component = () => {
         metadata: projectLoadedMetadata.metadata
       });
   
-      console.info(`[/projects/${slug()}:mount] successfully loaded "${slug()}" project.`);    
+      console.info(`[covers/${slug()}:mount] successfully loaded "${slug()}" cover.`);    
     })();
 
     onCleanup(() => {
-      console.info(`[/projects/${slug()}:cleanup] unconfigure shortcuts.`);
+      console.info(`[covers/${slug()}:cleanup] unconfigure shortcuts.`);
       window.removeEventListener("keydown", saveShortcut);
   
       setCurrentProjectStore({
@@ -68,11 +68,10 @@ const ProjectEditor: Component = () => {
 
   return (
     <div class="p-4">
-      <Show when={currentProjectStore.data && currentProjectStore.metadata}>
+      <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={<p>Cover {slug()} is currently loading...</p>}>
         {/* <ProjectPlay />
         <ProjectSampler />
         <ProjectTimeline /> */}
-        <p>project {slug()}</p>
       </Show>
     </div>
   );

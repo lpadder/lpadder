@@ -6,9 +6,9 @@ import JSZip from "jszip";
 
 import FullLoader from "@/components/FullLoader";
 
-import HeaderItem from "@/components/projects/HeaderItem";
-import NavbarItem from "@/components/projects/NavbarItem";
-import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
+import HeaderItem from "@/components/covers/HeaderItem";
+import NavbarItem from "@/components/covers/NavbarItem";
+import NavbarHeadItem from "@/components/covers/NavbarHeadItem";
 
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
