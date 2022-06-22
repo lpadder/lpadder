@@ -1,8 +1,9 @@
-export default function downloadBlob (
+/** Helper to download a blob. */
+const downloadBlob = (
   data: Uint8Array,
   fileName = "converted",
   type: string
-) {
+) => {
   const blob = new Blob([data], { type });
 
   // Creating an element to auto-download the file.
@@ -21,4 +22,6 @@ export default function downloadBlob (
   aInput.remove();
 
   setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-}
+};
+
+export default downloadBlob;

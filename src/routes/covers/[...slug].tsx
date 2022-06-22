@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { Show, onMount, onCleanup } from "solid-js";
+import { Show, onCleanup } from "solid-js";
 import { useParams, useNavigate } from "solid-app-router";
 
 // Stores.

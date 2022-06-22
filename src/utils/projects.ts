@@ -22,7 +22,7 @@ export const syncProjectDataGlobally = async () => {
 
   /** Saved data into localForage. */
   const response = await projectsDataLocal.update(
-    // Here, we use `Object.assign` to get rid of the SolidJS proxy.
+    // Here, we use `unwrap` to get rid of the SolidJS proxy.
     current_project.slug, unwrap(current_project.data)
   );
 

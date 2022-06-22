@@ -37,27 +37,27 @@ const Projects: Component = () => {
    */
   onMount(async () => {
     if (projectsMetadataStore.loaded) {
-      console.info("[@projects/layout:mount] already preloaded every projects' metadata, skipping...");
+      console.info("[covers/layout:mount] already preloaded every projects' metadata, skipping...");
       return;
     }
 
-    console.info("[@projects/layout:mount] fetching every projects' metadata...");
+    console.info("[covers/layout:mount] fetching every projects' metadata...");
 
     const projects_metadatas = await projectsMetadataLocal.getAll();
     setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
 
-    console.info("[@projects/layout:mount] done.");
+    console.info("[covers/layout:mount] done.");
   });
   
   onCleanup(() => {
-    console.info("[@projects/layout:cleanup] clearing stores...");
+    console.info("[covers/layout:cleanup] clearing stores...");
 
     setCurrentProjectStore({
       data: null,
       metadata: null
     });
 
-    console.info("[@projects/layout:cleanup] done.");
+    console.info("[covers/layout:cleanup] done.");
   });
 
   const [showMobileHeader, setMobileHeaderVisibility] = createSignal(false);
@@ -150,12 +150,12 @@ const Projects: Component = () => {
               onClick={() => setMobileHeaderVisibility(show => !show)}
               class="md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
             >
-            menu
+              menu
             </button>
 
             {/* Desktop->HeaderTopLeft */}
             <p class="hidden md:block font-medium text-lg text-gray-200">
-            lpadder.
+              lpadder.
             </p>
 
             {/* HeaderTopRight */}
@@ -184,7 +184,7 @@ const Projects: Component = () => {
                     class="py-2 px-4 bg-opacity-60 rounded-full"
                     onClick={syncProjectDataGlobally}
                   >
-                  save
+                    save
                   </button>
                 </HeaderItem>
               </ul>
@@ -249,7 +249,7 @@ const Projects: Component = () => {
               href="/"
               class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-gray-500 hover:bg-pink-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
             >
-            EXIT
+              EXIT
             </Link>
           </nav>
 

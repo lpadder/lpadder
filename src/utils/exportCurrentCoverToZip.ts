@@ -1,11 +1,7 @@
 import type { ProjectStructure } from "@/types/Project";
-
 import JSZip from "jszip";
 
-// Stores
 import { currentProjectStore } from "@/stores/current_project";
-
-// Utilities
 import downloadBlob from "@/utils/downloadBlob";
 
 export default async function exportCurrentCoverToZip ( ) {
@@ -17,7 +13,7 @@ export default async function exportCurrentCoverToZip ( ) {
   if (!project_data || !project_metadata || !current_project.slug) {
     return console.error(
       "[exportCurrentCoverToZip] Cannot export to ZIP the cover: "
-      + "wasn't able to get the current project data."
+      + "wasn't able to get the current project."
     );
   }
 

@@ -1,10 +1,8 @@
 import type { Component } from "solid-js";
 
 import DropdownButton from "@/components/DropdownButton";
-
 import { deleteProject } from "@/utils/projects";
 
-// Stores
 import {
   currentProjectStore,
   setCurrentProjectStore
@@ -19,10 +17,10 @@ const NavbarItem: Component<{
   
   const handleProjectUpdate = () => {
     /** When the project is already selected, skip. */
-    if (current_slug() === props.slug) return;
+    if (currentProjectStore.slug === props.slug) return;
 
     console.info("[PROJECT_UPDATE] Switching from", current_slug(), "to", props.slug);
-    navigate(`/projects/${props.slug}`);
+    navigate(`/covers/${props.slug}`);
   };
 
   return (
@@ -53,7 +51,7 @@ const NavbarItem: Component<{
               // to root because project will be inexistant.
               // Also remove the useless components.
               if (current_slug() === props.slug) {
-                navigate("/projects");
+                navigate("/covers");
                 
                 // We remove any currently opened project.
                 setCurrentProjectStore({
