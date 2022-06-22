@@ -1,8 +1,6 @@
-import type { JSX } from "solid-js";
-import { createStore } from "solid-js/store";
+import type { Component, JSX } from "solid-js";
 
 import { DialogTitle } from "solid-headless";
-import { useNavigate } from "solid-app-router";
 
 import Modal from "@/components/Modal";
 import Input from "@/components/Input";
@@ -11,7 +9,7 @@ import { modalsStore, setModalsStore } from "@/stores/modals";
 
 import { createNewProject } from "@/utils/projects";
 
-export default function CreateProjectModal () {
+const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
   const [state, setState] = createStore({
     name: "",
@@ -84,4 +82,6 @@ export default function CreateProjectModal () {
       </form>
     </Modal>
   );
-}
+};
+
+export default CreateProjectModal;

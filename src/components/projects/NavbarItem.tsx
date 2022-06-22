@@ -1,5 +1,4 @@
 import type { Component } from "solid-js";
-import { useNavigate } from "solid-app-router";
 
 import DropdownButton from "@/components/DropdownButton";
 
@@ -10,9 +9,6 @@ import {
   currentProjectStore,
   setCurrentProjectStore
 } from "@/stores/current_project";
-
-// Icons
-import { HiOutlineDotsVertical } from "solid-icons/hi";
 
 const NavbarItem: Component<{
   name: string,
@@ -69,7 +65,7 @@ const NavbarItem: Component<{
           }
         ]}
 
-        buttonIcon={<HiOutlineDotsVertical size={24} />}
+        buttonIcon={<button />}
       /> 
     </div>
   );

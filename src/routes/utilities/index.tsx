@@ -1,12 +1,9 @@
-import type { Component } from "solid-js";
-
 import { For } from "solid-js";
-import { Link } from "solid-app-router";
+import type { Component } from "solid-js";
 
 /**
  * List the description of the available utilities.
- * The slugs are actually the routes mentionned in
- * the `@/main.tsx` file.
+ * The slugs are actually the routes in the `@/routes/utilities` directory.
  */
 const utilities = [
   {

@@ -1,8 +1,7 @@
+import { Show } from "solid-js";
 import type { Component } from "solid-js";
 
-import { Show } from "solid-js";
 import { useRegisterSW } from "virtual:pwa-register/solid";
-
 import Modal from "@/components/Modal";
 
 const LpadderUpdaterModal: Component = () => {
