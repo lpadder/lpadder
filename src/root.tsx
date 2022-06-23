@@ -9,10 +9,12 @@ import "virtual:windi.css";
 import { Links, Meta, Routes, Scripts } from "solid-start/root";
 import { ErrorBoundary } from "solid-start/error-boundary";
 
+import FullLoader from "@/components/FullLoader";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
 
 import { enableAndSetup } from "@/utils/webmidi";
+import { webMidiInformations } from "@/stores/webmidi";
 
 export default function RootRender () {
   onMount(() => enableAndSetup());
@@ -55,14 +57,17 @@ export default function RootRender () {
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-        <CreateProjectModal />
-        <LpadderUpdaterModal />
+        
+        <Show when={webMidiInformations.isEnabled} fallback={<FullLoader message="Initializing WebMIDI..." />}>
+          <CreateProjectModal />
+          <LpadderUpdaterModal />
 
-        <ErrorBoundary fallback={err => <p>{err}</p>}>
-          <Suspense fallback={<p>Loading...</p>}>
-            <Routes />
-          </Suspense>
-        </ErrorBoundary>
+          <ErrorBoundary fallback={err => <p>{err}</p>}>
+            <Suspense fallback={<p>Loading...</p>}>
+              <Routes />
+            </Suspense>
+          </ErrorBoundary>
+        </Show>
         
         <Scripts />
       </body>
