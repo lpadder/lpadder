@@ -50,7 +50,7 @@ const refreshDevices = (midi: typeof WebMidi) => {
  */
 export const enableAndSetup = async () => {
   try {
-    const midi = await WebMidi.enable();
+    const midi = await WebMidi.enable({ sysex: true });
 
     // Listen to changes on Inputs and Outputs.
     midi.addListener("connected", (event) => refreshDevices(event.target as typeof WebMidi));
@@ -64,7 +64,7 @@ export const enableAndSetup = async () => {
     return true;
   }
   catch (error) {
-    console.error("[utils/webmidi] Not able to enable webmidi. Try to check if your browser supports webmidi.", error);
+    console.error("[utils/webmidi]", error);
     setWebMidiInformations({ isEnabled: false, wasRequested: true });
     return false;
   }

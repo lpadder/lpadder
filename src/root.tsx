@@ -10,6 +10,7 @@ import { Links, Meta, Routes, Scripts } from "solid-start/root";
 import { ErrorBoundary } from "solid-start/error-boundary";
 
 import FullLoader from "@/components/FullLoader";
+import WebMidiErrorModal from "@/components/WebMidiErrorModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
 
@@ -58,12 +59,17 @@ export default function RootRender () {
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
         
-        <Show when={webMidiInformations.isEnabled} fallback={<FullLoader message="Initializing WebMIDI..." />}>
+        <Show when={webMidiInformations.wasRequested} fallback={
+          <FullLoader message="Requesting WebMIDI..." />
+        }>
+
+          <WebMidiErrorModal />
+          
           <CreateProjectModal />
           <LpadderUpdaterModal />
 
-          <ErrorBoundary fallback={err => <p>{err}</p>}>
-            <Suspense fallback={<p>Loading...</p>}>
+          <ErrorBoundary>
+            <Suspense fallback={<FullLoader message="Loading route..." />}>
               <Routes />
             </Suspense>
           </ErrorBoundary>
