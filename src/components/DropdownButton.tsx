@@ -1,12 +1,6 @@
 import type { Component, JSX } from "solid-js";
 import { Menu, Transition, MenuItem, Popover, PopoverButton, PopoverPanel } from "solid-headless";
 
-const Separator: Component = () => (
-  <div class="flex items-center" aria-hidden="true">
-    <div class="w-full h-[1px] rounded mb-1 bg-gray-600" />
-  </div>
-);
-
 const DropdownButton: Component<{
   items: { name?: string, action?: () => unknown }[][],
   buttonIcon: JSX.Element,
