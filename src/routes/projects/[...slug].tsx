@@ -18,62 +18,77 @@ import { syncProjectDataGlobally } from "@/utils/covers";
 const ProjectEditor: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
+
+  /** Short-hand */
   const slug = () => params.slug;
 
   const platform = navigator.userAgentData?.platform || navigator.platform;
-  const saveShortcut = (e: KeyboardEvent) => {
+  const saveProjectShortcut = (e: KeyboardEvent) => {
     if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
       
-      console.info(`[CTRL+S] Save for ${slug()}.`);
+      console.info(`[shortcuts][(ctrl/cmd)+s] trigger save for ${slug()}.`);
       syncProjectDataGlobally();
     }
   };
 
   createEffect(() => {
     (async () => {
-      /** CTRL/CMD+S => Save globally the project. */
-      console.info(`[covers/${slug()}:mount] configure shortcuts.`);
-      window.addEventListener("keydown", saveShortcut);
+      /** Debug. */ console.group(`[EFFECT->${slug()}]`);
   
-      console.info(`[covers/${slug()}:mount] loading "${slug()}" from metadata and data stores.`);
+      console.info(`[metadata] find "${slug()}" from store.`);
       const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug());
+      
+      console.info(`[data] get "${slug()}" from localForage.`);
       const projectData = await projectsDataLocal.get(slug());
       
       if (!projectLoadedMetadata || !projectData.success) {
-        console.error(`! Cover "${slug()}" not found ! Redirecting to '/covers'.`);
-        navigate("/covers");
+        console.error(`[ERROR] "${slug()}" not found ! Redirecting to '/projects'.`);
+        navigate("/projects");
         return;
       }
+
+      /** CTRL/CMD+S => Save globally the project. */
+      console.info("[shortcuts] configure.");
+      window.addEventListener("keydown", saveProjectShortcut);
     
+      console.info("[stores] load.");
       setCurrentProjectStore({
         slug: slug(),
         data: projectData.data,
         metadata: projectLoadedMetadata.metadata
       });
   
-      console.info(`[covers/${slug()}:mount] successfully loaded "${slug()}" cover.`);    
+      console.info("[stores] done.");    
     })();
 
     onCleanup(() => {
-      console.info(`[covers/${slug()}:cleanup] unconfigure shortcuts.`);
-      window.removeEventListener("keydown", saveShortcut);
-  
+      console.info("[shortcuts] unconfigure.");
+      window.removeEventListener("keydown", saveProjectShortcut);
+      
+      console.info("[stores] clean.");
       setCurrentProjectStore({
+        slug: null,
         data: null,
-        metadata: null
+        metadata: null,
       });
+
+      /** Debug. */ console.groupEnd();
     });
   });
 
   return (
-    <div class="p-4">
-      <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={<p>Cover {slug()} is currently loading...</p>}>
-        {/* <ProjectPlay />
-        <ProjectSampler />
-        <ProjectTimeline /> */}
-      </Show>
-    </div>
+    <>
+      <Title>lpadder - projects: {slug()}</Title>
+
+      <div class="p-4">
+        <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={<p>Cover {slug()} is currently loading...</p>}>
+          {/* <ProjectPlay />
+          <ProjectSampler />
+          <ProjectTimeline /> */}
+        </Show>
+      </div>
+    </>
   );
 };
 

@@ -29,9 +29,9 @@ const Home: Component = () => {
 
         <div class="flex flex-col flex-wrap gap-4 items-center sm:items-start">
           <SubMenu
-            title="Covers"
-            description="Take a look at your saved covers !"
-            href="/covers"
+            title="Projects"
+            description="Take a look at your saved projects !"
+            href="/projects"
           />
 
           <SubMenu
@@ -52,7 +52,7 @@ const Home: Component = () => {
             <Show when={!import.meta.env.DEV} fallback="next">{APP_VERSION}</Show>
           </span></p>
           <p class="text-gray-200 text-opacity-80">
-          Made with ❤️ by {" "}
+            Made with ❤️ by {" "}
             <a
               href="https://github.com/Vexcited"
               target="_blank"

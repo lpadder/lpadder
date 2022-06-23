@@ -3,10 +3,7 @@ import type { Component } from "solid-js";
 import DropdownButton from "@/components/DropdownButton";
 import { deleteProject } from "@/utils/covers";
 
-import {
-  currentProjectStore,
-  setCurrentProjectStore
-} from "@/stores/current_cover";
+import { currentProjectStore } from "@/stores/current_cover";
 
 const NavbarItem: Component<{
   name: string,
@@ -15,16 +12,23 @@ const NavbarItem: Component<{
   const navigate = useNavigate();
   const current_slug = () => currentProjectStore.slug;
   
-  const handleProjectUpdate = () => {
+  /** Reference of the main div. */
+  let navitem_ref: HTMLDivElement | undefined;
+  
+  const handleProjectUpdate = (evt: Event) => {
+    /** Prevent the project update when clicking on the dropdown button. */
+    if (evt.target !== navitem_ref) return;
+
     /** When the project is already selected, skip. */
     if (currentProjectStore.slug === props.slug) return;
 
     console.info("[PROJECT_UPDATE] Switching from", current_slug(), "to", props.slug);
-    navigate(`/covers/${props.slug}`);
+    navigate(`/projects/${props.slug}`);
   };
 
   return (
     <div
+      ref={navitem_ref}
       onClick={handleProjectUpdate}
       class={`
         flex flex-row items-center justify-between
@@ -38,8 +42,11 @@ const NavbarItem: Component<{
         <h3 class="text-lg font-medium">{props.name}</h3>
         <span class="font-light text-md">{props.slug}</span>
       </div>
+
       <DropdownButton
+        buttonIcon={<IconMdiDotsVertical  />}
         buttonClassName="text-lg p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
+        
         items={[[
           {
             name: "Delete",
@@ -47,23 +54,16 @@ const NavbarItem: Component<{
               const response = await deleteProject(props.slug);
               if (!response.success) return;
 
-              // If the current project was removed, we redirect
-              // to root because project will be inexistant.
-              // Also remove the useless components.
+              /**
+               * When the current project is removed, we
+               * redirect to root to prevent unexistant project.
+               */
               if (current_slug() === props.slug) {
-                navigate("/covers");
-                
-                // We remove any currently opened project.
-                setCurrentProjectStore({
-                  data: null,
-                  metadata: null
-                });
+                navigate("/projects");
               }
             }
           }
         ]]}
-
-        buttonIcon={<IconMdiDotsVertical  />}
       /> 
     </div>
   );

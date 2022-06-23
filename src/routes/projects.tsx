@@ -1,76 +1,55 @@
-import { Show, For } from "solid-js";
 import type { Component } from "solid-js"; 
 import type { ProjectStructure } from "@/types/Project";
 
 import JSZip from "jszip";
+import LpadderLogo from "@/assets/icon.png";
 
+// Components
 import FullLoader from "@/components/FullLoader";
+import DropdownButton from "@/components/DropdownButton";
 
-import HeaderItem from "@/components/covers/HeaderItem";
-import NavbarItem from "@/components/covers/NavbarItem";
-import NavbarHeadItem from "@/components/covers/NavbarHeadItem";
+// Components for /covers
+import HeaderItem from "@/components/projects/HeaderItem";
+import NavbarItem from "@/components/projects/NavbarItem";
+import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 
+// Utilities
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
 import { syncProjectDataGlobally } from "@/utils/covers";
 
-import DropdownButton from "@/components/DropdownButton";
-
-// import LpadderWrongVersionModal, {
-//   LpadderWrongVersionModalData
-// } from "@/components/LpadderWrongVersionModal";
-
+// Stores
+import { currentProjectStore } from "@/stores/current_cover";
+import { setModalsStore } from   "@/stores/modals";
 import {
   projectsMetadataLocal,
   projectsMetadataStore,
   setProjectsMetadataStore,
 } from "@/stores/projects_metadata";
 
-import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_cover";
+const CoversLayout: Component = () => {
+  /** We group the mount and cleanup for debugging purposes. */
+  onMount(() => console.group("[PROJECTS->MOUNT]"));
+  onCleanup(() => console.groupEnd());
 
-import { setModalsStore } from   "@/stores/modals";
-
-const Projects: Component = () => {
-  /**
-   * On page load, we take every projects in the localForage
-   * and we store them in a global metadata store.
-   */
   onMount(async () => {
+    // Skip if already loaded.
     if (projectsMetadataStore.loaded) {
-      console.info("[covers/layout:mount] already preloaded every projects' metadata, skipping...");
+      console.info("already preloaded every projects' metadata, skipping.");
       return;
     }
 
-    console.info("[covers/layout:mount] fetching every projects' metadata...");
+    console.info("fetching every projects' metadata...");
 
+    // Get all the projects' metadata and store them.
     const projects_metadatas = await projectsMetadataLocal.getAll();
     setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
 
-    console.info("[covers/layout:mount] done.");
+    console.info(`done. got ${projects_metadatas.length} project(s).`);
   });
   
-  onCleanup(() => {
-    console.info("[covers/layout:cleanup] clearing stores...");
-
-    setCurrentProjectStore({
-      data: null,
-      metadata: null
-    });
-
-    console.info("[covers/layout:cleanup] done.");
-  });
-
   const [showMobileHeader, setMobileHeaderVisibility] = createSignal(false);
   
-  // const default_lpadderWrongVersionModalData: LpadderWrongVersionModalData = {
-  //   requiredVersion: APP_VERSION,
-  //   errorMessage: undefined,
-  //   lpadderDeployUrl: undefined
-  // };
-
-  // const [lpadderWrongVersionModalData, setLpadderWrongVersionModalData] = createSignal<LpadderWrongVersionModalData>(default_lpadderWrongVersionModalData);
-  // const [lpadderWrongVersionModalOpen, setLpadderWrongVersionModalOpen] = createSignal(false);
-
   const handleImportCover = () => {
     const fileInput = document.createElement("input");
     fileInput.setAttribute("type", "file");
@@ -131,18 +110,10 @@ const Projects: Component = () => {
   return (
     <>
       <Title>lpadder - covers</Title>
+
       <Show when={projectsMetadataStore.loaded} fallback={
-        <FullLoader message="Preloading the covers..." />
+        <FullLoader message="Preloading the covers metadata..." />
       }>
-        {/* <LpadderWrongVersionModal
-          open={lpadderWrongVersionModalOpen()}
-          closeModal={() => setLpadderWrongVersionModalOpen(false)}
-
-          lpadderDeployUrl={lpadderWrongVersionModalData().lpadderDeployUrl}
-          requiredVersion={lpadderWrongVersionModalData().requiredVersion}
-          errorMessage={lpadderWrongVersionModalData().errorMessage}
-        /> */}
-
         <div class="h-screen overflow-y-hidden">
           <div class="h-20 flex px-8 bg-gray-900 justify-between items-center">
             {/* Mobile->HeaderTopLeft */}
@@ -156,12 +127,13 @@ const Projects: Component = () => {
             </button>
 
             {/* Desktop->HeaderTopLeft */}
-            <p class="hidden md:block font-medium text-lg text-gray-200">
-              lpadder.
-            </p>
+            <div class="hidden md:(flex items-center gap-4)">
+              <img class="w-10 h-10" src={LpadderLogo} alt="lpadder's logo" />
+              <span class="font-medium text-xl text-gray-300">lpadder.</span>
+            </div>
 
             {/* HeaderTopRight */}
-            <Show when={currentProjectStore.slug}>
+            <Show when={currentProjectStore.slug && !showMobileHeader()}>
               <ul class="flex flex-row-reverse gap-4">
                 <HeaderItem>
                   <DropdownButton
@@ -196,7 +168,7 @@ const Projects: Component = () => {
             </Show>
           </div>
 
-          {/** Projects Navigation */}
+          {/** Covers navigation */}
           <nav
             class="z-20 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
             classList={{
@@ -214,7 +186,7 @@ const Projects: Component = () => {
               </NavbarHeadItem>
             </div>
 
-            {/** Projects List */}
+            {/** Covers list */}
             <div class="overflow-auto fixed md:bottom-16 bottom-20 top-32 w-full md:w-72">
               <Show when={projectsMetadataStore.metadatas.length > 0} fallback={
                 <div class="flex flex-col gap-8 justify-center items-center px-4 h-full">
@@ -238,7 +210,6 @@ const Projects: Component = () => {
                   </div>
                 </div>
               }>
-              
                 <For each={projectsMetadataStore.metadatas}>
                   {local_project => (
                     <NavbarItem
@@ -252,12 +223,13 @@ const Projects: Component = () => {
 
             <Link
               href="/"
-              class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-gray-500 hover:bg-pink-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
+              class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-gray-500 hover:bg-pink-500 focus:bg-blue-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
             >
               EXIT
             </Link>
           </nav>
 
+          {/** Cover editor */}
           <div class="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
             <Outlet />
           </div>
@@ -267,4 +239,4 @@ const Projects: Component = () => {
   );
 };
 
-export default Projects;
+export default CoversLayout;
