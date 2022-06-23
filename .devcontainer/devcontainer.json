@@ -16,9 +16,8 @@
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"bradlc.vscode-tailwindcss",
 		"dbaeumer.vscode-eslint",
-		"csstools.postcss"
+		"voorjaar.windicss-intellisense"
 	],
 
   // Vite's development server port.
