@@ -41,6 +41,13 @@ const pwaOptions: Partial<VitePWAOptions> = {
     background_color: "#1E293B", // slate.800
     theme_color: "#0F172A", // slate.900
 
+    categories: [
+      "productivity",
+      "utilities",
+      "music",
+      "games"
+    ],
+
     icons: [
       {
         src: "icon-default.png",
