@@ -8,7 +8,7 @@ import type {
 import localforage from "localforage";
 import { createStore } from "solid-js/store";
 
-/** localForage store for persistance of projects' metadata. */
+/** LocalForage store for persistance of projects' metadata. */
 class ProjectsMetadataLocalStore {
   private store: LocalForage;
 
@@ -30,7 +30,7 @@ class ProjectsMetadataLocalStore {
         metadata: projectMetadata
       });
     });
-  
+
     return projects;
   }
 
@@ -72,15 +72,11 @@ class ProjectsMetadataLocalStore {
         }
       };
     }
-    catch (e) {
-      console.error("[stores][projects_metadata][updateProjectMetadata]", e);
-
+    catch (error) {
       return {
         success: false,
-        message: `Error while saving the project of slug "${slug}"`,
-        debug: {
-          error: e
-        }
+        message: `Error while updating the metadata of "${slug}"`,
+        debug: { error }
       };
     }
   }
@@ -105,7 +101,7 @@ class ProjectsMetadataLocalStore {
   }
 }
 
-/** localForage store wrapped with some utility functions. */
+/** => localForage store wrapped with some utility functions. */
 export const projectsMetadataLocal = new ProjectsMetadataLocalStore("lpadder");
 
 

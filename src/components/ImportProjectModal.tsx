@@ -1,18 +1,24 @@
-import Input from "./Input";
+import type { Component } from "solid-js";
+import { unwrap } from "solid-js/store";
+
+import { DialogTitle } from "solid-headless";
+
+import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
-import { createNewProject } from "@/utils/covers";
+import { createNewProject } from "@/utils/projects";
 
-export default function ImportProjectModal () {
+const ImportProjectModal: Component = () => {
   const [slug, setSlug] = createSignal("");
 
   const handleCreation = async (e: Event) => {
     e.preventDefault();
 
     if (!slug() || !modalsStore.importProjectModalData) return;
-    
-    const response = await createNewProject(slug(), modalsStore.importProjectModalData); 
+    const project_data = unwrap(modalsStore.importProjectModalData);
+
+    const response = await createNewProject(slug(), project_data);
     if (!response.success) {
       alert(response.message);
       return;
@@ -33,13 +39,14 @@ export default function ImportProjectModal () {
 
   return (
     <Modal open={modalsStore.importProjectModal} onClose={resetAndClose}>
-      <h2 class="mt-6 text-3xl font-medium text-center text-gray-200">
-        Import a cover
-      </h2>
+      <DialogTitle as="h2" class="mt-6 text-3xl font-extrabold text-center text-gray-200">
+        Create a project
+      </DialogTitle>
+
       <p class="mt-4 px-4 py-2 mx-4 text-opacity-40 bg-blue-800 bg-opacity-20 rounded-lg">
-        You are currently importing <span class="font-medium text-blue-400">
+        You are currently importing a project called <span class="font-medium text-blue-400">
           {modalsStore.importProjectModalData ? modalsStore.importProjectModalData.metadata.name : ""}
-        </span> project.
+        </span>.
       </p>
 
       <form class="mt-6 space-y-6 mx-4" onSubmit={handleCreation}>
@@ -75,4 +82,6 @@ export default function ImportProjectModal () {
       </form>
     </Modal>
   );
-}
+};
+
+export default ImportProjectModal;

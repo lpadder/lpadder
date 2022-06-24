@@ -3,7 +3,7 @@ import type { Response } from "@/types/Globals";
 
 import localforage from "localforage";
 
-/** localForage store for persistance of projects' data. */
+/** LocalForage store for persistance of projects' data. */
 class ProjectsDataLocalStore {
   private store: LocalForage;
 
@@ -78,5 +78,5 @@ class ProjectsDataLocalStore {
   }
 }
 
-/** localForage store wrapped with some utility functions. */
+/** => localForage store wrapped with some utility functions. */
 export const projectsDataLocal = new ProjectsDataLocalStore("lpadder");
