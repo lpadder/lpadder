@@ -12,6 +12,7 @@ import { ErrorBoundary } from "solid-start/error-boundary";
 import FullLoader from "@/components/FullLoader";
 import WebMidiErrorModal from "@/components/WebMidiErrorModal";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import ImportProjectModal from "@/components/ImportProjectModal";
 import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
 
 import { enableAndSetup } from "@/utils/webmidi";
@@ -53,18 +54,19 @@ export default function RootRender () {
         <meta property="twitter:title" content="lpadder." />
         <meta property="twitter:description" content="Web application that lets you play Launchpad covers directly from your browser." />
         <meta property="twitter:image" content="/banner.png" />
-        
+
         <Meta />
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-        
+
         <Show when={webMidiInformations.wasRequested} fallback={
           <FullLoader message="Requesting WebMIDI..." />
         }>
 
           <WebMidiErrorModal />
-          
+
+          <ImportProjectModal />
           <CreateProjectModal />
           <LpadderUpdaterModal />
 
@@ -74,7 +76,7 @@ export default function RootRender () {
             </Suspense>
           </ErrorBoundary>
         </Show>
-        
+
         <Scripts />
       </body>
     </html>
