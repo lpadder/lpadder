@@ -17,6 +17,7 @@ import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import checkProjectVersion from "@/utils/checkProjectVersion";
 import { syncProjectDataGlobally } from "@/utils/covers";
+import { log, logStart, logEnd } from "@/utils/logger";
 
 // Stores
 import { currentProjectStore } from "@/stores/current_cover";
@@ -33,19 +34,16 @@ const CoversLayout: Component = () => {
   onCleanup(() => console.groupEnd());
 
   onMount(async () => {
-    // Skip if already loaded.
     if (projectsMetadataStore.loaded) {
-      console.info("already preloaded every projects' metadata, skipping.");
+      log("metadatas", "already preloaded, skipping.");
       return;
     }
 
-    console.info("fetching every projects' metadata...");
-
-    // Get all the projects' metadata and store them.
+    logStart("metadatas", "fetching every projects' metadata...");
     const projects_metadatas = await projectsMetadataLocal.getAll();
-    setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
+    logEnd("metadatas");
 
-    console.info(`done. got ${projects_metadatas.length} project(s).`);
+    setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
   });
   
   const [showMobileHeader, setMobileHeaderVisibility] = createSignal(false);

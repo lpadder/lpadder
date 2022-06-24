@@ -23,7 +23,7 @@ const CreateProjectModal: Component = () => {
     const response = await createNewProject(state.slug, state.name);
     if (!response.success) return;
 
-    navigate(`/covers/${state.slug}`);
+    navigate(`/projects/${state.slug}`);
     resetAndClose();
   };
 
@@ -40,7 +40,7 @@ const CreateProjectModal: Component = () => {
   return (
     <Modal open={modalsStore.createProjectModal} onClose={resetAndClose}>
       <DialogTitle as="h2" class="mt-6 text-3xl font-extrabold text-center text-gray-200">
-        Create a cover
+        Create a project
       </DialogTitle>
 
       <form class="px-4 mt-8 space-y-6" onSubmit={handleCreation}>
@@ -57,8 +57,8 @@ const CreateProjectModal: Component = () => {
           autocomplete="off"
           class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
           label="Personal slug"
-          placeholder="some-amazing-cover"
-          tip="Slug used to identify the cover more easily from URL."
+          placeholder="some-amazing-project"
+          tip="Slug used to identify the project more easily from URL."
           onInput={(e) => {
             const cleanedValue = e.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
             return setState({ ...state, slug: cleanedValue });

@@ -32,34 +32,41 @@ const ProjectEditor: Component = () => {
     }
   };
 
-  createEffect(() => {
+  createEffect(on(slug, (slug) => {
     (async () => {
-      /** Debug. */ console.group(`[EFFECT->${slug()}]`);
-  
-      console.info(`[metadata] find "${slug()}" from store.`);
-      const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug());
+      /** Debug. */ console.group(`[EFFECT->${slug}]`);
+      console.time("load");
       
-      console.info(`[data] get "${slug()}" from localForage.`);
-      const projectData = await projectsDataLocal.get(slug());
+      console.info(`[metadata] finding "${slug}" from store...`);
+      console.time("metadata");
+      const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug);
+      console.timeLog("metadata");
       
+      console.info(`[data] getting "${slug}" from localForage...`);
+      console.time("data");
+      const projectData = await projectsDataLocal.get(slug);
+      console.timeLog("data");
+
       if (!projectLoadedMetadata || !projectData.success) {
-        console.error(`[ERROR] "${slug()}" not found ! Redirecting to '/projects'.`);
+        console.error(`[ERROR] "${slug}" not found ! Redirecting to '/projects'.`);
+        console.timeEnd("load");
+
         navigate("/projects");
         return;
       }
 
       /** CTRL/CMD+S => Save globally the project. */
-      console.info("[shortcuts] configure.");
+      console.info("[shortcuts] configure ctrl/cmd+s.");
       window.addEventListener("keydown", saveProjectShortcut);
     
-      console.info("[stores] load.");
+      console.info("[stores] initialize current project store.");
       setCurrentProjectStore({
-        slug: slug(),
+        slug,
         data: projectData.data,
         metadata: projectLoadedMetadata.metadata
       });
-  
-      console.info("[stores] done.");    
+
+      console.timeEnd("load");
     })();
 
     onCleanup(() => {
@@ -75,7 +82,7 @@ const ProjectEditor: Component = () => {
 
       /** Debug. */ console.groupEnd();
     });
-  });
+  }));
 
   return (
     <>

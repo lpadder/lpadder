@@ -22,7 +22,6 @@ const NavbarItem: Component<{
     /** When the project is already selected, skip. */
     if (currentProjectStore.slug === props.slug) return;
 
-    console.info("[PROJECT_UPDATE] Switching from", current_slug(), "to", props.slug);
     navigate(`/projects/${props.slug}`);
   };
 
