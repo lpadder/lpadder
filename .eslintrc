@@ -27,7 +27,18 @@
     "semi": [
       "error", "always"
     ],
-
+    "capitalized-comments": [
+      "error", "always"
+    ],
+    "eol-last": [
+      "error", "always"
+    ],
+    "eqeqeq": [
+      "error", "always"
+    ],
+    
+    "no-return-await": "error",
+    "no-trailing-spaces": "error",
     "solid/jsx-no-undef": "off"
   }
 }
