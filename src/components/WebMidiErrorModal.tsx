@@ -5,7 +5,7 @@ import { webMidiInformations } from "@/stores/webmidi";
 
 /**
  * Modal when WebMIDI can't be enabled.
- * 
+ *
  * This warning explains what we can't do when
  * WebMIDI isn't enabled and tries to give advices.
  */
@@ -32,7 +32,7 @@ const WebMidiErrorModal: Component = () => {
             your browser supports WebMIDI
           </a>.
           If it does, then try to restart the application with the button below.
-          If it still doesn't fix the problem, try to use another browser such as <span class="font-medium text-blue-200">Chrome, Opera or Brave</span>. 
+          If it still doesn't fix the problem, try to use another browser such as <span class="font-medium text-blue-200">Chrome, Opera or Brave</span>.
         </p>
 
         <h3 class="font-medium text text-pink-300">
@@ -40,7 +40,7 @@ const WebMidiErrorModal: Component = () => {
         </h3>
 
         <ul class="list-disc ml-8 pr-2">
-          <li class="pb-2"> 
+          <li class="pb-2">
             You <span class="font-medium text-pink-200">can't use your MIDI devices</span> with lpadder.
           </li>
 
@@ -49,7 +49,7 @@ const WebMidiErrorModal: Component = () => {
           </li>
 
           <li class="pb-2">
-            Also, some <span class="font-medium text-pink-200">utilities will not be usable and games unplayable</span>. 
+            Also, some <span class="font-medium text-pink-200">utilities will not be usable and games unplayable</span>.
           </li>
         </ul>
 

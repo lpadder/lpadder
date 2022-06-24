@@ -19,7 +19,7 @@ const UtilitiesLayout: Component = () => {
           Go back
           </Link>
         </header>
-      
+
         <main class="relative p-4 h-full">
           <Outlet />
         </main>

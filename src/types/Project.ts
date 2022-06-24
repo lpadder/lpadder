@@ -38,7 +38,7 @@ export interface ProjectData {
        * Required at export to recompose file names with
        * proper extensions for them.
        */
-      type: string; 
+      type: string;
     }
   }
 
@@ -54,8 +54,8 @@ export interface ProjectMetadata {
    * Version of lpadder supported for this project.
    * It corresponds to the version on the home page `/`
    * or to the "version" field in `package.json`.
-   * 
-   * When a version don't match, we show a modal 
+   *
+   * When a version don't match, we show a modal
    * redirecting to the latest build of the version.
    */
   version: string;

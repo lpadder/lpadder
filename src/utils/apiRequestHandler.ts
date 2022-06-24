@@ -15,11 +15,11 @@ export type ApiRequestHandlerType = (props: ApiRequestHandlerPropsType) => Retur
 
 /**
  * This is a helper for the API routes.
- * 
+ *
  * Instead of building all the Response object by ourselves,
  * we're gonna provide some utilities functions that are
  * similar to the Express API.
- * 
+ *
  * @example
  * export const get: ApiRequestHandlerType = (props) => handleApiRequest(props, (req, res) => {
  *   res.status(200).json({ success: true, message: "Hello World" });
@@ -31,7 +31,7 @@ export const handleApiRequest = async (
     req: ApiRequestHandlerRequestType,
     res: ApiRequestHandlerResponseType
   ) => Promise<Response>
-) => {  
+) => {
 
   const res_options = {
     status: 200,

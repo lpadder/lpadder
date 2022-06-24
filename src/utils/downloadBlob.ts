@@ -12,7 +12,7 @@ const downloadBlob = (
 
   aInput.setAttribute("href", url);
   aInput.setAttribute("download", fileName);
-  
+
   // Append it to the DOM.
   document.body.appendChild(aInput);
   aInput.style.display = "none";

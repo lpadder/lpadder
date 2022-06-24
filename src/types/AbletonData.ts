@@ -9,7 +9,7 @@ export interface MidiTrackData {
   devices: (
     | MidiDeviceInstrumentRackData
     | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
+    | MidiDeviceSampleData
   )[];
 }
 
@@ -30,7 +30,7 @@ export interface MidiDeviceInstrumentRackBranchData {
   devices: (
     | MidiDeviceInstrumentRackData
     | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
+    | MidiDeviceSampleData
   )[];
 }
 
@@ -46,7 +46,7 @@ export interface MidiDeviceDrumRackBranchData {
   devices: (
     | MidiDeviceInstrumentRackData
     | MidiDeviceDrumRackData
-    | MidiDeviceSampleData  
+    | MidiDeviceSampleData
   )[];
 
   /** MIDI note assigned to the drum pad. */

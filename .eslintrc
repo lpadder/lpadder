@@ -36,6 +36,9 @@
     "eqeqeq": [
       "error", "always"
     ],
+    "comma-dangle": [
+      "error", "never"
+    ],
     
     "no-return-await": "error",
     "no-trailing-spaces": "error",

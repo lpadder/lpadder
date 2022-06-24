@@ -15,7 +15,7 @@ export type ClickEventFunctionProps = (
   padElement: EventTarget & HTMLDivElement,
   launchpadId?: number,
 ) => void;
-  
+
 export type ContextEventFunctionProps = (
   padId: number,
   event: MouseEvent & {
@@ -41,7 +41,7 @@ const Launchpad: Component<{
   onPadUp: ClickEventFunctionProps;
 
   /** Optional ustom behaviour on right click. */
-  onContextMenu?: ContextEventFunctionProps; 
+  onContextMenu?: ContextEventFunctionProps;
 }> = (props) => {
   const { layouts } = new LaunchpadLayout();
 
@@ -61,7 +61,7 @@ const Launchpad: Component<{
                 <div
                   data-note={padId}
                   id={props.launchpadId ? getPadElementId(padId, props.launchpadId) : undefined}
-                  
+
                   onContextMenu={event => {
                     event.preventDefault();
 
@@ -90,7 +90,7 @@ const Launchpad: Component<{
                     props.onPadDown(padId, pad, props.launchpadId);
                     document.addEventListener("touchend", handleTouchEnd);
                   }}
-              
+
                   onMouseDown={down_event => {
                     if (down_event.button === 2) return;
 

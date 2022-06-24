@@ -1,4 +1,4 @@
-export type AvailableLayouts = 
+export type AvailableLayouts =
   | "live"
   | "programmer"
   | "drum_rack";

@@ -11,7 +11,7 @@ interface WebMidiInformationsType {
    * was called, at least, once or not at all.
    */
   wasRequested: boolean;
-  
+
   /**
    * Whether webmidi is enabled or not.
    * If not, we should show a retry button

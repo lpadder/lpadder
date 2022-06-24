@@ -12,4 +12,3 @@ export const logEnd = (label: string) => {
 export const log = (label: string, ...message: unknown[]) => {
   console.info(wrapLabel(label) + ":", ...message);
 };
-  

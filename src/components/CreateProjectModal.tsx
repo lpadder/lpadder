@@ -7,7 +7,7 @@ import Input from "@/components/Input";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
 
-import { createNewProject } from "@/utils/covers";
+import { createNewProject } from "@/utils/projects";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const CreateProjectModal: Component = () => {
   const handleCreation: JSX.EventHandler<HTMLFormElement, Event> = async (event) => {
     event.preventDefault();
     if (!state.name || !state.slug) return;
-    
+
     const response = await createNewProject(state.slug, state.name);
     if (!response.success) return;
 
@@ -33,7 +33,7 @@ const CreateProjectModal: Component = () => {
       slug: "",
       name: ""
     });
-    
+
     setModalsStore({ createProjectModal: false });
   };
 

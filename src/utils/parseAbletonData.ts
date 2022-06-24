@@ -22,15 +22,15 @@ import pako from "pako";
 export const readAbletonFile = (buffer: ArrayBuffer) => new Promise<Document>((resolve, reject) => {
   try {
     const array = new Uint8Array(buffer);
-  
+
     // Ungzip the file and store it as a UTF-8 string.
     const ungzipped_file = pako.ungzip(array);
     const raw_file_content = new TextDecoder("utf-8").decode(ungzipped_file);
-  
+
     // Transform the file content from string to XML.
     const xml_parser = new DOMParser();
     const file_content = xml_parser.parseFromString(raw_file_content, "text/xml");
-  
+
     resolve(file_content);
   }
   catch (error) {
@@ -54,10 +54,10 @@ export const parseAbletonData = (project: Document) => new Promise<ParsedAbleton
     /** Ableton version (ex.: "Ableton Live 11.0.1"). */
     const abletonVersion = getFirstElementByTag("Ableton")
       .getAttribute("Creator") as string;
-  
+
     /** Get tracks data in project. */
     const tracksData = getTracksData(getFirstElementByTag("Tracks"));
-  
+
     resolve({
       abletonVersion,
       tracksData
@@ -71,8 +71,8 @@ export const parseAbletonData = (project: Document) => new Promise<ParsedAbleton
 
 /** Parse the tracks of the project. */
 function getTracksData (tracks: Element) {
-  const tracksData: (AudioTrackData | MidiTrackData)[] = []; 
-  
+  const tracksData: (AudioTrackData | MidiTrackData)[] = [];
+
   for (const track of tracks.children) {
     /** We get the type of the track. */
     const trackType = track.tagName;
@@ -92,7 +92,7 @@ function getTracksData (tracks: Element) {
 
       tracksData.push({
         type: "audio",
-        name: audio_track_name,
+        name: audio_track_name
       });
 
       break;
@@ -130,7 +130,7 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
     | MidiDeviceDrumRackData
     | MidiDeviceSampleData
   )[] = [];
-  
+
   /** We parse the devices in the group. */
   for (const device of devices.children) {
     /** We get the type of the device. */
@@ -140,11 +140,11 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
     if (!(
       deviceType === "InstrumentGroupDevice"
       || deviceType === "DrumGroupDevice"
-      || deviceType === "OriginalSimpler"  
+      || deviceType === "OriginalSimpler"
     )) continue;
 
     switch (deviceType) {
-    
+
     /** This is the instrument rack. */
     case "InstrumentGroupDevice": {
       const instrumentRackData = parseInstrumentRack(device);
@@ -167,11 +167,11 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
       const sampleRate = parseInt(device
         .getElementsByTagName("DefaultSampleRate")[0]
         .getAttribute("Value") || "-1");
-  
+
       const sampleStart = parseInt(device
         .getElementsByTagName("SampleStart")[0]
         .getAttribute("Value") || "-1");
-  
+
       const sampleEnd = parseInt(device
         .getElementsByTagName("SampleEnd")[0]
         .getAttribute("Value") || "-1");
@@ -189,11 +189,11 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
       if (sample_file_relative_path_element.children.length > 0) {
         for (const relativePathElement of sample_file_relative_path_element.children) {
           if (relativePathElement.tagName !== "RelativePathElement") continue;
-          
+
           const dir = relativePathElement.getAttribute("Dir") || "";
           sample_file_relative_path += `${dir}/`;
         }
-        
+
         const sample_file_name = sample_file_ref.getElementsByTagName("Name")[0].getAttribute("Value") || "";
         sample_file_relative_path += sample_file_name;
       }
@@ -249,7 +249,7 @@ function parseInstrumentRack (device: Element): MidiDeviceInstrumentRackData {
 
     parsed_branches.push({
       name: branch_name,
-      devices: getDevicesFromMidiGroup(branch, "device"),
+      devices: getDevicesFromMidiGroup(branch, "device")
     });
   }
 
@@ -262,7 +262,7 @@ function parseInstrumentRack (device: Element): MidiDeviceInstrumentRackData {
 
 function parseDrumRack (device: Element): MidiDeviceDrumRackData {
   const name = getDeviceName(device);
-  
+
   const branches = device.getElementsByTagName("Branches")[0];
   const parsed_branches: MidiDeviceDrumRackBranchData[] = [];
 
@@ -280,7 +280,7 @@ function parseDrumRack (device: Element): MidiDeviceDrumRackData {
     const receivingNote = parseInt(branch
       .getElementsByTagName("ReceivingNote")[0]
       .getAttribute("Value") || "-1");
-      
+
     parsed_branches.push({
       name: branch_name,
       receivingNote,

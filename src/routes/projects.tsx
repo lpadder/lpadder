@@ -1,22 +1,19 @@
-import type { Component } from "solid-js"; 
-import type { ProjectStructure } from "@/types/Project";
+import type { Component } from "solid-js";
 
-import JSZip from "jszip";
 import LpadderLogo from "@/assets/icon.png";
 
 // Components
 import FullLoader from "@/components/FullLoader";
 import DropdownButton from "@/components/DropdownButton";
 
-// Components for /covers
+// Components for /projects
 import HeaderItem from "@/components/projects/HeaderItem";
 import NavbarItem from "@/components/projects/NavbarItem";
 import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 
 // Utilities
+import { syncProjectDataGlobally, createImportCover } from "@/utils/projects";
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
-import checkProjectVersion from "@/utils/checkProjectVersion";
-import { syncProjectDataGlobally } from "@/utils/covers";
 import { log, logStart, logEnd } from "@/utils/logger";
 
 // Stores
@@ -25,7 +22,7 @@ import { setModalsStore } from   "@/stores/modals";
 import {
   projectsMetadataLocal,
   projectsMetadataStore,
-  setProjectsMetadataStore,
+  setProjectsMetadataStore
 } from "@/stores/projects_metadata";
 
 const CoversLayout: Component = () => {
@@ -45,65 +42,8 @@ const CoversLayout: Component = () => {
 
     setProjectsMetadataStore({ loaded: true, metadatas: projects_metadatas });
   });
-  
+
   const [showMobileHeader, setMobileHeaderVisibility] = createSignal(false);
-  
-  const handleImportCover = () => {
-    const fileInput = document.createElement("input");
-    fileInput.setAttribute("type", "file");
-    fileInput.setAttribute("hidden", "true");
-    
-    // Only accept ".zip" files.
-    fileInput.setAttribute("accept", ".zip");
-    
-    fileInput.addEventListener("change", () => {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        const zip_content = await JSZip.loadAsync(arrayBuffer);
-
-        const coverDataFile = zip_content.file("cover.json");
-        if (!coverDataFile) return console.error(
-          "This file doesn't contain a `cover.json` file in root directory."
-        );
-
-        const coverData = await coverDataFile.async("string");
-        const parsedCoverData: ProjectStructure = JSON.parse(coverData);
-
-        // We check if the project version is matching
-        // with lpadder's one - except on development.
-        const { version } = parsedCoverData.metadata;
-        const version_data = await checkProjectVersion(version);
-        if (!version_data.success) {
-          // setLpadderWrongVersionModalData({
-          //   requiredVersion: version,
-          //   errorMessage: version_data.error_message,
-          //   lpadderDeployUrl: version_data.deploy_url
-          // });
-
-          // setLpadderWrongVersionModalOpen(true);
-          return; // We stop here.
-        }
-
-        setModalsStore({
-          importProjectModal: true,
-          importProjectModalData: parsedCoverData
-        });
-      };
-      
-      const files = fileInput.files;
-      if (files && files.length > 0) {
-        reader.readAsArrayBuffer(files[0]);
-      }
-    });
-
-    // Add the input to the DOM.
-    document.body.append(fileInput);
-    
-    // Click the input to import a file.
-    fileInput.click();
-    fileInput.remove();
-  };
 
   return (
     <>
@@ -139,14 +79,14 @@ const CoversLayout: Component = () => {
                       [
                         {
                           name: "Export to .zip",
-                          action: async () => await exportCurrentCoverToZip()
+                          action: exportCurrentCoverToZip
                         }
                       ],
                       [
                         {
                           name: "Collaborate online",
                           action: () => console.info("Collaborate")
-                        },
+                        }
                       ]
                     ]}
 
@@ -173,10 +113,10 @@ const CoversLayout: Component = () => {
               "hidden": !showMobileHeader()
             }}
           >
-          
+
             {/** Import / Create */}
             <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
-              <NavbarHeadItem onClick={handleImportCover}>
+              <NavbarHeadItem onClick={createImportCover}>
                 Import
               </NavbarHeadItem>
               <NavbarHeadItem onClick={() => setModalsStore({ createProjectModal: true })}>
@@ -201,7 +141,7 @@ const CoversLayout: Component = () => {
                     <span>OR</span>
                     <button
                       class="px-4 py-2 font-medium bg-blue-600 bg-opacity-20 rounded border-2 border-blue-600"
-                      onClick={handleImportCover}
+                      onClick={createImportCover}
                     >
                       Import a lpadder cover
                     </button>

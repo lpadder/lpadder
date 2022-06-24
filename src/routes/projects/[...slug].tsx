@@ -8,12 +8,12 @@ import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_co
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
-import { syncProjectDataGlobally } from "@/utils/covers";
+import { syncProjectDataGlobally } from "@/utils/projects";
 
 // Components.
-// import ProjectPlay from "@/components/ProjectPlay";
-// import ProjectEditor from "@/components/ProjectEditor";
-// import ProjectSampler from "@/components/ProjectSampler";
+// Import ProjectPlay from "@/components/ProjectPlay";
+// Import ProjectEditor from "@/components/ProjectEditor";
+// Import ProjectSampler from "@/components/ProjectSampler";
 
 const ProjectEditor: Component = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const ProjectEditor: Component = () => {
   const saveProjectShortcut = (e: KeyboardEvent) => {
     if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
-      
+
       console.info(`[shortcuts][(ctrl/cmd)+s] trigger save for ${slug()}.`);
       syncProjectDataGlobally();
     }
@@ -36,12 +36,12 @@ const ProjectEditor: Component = () => {
     (async () => {
       /** Debug. */ console.group(`[EFFECT->${slug}]`);
       console.time("load");
-      
+
       console.info(`[metadata] finding "${slug}" from store...`);
       console.time("metadata");
       const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug);
       console.timeLog("metadata");
-      
+
       console.info(`[data] getting "${slug}" from localForage...`);
       console.time("data");
       const projectData = await projectsDataLocal.get(slug);
@@ -58,7 +58,7 @@ const ProjectEditor: Component = () => {
       /** CTRL/CMD+S => Save globally the project. */
       console.info("[shortcuts] configure ctrl/cmd+s.");
       window.addEventListener("keydown", saveProjectShortcut);
-    
+
       console.info("[stores] initialize current project store.");
       setCurrentProjectStore({
         slug,
@@ -72,12 +72,12 @@ const ProjectEditor: Component = () => {
     onCleanup(() => {
       console.info("[shortcuts] unconfigure.");
       window.removeEventListener("keydown", saveProjectShortcut);
-      
+
       console.info("[stores] clean.");
       setCurrentProjectStore({
         slug: null,
         data: null,
-        metadata: null,
+        metadata: null
       });
 
       /** Debug. */ console.groupEnd();

@@ -11,7 +11,7 @@ const Button: ParentComponent<JSX.IntrinsicElements["button"]> = (props) => {
         transition-all
         ${props.class ? props.class : ""}
       `}
-      
+
       {...props}
     />
   );

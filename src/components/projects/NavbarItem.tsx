@@ -1,7 +1,7 @@
 import type { Component } from "solid-js";
 
 import DropdownButton from "@/components/DropdownButton";
-import { deleteProject } from "@/utils/covers";
+import { deleteProject } from "@/utils/projects";
 
 import { currentProjectStore } from "@/stores/current_cover";
 
@@ -11,10 +11,10 @@ const NavbarItem: Component<{
 }> = (props) => {
   const navigate = useNavigate();
   const current_slug = () => currentProjectStore.slug;
-  
+
   /** Reference of the main div. */
   let navitem_ref: HTMLDivElement | undefined;
-  
+
   const handleProjectUpdate = (evt: Event) => {
     /** Prevent the project update when clicking on the dropdown button. */
     if (evt.target !== navitem_ref) return;
@@ -45,7 +45,7 @@ const NavbarItem: Component<{
       <DropdownButton
         buttonIcon={<IconMdiDotsVertical  />}
         buttonClassName="text-lg p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
-        
+
         items={[[
           {
             name: "Delete",
@@ -63,7 +63,7 @@ const NavbarItem: Component<{
             }
           }
         ]]}
-      /> 
+      />
     </div>
   );
 };
