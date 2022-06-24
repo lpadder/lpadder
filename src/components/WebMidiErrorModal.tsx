@@ -3,6 +3,12 @@ import type { Component } from "solid-js";
 import Modal from "@/components/Modal";
 import { webMidiInformations } from "@/stores/webmidi";
 
+/**
+ * Modal when WebMIDI can't be enabled.
+ * 
+ * This warning explains what we can't do when
+ * WebMIDI isn't enabled and tries to give advices.
+ */
 const WebMidiErrorModal: Component = () => {
   const [forceClose, setForceClose] = createSignal(false);
 
@@ -26,11 +32,11 @@ const WebMidiErrorModal: Component = () => {
             your browser supports WebMIDI
           </a>.
           If it does, then try to restart the application with the button below.
-          If it still doesn't fix the problem, try to use another browser like <span class="font-medium text-blue-200">Chrome, Opera or Brave</span>. 
+          If it still doesn't fix the problem, try to use another browser such as <span class="font-medium text-blue-200">Chrome, Opera or Brave</span>. 
         </p>
 
         <h3 class="font-medium text text-pink-300">
-          {">"} What are the downsides if my browser does not support WebMIDI ?
+          {">"} What are the downsides of my browser not supporting WebMIDI ?
         </h3>
 
         <ul class="list-disc ml-8 pr-2">
