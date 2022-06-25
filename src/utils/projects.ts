@@ -10,26 +10,35 @@ import {
 } from "@/stores/projects_metadata";
 
 import { produce, unwrap } from "solid-js/store";
+
+import { log, error, logStart, logEnd } from "@/utils/logger";
 import JSZip from "jszip";
 
 /** Saves the current project to localForage. */
 export const syncProjectDataGlobally = async () => {
-
-  /** Current data in current project store. */
   const current_project = currentProjectStore;
+
   if (!current_project.slug || !current_project.data) {
-    console.error("[syncProjectDataGlobally] Missing 'current_project' data and slug.");
+    error("save", "project is not loaded in `current_project`.");
     return false;
   }
 
-  /** Saved data into localForage. */
-  const response = await projectsDataLocal.update(
-    // Here, we use `unwrap` to get rid of the SolidJS proxy.
-    current_project.slug, unwrap(current_project.data)
-  );
+  if (current_project.saved) {
+    log("save", "already saved. skipping...");
+    return true;
+  }
 
-  if (!response.success) {
-    console.error("[syncProjectDataGlobally] An error was thrown while saving to localForage.", response.debug);
+  /** Here, we use `unwrap` to get rid of the proxy. */
+  const project_data = unwrap(current_project.data);
+
+  logStart("save", "updating the localForage...");
+  const update_response = await projectsDataLocal.update(
+    current_project.slug, project_data
+  );
+  logEnd("save");
+
+  if (!update_response.success) {
+    error("save", "an error was thrown while saving to localForage.", update_response.debug);
     return false;
   }
 
