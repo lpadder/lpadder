@@ -3,6 +3,7 @@ import { createStore } from "solid-js/store";
 
 interface CurrentProjectStore {
   slug: string | null;
+  saved: boolean | null;
 
   metadata: ProjectMetadata | null;
   data: ProjectData | null;
@@ -14,6 +15,7 @@ interface CurrentProjectStore {
  */
 export const [currentProjectStore, setCurrentProjectStore] = createStore<CurrentProjectStore>({
   slug: null,
+  saved: null,
 
   metadata: null,
   data: null
