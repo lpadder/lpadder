@@ -90,17 +90,20 @@ const CoversLayout: Component = () => {
                       ]
                     ]}
 
-                    buttonClassName="p-2 transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                    buttonClassName="p-2 text-xl transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
                     buttonIcon={<IconMdiDotsVertical />}
                   />
                 </HeaderItem>
+
                 <HeaderItem>
-                  <button
-                    class="py-2 px-4 bg-opacity-60 rounded-full"
-                    onClick={syncProjectDataGlobally}
-                  >
-                    save
-                  </button>
+                  <Show when={currentProjectStore.saved === false}>
+                    <button
+                      class="flex text-xl py-2 px-4 bg-opacity-60 rounded-full"
+                      onClick={syncProjectDataGlobally}
+                    >
+                      <IconMdiContentSave />
+                    </button>
+                  </Show>
                 </HeaderItem>
               </ul>
             </Show>

@@ -1,21 +1,16 @@
 import { Component, createEffect } from "solid-js";
 
-import { Show, onCleanup } from "solid-js";
-import { useParams, useNavigate } from "solid-app-router";
-
-// Stores.
 import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_cover";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
+import { useParams, useNavigate } from "solid-app-router";
 import { syncProjectDataGlobally } from "@/utils/projects";
+import { log, error, logStart, logEnd } from "@/utils/logger";
 
-// Components.
-// Import ProjectPlay from "@/components/ProjectPlay";
-// Import ProjectEditor from "@/components/ProjectEditor";
-// Import ProjectSampler from "@/components/ProjectSampler";
+import ProjectPreview from "@/components/projects/editor/ProjectPreview";
 
-const ProjectEditor: Component = () => {
+const ProjectsEditor: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
 
@@ -35,47 +30,46 @@ const ProjectEditor: Component = () => {
   createEffect(on(slug, (slug) => {
     (async () => {
       /** Debug. */ console.group(`[EFFECT->${slug}]`);
-      console.time("load");
+      logStart("load", `loading ${slug}...`);
 
-      console.info(`[metadata] finding "${slug}" from store...`);
-      console.time("metadata");
+      logStart("metadata", `finding "${slug}" from store...`);
       const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug);
-      console.timeLog("metadata");
+      logEnd("metadata");
 
-      console.info(`[data] getting "${slug}" from localForage...`);
-      console.time("data");
+      logStart("data", `getting "${slug}" from localForage...`);
       const projectData = await projectsDataLocal.get(slug);
-      console.timeLog("data");
+      logEnd("data");
 
       if (!projectLoadedMetadata || !projectData.success) {
-        console.error(`[ERROR] "${slug}" not found ! Redirecting to '/projects'.`);
-        console.timeEnd("load");
+        error("metadata", `"${slug}" not found. redirecting to '/projects'...`);
+        logEnd("load");
 
         navigate("/projects");
         return;
       }
 
-      /** CTRL/CMD+S => Save globally the project. */
-      console.info("[shortcuts] configure ctrl/cmd+s.");
+      log("shortcuts", "configure ctrl/cmd+s.");
       window.addEventListener("keydown", saveProjectShortcut);
 
-      console.info("[stores] initialize current project store.");
+      log("stores", "initialize current_project store.");
       setCurrentProjectStore({
         slug,
+        saved: true,
         data: projectData.data,
         metadata: projectLoadedMetadata.metadata
       });
 
-      console.timeEnd("load");
+      logEnd("load");
     })();
 
     onCleanup(() => {
-      console.info("[shortcuts] unconfigure.");
+      log("shortcuts", "clean ctrl/cmd+s.");
       window.removeEventListener("keydown", saveProjectShortcut);
 
-      console.info("[stores] clean.");
+      log("stores", "clean current_project store.");
       setCurrentProjectStore({
         slug: null,
+        saved: null,
         data: null,
         metadata: null
       });
@@ -88,15 +82,13 @@ const ProjectEditor: Component = () => {
     <>
       <Title>lpadder - projects: {slug()}</Title>
 
-      <div class="p-4">
-        <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={<p>Cover {slug()} is currently loading...</p>}>
-          {/* <ProjectPlay />
-          <ProjectSampler />
-          <ProjectTimeline /> */}
-        </Show>
-      </div>
+      <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={
+        <p>Cover {slug()} is currently loading...</p>
+      }>
+        <ProjectPreview />
+      </Show>
     </>
   );
 };
 
-export default ProjectEditor;
+export default ProjectsEditor;
