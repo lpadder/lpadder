@@ -18,24 +18,24 @@ const DropdownButton: Component<{
 
           <Transition
             show={isOpen()}
-            enter="transition duration-200"
+            enter="transition duration-100"
             enterFrom="opacity-0 -translate-y-1 scale-50"
             enterTo="opacity-100 translate-y-0 scale-100"
             leave="transition duration-150"
             leaveFrom="opacity-100 translate-y-0 scale-100"
             leaveTo="opacity-0 -translate-y-1 scale-50"
           >
-            <PopoverPanel unmount={false} class="absolute z-10 px-4 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
-              <Menu class="bg-gray-800 p-2 rounded-lg shadow-lg flex flex-col gap-1 z-50 absolute right-0 mt-2 w-56 origin-top-right">
+            <PopoverPanel unmount={false} class="absolute z-20 p-2 transform -translate-x-1/2 left-1/2 sm:px-0 lg:max-w-3xl">
+              <Menu class="flex flex-col gap-1 absolute right-0 w-48 origin-top-right">
                 <For each={props.items}>
                   {group_items => (
-                    <div class="bg-gray-900 rounded-md p-2">
+                    <div class="rounded-md backdrop-filter backdrop-blur bg-gray-800 bg-opacity-80 border border-gray-900 p-1.5">
                       <For each={group_items}>
                         {item => (
                           <MenuItem
                             as="button"
                             onClick={item.action}
-                            class="hover:bg-gray-600 hover:bg-opacity-60 bg-gray-600 bg-opacity-40 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
+                            class="hover:(bg-gray-600 bg-opacity-100) bg-gray-400 bg-opacity-60 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
                           >
                             {item.name}
                           </MenuItem>
