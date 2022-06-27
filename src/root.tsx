@@ -59,16 +59,18 @@ export default function RootRender () {
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-
         <Show when={webMidiInformations.wasRequested} fallback={
           <FullLoader message="Requesting WebMIDI..." />
         }>
+          {/** Internal related modals. */}
+          <LpadderUpdaterModal />
 
+          {/** Error modals. */}
           <WebMidiErrorModal />
 
+          {/** Application modals. */}
           <ImportProjectModal />
           <CreateProjectModal />
-          <LpadderUpdaterModal />
 
           <ErrorBoundary>
             <Suspense fallback={<FullLoader message="Loading route..." />}>

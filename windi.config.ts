@@ -21,7 +21,7 @@ export default defineConfig({
       gray: colors.slate,
       blue: colors.sky
     },
-    
+
     fontFamily: {
       sans: ["Poppins", "sans-serif "]
     }

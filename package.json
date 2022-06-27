@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@fontsource/poppins": "^4.5.0",
-    "@polka/send-type": "^0.5.2",
     "@tonejs/midi": "^2.0.28",
     "chroma-js": "^2.4.2",
     "jszip": "^3.7.1",
@@ -26,7 +25,6 @@
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.1.21",
-    "@rollup/plugin-replace": "^4.0.0",
     "@types/chroma-js": "^2.1.3",
     "@types/pako": "^1.0.3",
     "@types/wavesurfer.js": "^6.0.3",
@@ -36,9 +34,7 @@
     "dotenv-cli": "^5.1.0",
     "eslint": "^8.16.0",
     "eslint-plugin-solid": "^0.5.0",
-    "eslint-plugin-unused-imports": "^2.0.0",
     "release-it": "^14.14.0",
-    "rollup": "^2.75.7",
     "solid-start": "0.1.0-alpha.89",
     "solid-start-vercel": "0.1.0-alpha.89",
     "typescript": "^4.7.2",
@@ -46,9 +42,7 @@
     "unplugin-icons": "^0.14.5",
     "user-agent-data-types": "^0.2.0",
     "vite": "2.9.12",
-    "vite-plugin-mix": "^0.3.1",
     "vite-plugin-pwa": "^0.11.13",
-    "vite-plugin-solid": "^2.2.6",
     "vite-plugin-windicss": "^1.8.4",
     "windicss": "^3.5.4",
     "workbox-window": "^6.5.3"

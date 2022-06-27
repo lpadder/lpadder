@@ -12,7 +12,7 @@ import NavbarItem from "@/components/projects/NavbarItem";
 import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 
 // Utilities
-import { syncProjectDataGlobally, createImportCover } from "@/utils/projects";
+import { syncProjectDataGlobally, createImportProject } from "@/utils/projects";
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import { log, logStart, logEnd } from "@/utils/logger";
 
@@ -25,7 +25,7 @@ import {
   setProjectsMetadataStore
 } from "@/stores/projects_metadata";
 
-const CoversLayout: Component = () => {
+const ProjectsLayout: Component = () => {
   /** We group the mount and cleanup for debugging purposes. */
   onMount(() => console.group("[PROJECTS->MOUNT]"));
   onCleanup(() => console.groupEnd());
@@ -47,10 +47,10 @@ const CoversLayout: Component = () => {
 
   return (
     <>
-      <Title>lpadder - covers</Title>
+      <Title>lpadder - projects</Title>
 
       <Show when={projectsMetadataStore.loaded} fallback={
-        <FullLoader message="Preloading the covers metadata..." />
+        <FullLoader message="Preloading the projects' metadata..." />
       }>
         <div class="h-screen overflow-y-hidden">
           <div class="h-20 flex px-8 bg-gray-900 justify-between items-center">
@@ -109,7 +109,7 @@ const CoversLayout: Component = () => {
             </Show>
           </div>
 
-          {/** Covers navigation */}
+          {/** Projects navigation */}
           <nav
             class="z-20 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
             classList={{
@@ -119,7 +119,7 @@ const CoversLayout: Component = () => {
 
             {/** Import / Create */}
             <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
-              <NavbarHeadItem onClick={createImportCover}>
+              <NavbarHeadItem onClick={createImportProject}>
                 Import
               </NavbarHeadItem>
               <NavbarHeadItem onClick={() => setModalsStore({ createProjectModal: true })}>
@@ -127,7 +127,7 @@ const CoversLayout: Component = () => {
               </NavbarHeadItem>
             </div>
 
-            {/** Covers list */}
+            {/** Projects list */}
             <div class="overflow-auto fixed md:bottom-16 bottom-20 top-32 w-full md:w-72">
               <Show when={projectsMetadataStore.metadatas.length > 0} fallback={
                 <div class="flex flex-col gap-8 justify-center items-center px-4 h-full">
@@ -139,14 +139,14 @@ const CoversLayout: Component = () => {
                       class="px-4 py-2 font-medium bg-pink-600 bg-opacity-20 rounded border-2 border-pink-600"
                       onClick={() => setModalsStore({ createProjectModal: true })}
                     >
-                      Create a new cover !
+                      Create a new project !
                     </button>
                     <span>OR</span>
                     <button
                       class="px-4 py-2 font-medium bg-blue-600 bg-opacity-20 rounded border-2 border-blue-600"
-                      onClick={createImportCover}
+                      onClick={createImportProject}
                     >
-                      Import a lpadder cover
+                      Import a lpadder project
                     </button>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ const CoversLayout: Component = () => {
             </Link>
           </nav>
 
-          {/** Cover editor */}
+          {/** Project editor */}
           <div class="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
             <Outlet />
           </div>
@@ -180,4 +180,4 @@ const CoversLayout: Component = () => {
   );
 };
 
-export default CoversLayout;
+export default ProjectsLayout;

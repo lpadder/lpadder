@@ -26,7 +26,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     "favicon.ico",
     "apple-touch-icon.png"
   ],
-  
+
   workbox: {
     globPatterns: [
       "**/*.{js,css,html,svg,png,woff,woff2}"
@@ -38,8 +38,8 @@ const pwaOptions: Partial<VitePWAOptions> = {
     short_name: "lpadder.",
     description: "Web application that lets you play Launchpad covers directly from your browser.",
 
-    background_color: "#1E293B", // slate.800
-    theme_color: "#0F172A", // slate.900
+    background_color: "#1E293B", // WindiCSS: slate.800
+    theme_color: "#0F172A", // WindiCSS: slate.900
 
     categories: [
       "productivity",
@@ -92,7 +92,7 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
           extension: "jsx"
         })
       ],
-      
+
       imports: [
         "solid-app-router",
         "solid-js",
@@ -110,7 +110,7 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
     Icons({ compiler: "solid" }),
     VitePWA(pwaOptions)
   ],
-  
+
   define: {
     APP_VERSION: JSON.stringify(pkg.version)
   },
@@ -126,7 +126,7 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
       "solid-headless"
     ]
   },
-  
+
   build: {
     target: "esnext",
     polyfillDynamicImport: false
@@ -134,7 +134,7 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
 
   server: {
     strictPort: true,
-    
+
     hmr: {
       clientPort: CLIENT_PORT
     }

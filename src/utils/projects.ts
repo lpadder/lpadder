@@ -197,7 +197,7 @@ export const deleteProject = async (slug: string): Promise<Response<undefined>> 
  * the project matches with lpadder's version. If it doesn't, we open
  * the wrong version modal.
  */
-export const createImportCover = () => {
+export const createImportProject = () => {
   const fileInput = document.createElement("input");
   fileInput.setAttribute("type", "file");
   fileInput.setAttribute("hidden", "true");
