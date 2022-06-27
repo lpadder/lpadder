@@ -1,7 +1,7 @@
 import type { ProjectData, ProjectMetadata, ProjectStructure } from "@/types/Project";
 import type { Response } from "@/types/Globals";
 
-import { currentProjectStore } from "@/stores/current_cover";
+import { currentProjectStore } from "@/stores/current_project";
 import { projectsDataLocal } from "@/stores/projects_data";
 import { setModalsStore } from "@/stores/modals";
 import {

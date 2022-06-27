@@ -1,7 +1,7 @@
 import type { ProjectStructure } from "@/types/Project";
 import JSZip from "jszip";
 
-import { currentProjectStore } from "@/stores/current_cover";
+import { currentProjectStore } from "@/stores/current_project";
 import downloadBlob from "@/utils/downloadBlob";
 
 export default async function exportCurrentCoverToZip ( ) {

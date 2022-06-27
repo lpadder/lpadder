@@ -3,7 +3,7 @@ import type { Component } from "solid-js";
 import DropdownButton from "@/components/DropdownButton";
 import { deleteProject } from "@/utils/projects";
 
-import { currentProjectStore } from "@/stores/current_cover";
+import { currentProjectStore } from "@/stores/current_project";
 
 const NavbarItem: Component<{
   name: string,
