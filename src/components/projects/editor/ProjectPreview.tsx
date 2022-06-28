@@ -125,6 +125,7 @@ const ProjectPreview: Component = () => {
 
     // We only accept one finger for dragging.
     if (evt.touches.length > 1) return;
+    evt.preventDefault();
     const touch = evt.changedTouches[0];
 
     const currentScreenX = Math.round(touch.screenX);
