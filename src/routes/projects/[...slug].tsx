@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_cover";
+import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
@@ -85,7 +85,23 @@ const ProjectsEditor: Component = () => {
       <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={
         <p>Cover {slug()} is currently loading...</p>
       }>
-        <ProjectPreview />
+        <div class="relative w-full -mb-12">
+          <ProjectPreview />
+
+        </div>
+        <div class="z-5 absolute w-full">
+
+          <div class="flex justify-between px-4">
+            <select>
+              <option>add launchpad</option>
+            </select>
+            <select>
+              <option>add page</option>
+            </select>
+
+          </div>
+
+        </div>
       </Show>
     </>
   );
