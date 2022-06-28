@@ -46,8 +46,8 @@ export interface ProjectData {
 }
 
 /**
- * Content of a cover that is stored in
- * a `cover.json` file or in localForage.
+ * Content of a project that is stored in
+ * a `project.json` file or in localForage.
  */
 export interface ProjectMetadata {
   /**
@@ -63,10 +63,17 @@ export interface ProjectMetadata {
   /** Project's name. */
   name: string;
 
-  /** Cover music author(s). */
+  /** Author(s) of the music. */
   authors: string[];
-  /** Creator(s) of the cover. */
-  launchpadders: string[];
+  /** Creator(s) of the project. */
+  creators: string[];
+
+  /** Height of the preview canvas. */
+  canvasHeight: number;
+  /** Width of the preview canvas. */
+  canvasWidth: number;
+  /** View position of the preview canvas. */
+  defaultCanvasViewPosition: { x: number, y: number };
 }
 
 /** Used when the projects' metadata are preloaded. */

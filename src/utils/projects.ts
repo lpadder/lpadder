@@ -134,10 +134,20 @@ export const createNewProject = async (
   const metadata: ProjectMetadata = typeof extra !== "string" ? extra.metadata : {
     name: extra, // Here, we use `extra` as the project's name.
     authors: [],
-    launchpadders: [],
+    creators: [],
 
     // Version of lpadder is defined globally, see `@/global.d.ts`.
-    version: import.meta.env.DEV ? "next" : APP_VERSION
+    version: import.meta.env.DEV ? "next" : APP_VERSION,
+
+    // The default values of the canvas is the user's window height and width.
+    canvasHeight: window.innerHeight,
+    canvasWidth: window.innerWidth,
+
+    // The default value of the canvas view position is middle (x=0, y=0)
+    defaultCanvasViewPosition: {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    }
   };
 
   // Update the data localForage.
