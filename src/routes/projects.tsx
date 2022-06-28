@@ -53,7 +53,7 @@ const ProjectsLayout: Component = () => {
         <FullLoader message="Preloading the projects' metadata..." />
       }>
         <div class="h-screen overflow-y-hidden">
-          <div class="z-20 h-20 flex px-8 bg-gray-900 justify-between items-center">
+          <div class="h-20 flex px-8 bg-gray-900 justify-between items-center">
             {/* Mobile->HeaderTopLeft */}
             <button
               onClick={() => setMobileHeaderVisibility(show => !show)}
@@ -110,7 +110,7 @@ const ProjectsLayout: Component = () => {
           </div>
 
           {/** Projects navigation */}
-          <nav class="z-20 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
+          <nav class="z-5 md:z-0 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
             classList={{
               "hidden": !showMobileHeader()
             }}
@@ -170,7 +170,7 @@ const ProjectsLayout: Component = () => {
           </nav>
 
           {/** Project editor */}
-          <div class="z-10 fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
+          <div class="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
             <Outlet />
           </div>
         </div>
