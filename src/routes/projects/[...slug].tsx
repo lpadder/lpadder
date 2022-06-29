@@ -19,7 +19,7 @@ const ProjectsEditor: Component = () => {
 
   const platform = navigator.userAgentData?.platform || navigator.platform;
   const saveProjectShortcut = (e: KeyboardEvent) => {
-    if (e.key === "s" && (platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+    if (e.key === "s" && (platform.match(/mac/i) ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
 
       console.info(`[shortcuts][(ctrl/cmd)+s] trigger save for ${slug()}.`);
