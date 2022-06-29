@@ -18,7 +18,7 @@ import JSZip from "jszip";
 export const syncProjectDataGlobally = async () => {
   const current_project = currentProjectStore;
 
-  if (!current_project.slug || !current_project.data) {
+  if (!current_project.slug || !current_project.data || !current_project.metadata) {
     error("save", "project is not loaded in `current_project`.");
     return false;
   }
@@ -30,17 +30,35 @@ export const syncProjectDataGlobally = async () => {
 
   /** Here, we use `unwrap` to get rid of the proxy. */
   const project_data = unwrap(current_project.data);
+  const project_metadata = unwrap(current_project.metadata);
 
-  logStart("save", "updating the localForage...");
-  const update_response = await projectsDataLocal.update(
+  logStart("save", "updating the data in localForage...");
+  const data_update_response = await projectsDataLocal.update(
     current_project.slug, project_data
   );
   logEnd("save");
 
-  if (!update_response.success) {
-    error("save", "an error was thrown while saving to localForage.", update_response.debug);
+  if (!data_update_response.success) {
+    error("save", "an error was thrown while saving the data to localForage.", data_update_response.debug);
     return false;
   }
+
+  logStart("save", "updating the metadata in localForage...");
+  const metadata_update_response = await projectsMetadataLocal.update(
+    current_project.slug, project_metadata
+  );
+  logEnd("save");
+
+  if (!metadata_update_response.success) {
+    error("save", "an error was thrown while saving the metadata to localForage.", metadata_update_response.debug);
+    return false;
+  }
+
+  logStart("store", "updating the `current_project` store...");
+  setProjectsMetadataStore("metadatas", projects => projects.slug === current_project.slug, {
+    metadata: project_metadata
+  });
+  logEnd("save");
 
   setProjectSaved(true);
   return true;
