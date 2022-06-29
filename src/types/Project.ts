@@ -73,7 +73,7 @@ export interface ProjectMetadata {
   /** Width of the preview canvas. */
   canvasWidth: number;
   /** View position of the preview canvas. */
-  defaultCanvasViewPosition: { x: number, y: number };
+  defaultCanvasViewPosition: { x: number, y: number, scale: number };
 }
 
 /** Used when the projects' metadata are preloaded. */

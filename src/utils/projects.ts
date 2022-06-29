@@ -143,10 +143,11 @@ export const createNewProject = async (
     canvasHeight: window.innerHeight,
     canvasWidth: window.innerWidth,
 
-    // The default value of the canvas view position is middle (x=0, y=0)
+    // The default values of the canvas view position is middle (x=0, y=0)
     defaultCanvasViewPosition: {
       x: window.innerWidth / 2,
-      y: window.innerHeight / 2
+      y: window.innerHeight / 2,
+      scale: 1 // Default zoom/scale.
     }
   };
 
