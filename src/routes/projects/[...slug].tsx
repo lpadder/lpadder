@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
+import { currentProjectStore, setCurrentProjectStore, resetCurrentProjectStore, setProjectSaved } from "@/stores/current_project";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
@@ -54,10 +54,9 @@ const ProjectsEditor: Component = () => {
       log("stores", "initialize current_project store.");
       setCurrentProjectStore({
         slug,
-        saved: true,
         data: projectData.data,
         metadata: projectLoadedMetadata.metadata
-      });
+      }); /** `true` only because we load. */ setProjectSaved(true);
 
       logEnd("load");
     })();
@@ -67,12 +66,7 @@ const ProjectsEditor: Component = () => {
       window.removeEventListener("keydown", saveProjectShortcut);
 
       log("stores", "clean current_project store.");
-      setCurrentProjectStore({
-        slug: null,
-        saved: null,
-        data: null,
-        metadata: null
-      });
+      resetCurrentProjectStore();
 
       /** Debug. */ console.groupEnd();
     });

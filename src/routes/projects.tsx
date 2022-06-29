@@ -17,7 +17,7 @@ import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
 import { log, logStart, logEnd } from "@/utils/logger";
 
 // Stores
-import { currentProjectStore } from "@/stores/current_project";
+import { currentProjectStore, projectSaved } from "@/stores/current_project";
 import { setModalsStore } from   "@/stores/modals";
 import {
   projectsMetadataLocal,
@@ -96,7 +96,7 @@ const ProjectsLayout: Component = () => {
                 </HeaderItem>
 
                 <HeaderItem>
-                  <Show when={currentProjectStore.saved === false}>
+                  <Show when={projectSaved() === false}>
                     <button
                       class="flex text-xl py-2 px-4 bg-opacity-60 rounded-full"
                       onClick={syncProjectDataGlobally}
