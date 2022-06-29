@@ -172,7 +172,6 @@ const ProjectPreview: Component = () => {
     if (isPreviewCanvasFullscreen()) canvasViewTop += (window.innerHeight / 2);
     else canvasViewTop += HEADER_TOP_HEIGHT + (CANVAS_PREVIEW_HEIGHT / 2);
 
-    console.log(canvasViewLeft, canvasViewTop);
 
     return {
       left: canvasViewLeft,

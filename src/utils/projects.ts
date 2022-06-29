@@ -58,7 +58,7 @@ export const syncProjectDataGlobally = async () => {
   setProjectsMetadataStore("metadatas", projects => projects.slug === current_project.slug, {
     metadata: project_metadata
   });
-  logEnd("save");
+  logEnd("store");
 
   setProjectSaved(true);
   return true;
