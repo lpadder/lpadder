@@ -1,20 +1,9 @@
 import type { Component, JSX } from "solid-js";
 
 import { currentProjectStore, setCurrentProjectStore } from "@/stores/current_project";
-
 import { log } from "@/utils/logger";
 
-/**
- * This determines the position of X = 0
- * depending on the width of the canvas.
- */
-const canvasX0 = () => (currentProjectStore.metadata?.canvasWidth || 0) / 2;
-
-/**
- * This determines the position of Y = 0
- * depending on the height of the canvas.
- */
-const canvasY0 = () => (currentProjectStore.metadata?.canvasHeight || 0) / 2;
+import DeviceInPreview from "@/components/projects/editor/DeviceInPreview";
 
 const ProjectPreviewButton: Component<{
   title: string;
@@ -267,9 +256,7 @@ const ProjectPreview: Component = () => {
           {/** Line for X */}
           <span class="absolute bg-gray-700 w-full h-1" style={{ top: (currentProjectStore.metadata?.canvasHeight || 0) / 2 + "px" }}></span>
 
-          <div style={{
-            left: canvasX0() + "px", top: canvasY0() + "px"
-          }} class="bg-gray-600 h-32 w-32 absolute left-2"></div>
+          <DeviceInPreview x={150} y={-60} />
         </div>
       </div>
 
