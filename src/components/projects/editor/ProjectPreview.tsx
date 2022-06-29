@@ -38,13 +38,12 @@ const ProjectPreview: Component = () => {
 
   /** Adds `x` to `left` and `y` to `top`. */
   const updateCanvasPosition = (x?: number, y?: number) => {
-    if (!canvas_ref) return;
-
-    const current_x = parseInt(canvas_ref.style.left.replace("px", ""));
-    canvas_ref.style.left = current_x + (x || 0) + "px";
-
-    const current_y = parseInt(canvas_ref.style.top.replace("px", ""));
-    canvas_ref.style.top = current_y + (y || 0) + "px";
+    setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => {
+      return {
+        x: prev.x + (x || 0),
+        y: prev.y + (y || 0)
+      };
+    });
   };
 
   /** Correct the position of the canvas after a move. */
@@ -156,10 +155,66 @@ const ProjectPreview: Component = () => {
     canvas_ref.removeEventListener("mousedown", canvasMouseDown);
   });
 
+  const getCanvasRealMiddle = () => {
+    /** Whether we're on the desktop view or not. */
+    const isDesktopView = window.innerWidth >= 768;
+    const DESKTOP_NAVBAR_LEFT_WIDTH = 288;
+    const HEADER_TOP_HEIGHT = 80;
+    const CANVAS_PREVIEW_HEIGHT = 320;
+
+    const canvasViewWidth = currentProjectStore.metadata?.canvasWidth || 0;
+    const canvasViewHeight = currentProjectStore.metadata?.canvasHeight || 0;
+
+    let canvasViewLeft = (-canvasViewWidth / 2) + (window.innerWidth / 2);
+    if (isDesktopView && !isPreviewCanvasFullscreen()) canvasViewLeft += DESKTOP_NAVBAR_LEFT_WIDTH / 2;
+
+    let canvasViewTop = (-canvasViewHeight / 2);
+    if (isPreviewCanvasFullscreen()) canvasViewTop += (window.innerHeight / 2);
+    else canvasViewTop += HEADER_TOP_HEIGHT + (CANVAS_PREVIEW_HEIGHT / 2);
+
+    console.log(canvasViewLeft, canvasViewTop);
+
+    return {
+      left: canvasViewLeft,
+      top: canvasViewTop
+    };
+  };
+
   return (
     <div class="relative h-80 bg-gray-800 overflow-hidden shadow-md shadow-inner">
-      <div class="z-15 absolute top-4 right-4">
+      <div class="z-15 absolute top-4 left-4 flex flex-col gap-2">
+        <ProjectPreviewButton
+          title="Zoom in"
+          action={() =>
+            setCurrentProjectStore(
+              "metadata",
+              "defaultCanvasViewPosition",
+              "scale", (prev) => prev + 0.2
+            )
+          }
+          icon={<IconMdiMagnifyPlus />}
+        />
 
+        <ProjectPreviewButton
+          title="Zoom out"
+          action={() =>
+            setCurrentProjectStore(
+              "metadata",
+              "defaultCanvasViewPosition",
+              "scale", (prev) => {
+                const newValue = prev - 0.2;
+
+                // When the new value is below 0.2, we restore the view at 0.2
+                if (newValue <= 0.2) return 0.2;
+                else return newValue;
+              }
+            )
+          }
+          icon={<IconMdiMagnifyMinus />}
+        />
+      </div>
+
+      <div class="z-15 absolute top-4 right-4">
         <ProjectPreviewButton
           title="Settings"
           action={() => log("settings", "open")}
@@ -167,11 +222,21 @@ const ProjectPreview: Component = () => {
         />
       </div>
 
-      <div class="z-15 absolute bottom-20 right-4">
+      <div class="z-15 absolute bottom-20 right-4 flex gap-2">
+        <ProjectPreviewButton
+          title="Reset View"
+          action={() =>
+            setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
+              x: 0,
+              y: 0
+            })
+          }
+          icon={<IconMdiUndoVariant />}
+        />
         <ProjectPreviewButton
           title="Fullscreen"
           action={() => setPreviewCanvasFullscreen(prev => !prev)}
-          icon={<IconMdiFullscreen />}
+          icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
         />
       </div>
 
@@ -193,9 +258,16 @@ const ProjectPreview: Component = () => {
              */
             height: currentProjectStore.metadata?.canvasHeight + "px",
             width: currentProjectStore.metadata?.canvasWidth + "px",
-            left: "0px", top: "0px" /** These are default values for X and Y. */
+            transform: `scale(${currentProjectStore.metadata?.defaultCanvasViewPosition.scale || 1})`,
+            left: getCanvasRealMiddle().left + (currentProjectStore.metadata?.defaultCanvasViewPosition.x || 0) + "px",
+            top: getCanvasRealMiddle().top + (currentProjectStore.metadata?.defaultCanvasViewPosition.y || 0) + "px"
           }}
         >
+          {/** Line for Y */}
+          <span class="absolute bg-gray-700 h-full w-1" style={{ left: (currentProjectStore.metadata?.canvasWidth || 0) / 2 + "px" }}></span>
+          {/** Line for X */}
+          <span class="absolute bg-gray-700 w-full h-1" style={{ top: (currentProjectStore.metadata?.canvasHeight || 0) / 2 + "px" }}></span>
+
           <div style={{
             left: canvasX0() + "px", top: canvasY0() + "px"
           }} class="bg-gray-600 h-32 w-32 absolute left-2"></div>
