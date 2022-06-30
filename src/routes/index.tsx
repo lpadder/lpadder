@@ -23,7 +23,7 @@ const Home: Component = () => {
       <Title>lpadder.</Title>
       <div class="p-8 w-screen h-screen bg-bottom bg-no-repeat bg-contain bg-home-mobile sm:bg-home-desktop sm:bg-right">
 
-        <nav class="flex flex-row justify-center w-full h-36 bg-transparent sm:justify-start">
+        <nav class="flex flex-row justify-center w-full mb-12 bg-transparent sm:justify-start">
           <img class="w-24 h-24" alt="lpadder's logo" src={LpadderLogo} />
         </nav>
 
