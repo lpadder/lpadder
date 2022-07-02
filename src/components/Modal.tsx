@@ -46,7 +46,7 @@ const Modal: ParentComponent<{
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <DialogPanel class=" p-4 mx-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900 shadow-lg shadow-gray-900">
+              <DialogPanel class="my-0 mx-auto p-4 mx-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900 shadow-lg shadow-gray-900">
                 {props.children}
               </DialogPanel>
             </TransitionChild>
