@@ -76,9 +76,9 @@ const config = {
       footer: {
         links: [
           { label: 'github', to: 'https://github.com/vexcited/lpadder' },
-          { label: 'discord', to: 'https://discord.gg/aoijdaoidj' }
+          { label: 'discord', to: 'https://discord.gg/HKm8nghM5m' }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Vexcited & Trobonox.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Vexcited & Trobonox`,
       },
       prism: {
         theme: lightCodeTheme,
