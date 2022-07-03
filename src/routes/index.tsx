@@ -1,4 +1,3 @@
-import { Show } from "solid-js";
 import type { Component } from "solid-js";
 import LpadderLogo from "@/assets/icon.png";
 
@@ -21,33 +20,40 @@ const Home: Component = () => {
   return (
     <>
       <Title>lpadder.</Title>
-      <div class="p-8 w-screen h-screen bg-bottom bg-no-repeat bg-contain bg-home-mobile sm:bg-home-desktop sm:bg-right">
+      <div class="flex flex-col justify-between p-8 min-h-screen bg-bottom bg-no-repeat bg-contain bg-home-mobile sm:bg-home-desktop sm:bg-right">
+        <header>
+          <nav class="flex flex-row justify-center w-full mb-12 bg-transparent sm:justify-start">
+            <img class="w-24 h-24" alt="lpadder's logo" src={LpadderLogo} />
+          </nav>
 
-        <nav class="flex flex-row justify-center w-full mb-12 bg-transparent sm:justify-start">
-          <img class="w-24 h-24" alt="lpadder's logo" src={LpadderLogo} />
-        </nav>
+          <div class="flex flex-col flex-wrap gap-4 h-full items-center sm:items-start">
+            <SubMenu
+              title="Projects"
+              description="Take a look at your saved projects !"
+              href="/projects"
+            />
 
-        <div class="flex flex-col flex-wrap gap-4 items-center sm:items-start">
-          <SubMenu
-            title="Projects"
-            description="Take a look at your saved projects !"
-            href="/projects"
-          />
+            <SubMenu
+              title="Utilities"
+              description="Want to do some crazy stuff ?"
+              href="/utilities"
+            />
 
-          <SubMenu
-            title="Utilities"
-            description="Want to do some crazy stuff ?"
-            href="/utilities"
-          />
+            <SubMenu
+              title="Games"
+              description="If you're bored..."
+              href="/games"
+            />
 
-          <SubMenu
-            title="Games"
-            description="Here is some cool games, try them !"
-            href="/games"
-          />
-        </div>
+            <SubMenu
+              title="Settings"
+              description="Custom the behaviour of lpadder."
+              href="/settings"
+            />
+          </div>
+        </header>
 
-        <footer class="flex flex-col fixed bottom-0 left-0 justify-start sm:justify-center items-center sm:items-start w-full h-24 sm:left-auto sm:w-auto">
+        <footer class="flex flex-col mt-12 justify-start sm:justify-center items-center sm:items-start w-full sm:left-auto sm:w-auto">
           <p class="text-opacity-60">Version: <span class="font-medium">
             <Show when={!import.meta.env.DEV} fallback="next">{APP_VERSION}</Show>
           </span></p>
