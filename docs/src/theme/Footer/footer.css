@@ -21,8 +21,6 @@ svg.faDiscord {
   color: var(--ifm-font-color-secondary)
 }
 
-
-
 svg.bsGithub:hover,
 svg.faDiscord:hover {
   fill: var(--ifm-link-color);
