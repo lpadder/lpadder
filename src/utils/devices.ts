@@ -5,11 +5,11 @@ export type DeviceLayoutType = number[][];
 export type DeviceType =
   | "launchpad_pro_mk3"
   | "launchpad_mini_mk3"
-  | "launchpad_pro"
-  | "launchpad_pro_cfw" // Old CFW
-  | "launchpad_pro_cfy" // Latest CFW
+  | "launchpad_pro_mk2"
+  | "launchpad_pro_mk2_cfw" // Old CFW
+  | "launchpad_pro_mk2_cfy" // Latest CFW
   | "launchpad_mk2"
-  | "launchpad_mini"
+  | "launchpad_mini_mk2"
   | "launchpad_x"
 
 /** Private function to build the `drum_rack` layout. */
@@ -103,17 +103,82 @@ export interface DeviceProperty {
   layout_to_use: DeviceLayoutType;
 }
 
-export const devices: { [Property in DeviceType]: DeviceProperty } = {
-  launchpad_pro: {
-    name: "Launchpad Pro",
+export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } = {
+  launchpad_pro_mk2: {
+    name: "Launchpad Pro MK2",
 
+    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L7-L11>. */
     initialization_sysex: [
-      [0, 32, 41, 2, 16, 33, 0], // Enter Live Mode
-      [0, 32, 41, 2, 16, 14, 0], // Clear canvas
-      [0, 32, 41, 2, 16, 10, 99, 0] // Turn off Mode light
+      // Enter "Live" mode.
+      [0, 32, 41, 2, 16, 33, 0],
+      // Clear canvas.
+      [0, 32, 41, 2, 16, 14, 0],
+      // Turn off "mode" light.
+      [0, 32, 41, 2, 16, 10, 99, 0]
     ],
 
     layout_to_use: layouts["drum_rack"]
+  },
+  launchpad_pro_mk2_cfw: {
+    name: "Launchpad Pro MK2 (Outdated CFW)",
+
+    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L145-L148>. */
+    initialization_sysex: [
+      // Enter "Performance" mode.
+      [0, 32, 41, 2, 16, 33, 1],
+      // Clear canvas.
+      [0, 32, 41, 2, 16, 14, 0]
+    ],
+
+    layout_to_use: layouts["drum_rack"]
+  },
+  /** Same as `launchpad_pro_cfw` but updated. */
+  get launchpad_pro_mk2_cfy () {
+    return {
+      ...this.launchpad_pro_mk2_cfw,
+      name: "Launchpad Pro (CFW)"
+    };
+  },
+
+  launchpad_x: {
+    name: "Launchpad X",
+
+    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L332-L334>. */
+    initialization_sysex: [
+      // Enter "Programmer" mode.
+      [0, 32, 41, 2, 12, 14, 1]
+    ],
+
+    layout_to_use: layouts["programmer"]
+  },
+
+  launchpad_pro_mk3: {
+    name: "Launchpad Pro MK3",
+
+    initialization_sysex: [
+      // Enter "Programmer" mode.
+      [0, 32, 41, 2, 12, 14, 0, 17, 0]
+    ],
+
+    layout_to_use: layouts["programmer"]
+  },
+
+  launchpad_mk2: {
+    name: "Launchpad MK2",
+    initialization_sysex: [],
+    layout_to_use: layouts["programmer"]
+  },
+
+  launchpad_mini_mk2: {
+    name: "Launchpad Mini MK2",
+    initialization_sysex: [],
+    layout_to_use: layouts["drum_rack"]
+  },
+
+  launchpad_mini_mk3: {
+    name: "Launchpad Mini MK3",
+    initialization_sysex: [],
+    layout_to_use: layouts["programmer"]
   }
 };
 
@@ -181,15 +246,15 @@ export const guessDeviceType = (output: Output, input: Input): Promise<DeviceTyp
             switch (versionStr) {
             case "cfw":
             case "cfx": {
-              type = "launchpad_pro_cfw";
+              type = "launchpad_pro_mk2_cfw";
               break;
             }
             case "cfy": {
-              type = "launchpad_pro_cfy";
+              type = "launchpad_pro_mk2_cfy";
               break;
             }
             default: {
-              type = "launchpad_pro";
+              type = "launchpad_pro_mk2";
               break;
             }
             }

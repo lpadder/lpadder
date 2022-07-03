@@ -1,6 +1,6 @@
 import type { ConnectedDeviceData, DeviceCustomProfile } from "@/stores/webmidi";
 
-import { guessDeviceType } from "@/utils/devices";
+import { guessDeviceType, devicesConfiguration } from "@/utils/devices";
 import { log } from "@/utils/logger";
 import { WebMidi } from "webmidi";
 
@@ -58,6 +58,17 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
         log("profile", "found the profile for", device_raw_name);
         if (device_profile.name) device_name = device_profile.name;
         if (device_profile.type) device_type = device_profile.type;
+      }
+
+      // Send the initialization sysex to devices for instant setup.
+      if (device_type && devicesConfiguration[device_type]) {
+        const { initialization_sysex } = devicesConfiguration[device_type];
+        for (const messageToSend of initialization_sysex) {
+          setTimeout(() => {
+            output.sendSysex([], messageToSend);
+            console.info(`[webmidi/init]: sent sysex message to ${device_name} (${device_type})`, messageToSend);
+          }, 2000);
+        }
       }
 
       const device: ConnectedDeviceData = {
