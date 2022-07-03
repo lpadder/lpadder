@@ -1,9 +1,28 @@
 import type { Input, Output } from "webmidi";
-import { createStore } from "solid-js/store";
-import { createSignal } from "solid-js";
+import type { DeviceType } from "@/utils/devices";
 
-export type InputsData = { [id: string]: Input };
-export type OutputsData = { [id: string]: Output };
+import { createStore } from "solid-js/store";
+
+export interface ConnectedDeviceData {
+  raw_name: string;
+  guessed_type?: DeviceType;
+
+  /** Same as `raw_name` when not customized. */
+  name: string;
+  /** Same as `guessed_type` when not customized. */
+  type?: DeviceType;
+
+  input: Input;
+  output: Output;
+}
+
+export interface DeviceCustomProfile {
+  /** Raw name of the device port, so we can still identify it. */
+  raw_name: string;
+
+  name?: string
+  type?: DeviceType;
+}
 
 interface WebMidiInformationsType {
   /**
@@ -25,5 +44,5 @@ export const [webMidiInformations, setWebMidiInformations] = createStore<WebMidi
   isEnabled: false
 });
 
-export const [webMidiInputs, setWebMidiInputs] = createSignal<InputsData>({});
-export const [webMidiOutputs, setWebMidiOutputs] = createSignal<OutputsData>({});
+export const [webMidiDevices, setWebMidiDevices] = createSignal<ConnectedDeviceData[]>([]);
+
