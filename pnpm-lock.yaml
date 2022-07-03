@@ -19,7 +19,7 @@ specifiers:
   pako: ^2.0.4
   release-it: ^14.14.0
   solid-app-router: ^0.3.3
-  solid-headless: ^0.11.0
+  solid-headless: ^0.11.1
   solid-js: ^1.4.3
   solid-meta: ^0.27.5
   solid-start: 0.1.0-alpha.89
@@ -44,7 +44,7 @@ dependencies:
   localforage: 1.10.0
   pako: 2.0.4
   solid-app-router: 0.3.3_solid-js@1.4.3
-  solid-headless: 0.11.0_solid-js@1.4.3
+  solid-headless: 0.11.1_solid-js@1.4.3
   solid-js: 1.4.3
   solid-meta: 0.27.5_solid-js@1.4.3
   wavesurfer.js: 6.2.0
@@ -5462,14 +5462,14 @@ packages:
     dependencies:
       solid-js: 1.4.3
 
-  /solid-headless/0.11.0_solid-js@1.4.3:
-    resolution: {integrity: sha512-ZAwstHK61dHrKxNycI7UMiMGZn4i5wsorCtnGTygioT5S7Yo8Wq5gyvsDt86kvfdn55KF7lyHFFypV2jcE5F5A==}
+  /solid-headless/0.11.1_solid-js@1.4.3:
+    resolution: {integrity: sha512-8u2G0FYR8W9dAM3GTLgfRYg6mVbb2urQf4w3eC8qlcziTsig1NBbiXYvOmdtvmthsjhlJNKOmBNn7l17TT0MxQ==}
     engines: {node: '>=10'}
     peerDependencies:
       solid-js: ^1.2
     dependencies:
       solid-js: 1.4.3
-      solid-use: 0.3.4_solid-js@1.4.3
+      solid-use: 0.4.3_solid-js@1.4.3
     dev: false
 
   /solid-js/1.4.3:
@@ -5578,8 +5578,8 @@ packages:
       - supports-color
     dev: true
 
-  /solid-use/0.3.4_solid-js@1.4.3:
-    resolution: {integrity: sha512-6i/OgufY6NAhYkB/1d5gU2lROTM9nIMo08qVyaTDp4RjDONf2HgceaEYhvRrQc31IAOBU6xnZ9d6S4rRsLdj9w==}
+  /solid-use/0.4.3_solid-js@1.4.3:
+    resolution: {integrity: sha512-ap+PoOTIc6nOa3KbSpCX35kOs08PJZ7EPhjXMpyhJmQXa78fETaBTU0R4Ki+UDkbWGMNCEPXfD7GnsS25mYGJw==}
     engines: {node: '>=10'}
     peerDependencies:
       solid-js: ^1.2

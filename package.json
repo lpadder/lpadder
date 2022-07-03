@@ -17,7 +17,7 @@
     "localforage": "^1.10.0",
     "pako": "^2.0.4",
     "solid-app-router": "^0.3.3",
-    "solid-headless": "^0.11.0",
+    "solid-headless": "^0.11.1",
     "solid-js": "^1.4.3",
     "solid-meta": "^0.27.5",
     "wavesurfer.js": "^6.1.0",
