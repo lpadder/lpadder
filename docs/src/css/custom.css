@@ -4,6 +4,9 @@
  * work well for content-centric websites.
  */
 
+/* Import Poppins Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-footer-background-color: var(--ifm-background-color);
@@ -40,4 +43,8 @@ html[data-theme='dark'] {
 html[data-theme='light'] {
   --ifm-background-color:  #f1f5f9;
   --ifm-navbar-background-color: #f1f5f9;
+}
+
+.navbar__title {
+  font-family: 'Poppins', sans-serif;
 }
