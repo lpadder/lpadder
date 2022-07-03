@@ -17,6 +17,22 @@ export const removeInOutFromName = (name: string) => {
 };
 
 /**
+ * Check if a device is black listed.
+ *
+ * Why would a device be black listed ?
+ * To prevent multiple entries of the exact same device in the store.
+ *
+ * For example, on macOS with a Launchpad Pro, you have 3 entries
+ * => Launchpad Pro Live Port (the one we need)
+ * => Launchpad Pro Standalone Port (also works but breaks everything on sysex initialization)
+ * => Launchpad Pro MIDI Port (doesn't work)
+ */
+const isDeviceBlackListed = (name: string) => {
+  const regexp = /(MIDI Port)|(Standalone Port)/gi;
+  return regexp.test(name);
+};
+
+/**
  * This checks for devices and refresh the `webMidiDevices` signal.
  * @param isNewDevices - When `true`, will check for new devices.
  */
@@ -38,6 +54,9 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
 
       const device_raw_name = removeInOutFromName(output.name);
       let device_name = device_raw_name;
+
+      /** We don't put in the store blacklisted devices. */
+      if (isDeviceBlackListed(device_name)) continue;
 
       /** Whether the device already in the store or not. */
       const alreadyInStore = devices.find(device => device.raw_name === device_raw_name);
