@@ -1,40 +1,37 @@
 import type { Component } from "solid-js";
 
 import type {
+  MessageEvent,
   NoteMessageEvent,
   ControlChangeMessageEvent
 } from "webmidi";
 
 import {
-  webMidiInformations,
-  webMidiInputs,
-  webMidiOutputs
+  webMidiDevices,
+  webMidiInformations
 } from "@/stores/webmidi";
 
 // Components
 import Select from "@/components/Select";
-// import InputElement from "@/components/Input";
+// Import InputElement from "@/components/Input";
 
 type MidiEvent =
-  | { type: "noteon"; event: NoteMessageEvent }
-  | { type: "noteoff"; event: NoteMessageEvent }
-  | { type: "controlchange"; event: ControlChangeMessageEvent }
+  | { type: "noteon", event: NoteMessageEvent }
+  | { type: "noteoff", event: NoteMessageEvent }
+  | { type: "controlchange", event: ControlChangeMessageEvent }
+  | { type: "sysex", event: MessageEvent }
 
 const MidiOutputSender = () => {
-  const [selectedOutputId, setSelectedOutputId] = createSignal<string | null>(null);
-  // const [message, setMessage] = createSignal<number[]>([0, 0, 0, 0, 0, 0, 0, 0]);
+  const [selectedDeviceIndex, setSelectedDeviceIndex] = createSignal<number | null>(null);
 
-  const handleSend = (e: Event) => {
+  const handleSysExSend = (e: Event) => {
     e.preventDefault();
 
-    const output_id = selectedOutputId();
-    if (!output_id) return;
+    const deviceIndex = selectedDeviceIndex();
+    if (!deviceIndex) return;
 
-    const output = webMidiOutputs()[output_id];
-    if (!output) return;
-
-    // console.info("[midi-checker] Sending message", message, "to output:", output);
-    // output.send(message);
+    const output = webMidiDevices()[deviceIndex].output;
+    output.sendSysex([], [0x7e, 0x7f, 0x06, 0x01]);
   };
 
   return (
@@ -51,18 +48,18 @@ const MidiOutputSender = () => {
           onChange={(evt) => {
             const value = evt.currentTarget.value;
 
-            if (value === "none") setSelectedOutputId(null);
-            else setSelectedOutputId(value);
+            if (value === "none") setSelectedDeviceIndex(null);
+            else setSelectedDeviceIndex(parseInt(value));
           }}
-          
+
           title="Select an output"
         >
           <option value="none">None</option>
 
-          <For each={Object.keys(webMidiOutputs())}>
-            {output_id => (
-              <option value={output_id}>
-                {webMidiOutputs()[output_id].name}
+          <For each={webMidiDevices()}>
+            {(device, deviceIndex) => (
+              <option value={deviceIndex()}>
+                {device.name}
               </option>
             )}
           </For>
@@ -93,12 +90,11 @@ const MidiOutputSender = () => {
         ))}
       </div> */}
 
-
       <button
         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleSend}
+        onClick={handleSysExSend}
       >
-        Send
+        Send SysEx
       </button>
     </div>
   );
@@ -123,52 +119,57 @@ const MidiInputChecker = () => {
    * Callback of a listener on input.
    * It adds the value from the input to the `midiEvents` array.
    */
-  const inputEventCallback = (event: NoteMessageEvent | ControlChangeMessageEvent) => {
+  const inputEventCallback = (event: NoteMessageEvent | ControlChangeMessageEvent | MessageEvent) => {
     if (event.type === "noteon" || event.type === "noteoff") {
       return appendToMidiEvent({
         type: event.type,
         event: event as NoteMessageEvent
       });
     }
-    
+
     if (event.type === "controlchange") {
       return appendToMidiEvent({
         type: event.type,
         event: event as ControlChangeMessageEvent
       });
     }
+
+    if (event.type === "sysex") {
+      return appendToMidiEvent({
+        type: event.type,
+        event: event as MessageEvent
+      });
+    }
   };
 
   createEffect(() => {
     console.group("[midi-checker/mount] Subscribe to listeners.");
-      
-    for (const input_id of Object.keys(webMidiInputs())) {
-      const input = webMidiInputs()[input_id];
 
+    for (const { input, name } of webMidiDevices()) {
       input.addListener("noteon", inputEventCallback);
       input.addListener("noteoff", inputEventCallback);
       input.addListener("controlchange", inputEventCallback);
-      
-      console.info("Subscribed to", input);
+      input.addListener("sysex", inputEventCallback);
+
+      console.info("Subscribed to", name);
     }
-      
+
     console.info("Done !");
     console.groupEnd();
-    
+
     /** On cleanup, we unsubscribe from all the inputs. */
     onCleanup(() => {
       console.group("[midi-checker/cleanup] Unsubscribe to listeners.");
-      
-      for (const input_id of Object.keys(webMidiInputs())) {
-        const input = webMidiInputs()[input_id];
 
+      for (const { input, name } of webMidiDevices()) {
         input.removeListener("noteon", inputEventCallback);
         input.removeListener("noteoff", inputEventCallback);
         input.removeListener("controlchange", inputEventCallback);
-        
-        console.info("Unsubscribed from", input);
+        input.removeListener("sysex", inputEventCallback);
+
+        console.info("Unsubscribed from", name);
       }
-        
+
       console.info("Done !");
       console.groupEnd();
     });
@@ -183,7 +184,31 @@ const MidiInputChecker = () => {
             <div
               class="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
             >
-              <p>[{event_info.event.port.name}]: {event_info.type} ({event_info.type === "controlchange" ? event_info.event.controller.number : event_info.event.note.number}) on channel {event_info.event.message.channel}.</p>
+              <h4>[{event_info.event.port.name}]</h4>
+              <p>Channel {event_info.event.message.channel ?? "UNKNOWN"}</p>
+
+              <Switch>
+                <Match when={event_info.type === "controlchange" && event_info}>
+                  {({ event }) => (
+                    <span>CC: {event.controller.number}</span>
+                  )}
+                </Match>
+                <Match when={event_info.type === "sysex" && event_info}>
+                  {({ event }) => (
+                    <span>SysEx: {event.message.data.toString()}</span>
+                  )}
+                </Match>
+                <Match when={event_info.type === "noteon" && event_info}>
+                  {({ event }) => (
+                    <span>NoteOn: {event.note.number}</span>
+                  )}
+                </Match>
+                <Match when={event_info.type === "noteoff" && event_info}>
+                  {({ event }) => (
+                    <span>NoteOff: {event.note.number}</span>
+                  )}
+                </Match>
+              </Switch>
             </div>
           )}
         </For>

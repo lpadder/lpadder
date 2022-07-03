@@ -10,7 +10,6 @@ const UtilitiesConvertMidi: Component = () => {
   const [toLayout, setToLayout] = createSignal<AvailableLayouts>("programmer");
 
   const [uploadedFiles, setUploadedFiles] = createSignal<FileList | null>(null);
-  // const [convertedFiles, setConvertedFiles] = useState([]);
 
   const handleMidiUpload = (evt: Event & {
     currentTarget: HTMLInputElement;
@@ -32,12 +31,12 @@ const UtilitiesConvertMidi: Component = () => {
       reader.onload = () => {
         const buffer = reader.result as ArrayBuffer;
         const midi = new Midi(buffer);
-          
+
         // Convert midi object to array and download it.
         const output = midi.toArray();
         downloadBlob(output, file.name, "audio/midi");
       };
-        
+
       // Read MIDI file as ArrayBuffer.
       reader.readAsArrayBuffer(file);
     }

@@ -1,18 +1,10 @@
 import type { Component } from "solid-js";
 
-import type { ConnectedDeviceData } from "@/stores/webmidi";
 import { webMidiDevices, setWebMidiDevices } from "@/stores/webmidi";
 
 import Input from "@/components/Input";
 
 const SettingsMidi: Component = () => {
-  const handleNameUpdate = (device_index: number, name: string) => {
-    const devices = webMidiDevices();
-    devices[device_index].name = name;
-
-    setWebMidiDevices([...devices]);
-  };
-
   return (
     <>
       <Title>lpadder - settings: MIDI</Title>
@@ -30,7 +22,7 @@ const SettingsMidi: Component = () => {
               }</h4>
 
               <Input
-                onInput={evt => {
+                onInput={(evt) => {
                   const devices = webMidiDevices();
                   devices[index] = {
                     ...device(),

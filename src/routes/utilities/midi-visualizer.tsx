@@ -1,7 +1,7 @@
 import { createStore } from "solid-js/store";
 import { Midi, MidiJSON } from "@tonejs/midi";
 
-import Launchpad from "@/components/Launchpad";
+import Launchpad from "@/components/Device";
 import Select from "@/components/Select";
 import FileInput from "@/components/FileInput";
 
@@ -9,7 +9,7 @@ import LaunchpadLayout from "@/utils/LaunchpadLayout";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 import chroma from "chroma-js";
 
-import { webMidiOutputs, webMidiInformations } from "@/stores/webmidi";
+import { webMidiDevices, webMidiInformations } from "@/stores/webmidi";
 import { JSX } from "solid-js";
 
 interface GroupedNotes {
@@ -21,7 +21,7 @@ interface GroupedNotes {
     /** MIDI note. */
     midi: number;
   }[];
-  
+
   /** In MS. */
   start_time: number;
 }
@@ -34,13 +34,12 @@ export default function UtilitiesMidiVisualizer () {
     midi: Midi | null,
     notes: GroupedNotes[] | null,
 
-    /** Defaults to `none`. */
-    selectedOutputId: string 
+    selectedDeviceIndex: number
   }>({
     loaded: false,
     midi: null,
     notes: null,
-    selectedOutputId: "none"
+    selectedDeviceIndex: 0
   });
 
   /** When a file is uploaded, parse and load it.  */
@@ -59,7 +58,7 @@ export default function UtilitiesMidiVisualizer () {
     reader.onload = () => {
       const midiBuffer = reader.result as ArrayBuffer;
       const midiObject = new Midi(midiBuffer);
-      
+
       // Parse the notes.
       const midi_data = midiObject.toJSON();
       const notesData = loadMidiData(midi_data);
@@ -67,7 +66,7 @@ export default function UtilitiesMidiVisualizer () {
       // Store the MIDI object and the parsed notes.
       setState({ midi: midiObject, notes: notesData, loaded: true });
     };
-    
+
     reader.readAsArrayBuffer(file);
   };
 
@@ -79,7 +78,7 @@ export default function UtilitiesMidiVisualizer () {
     const notes_data = midi_data.tracks[0].notes;
 
     /**
-     * Here, we group the notes by time to setup the 
+     * Here, we group the notes by time to setup the
      * setTimeouts for each group, when needed to.
      */
     const grouped_notes: GroupedNotes[] = [];
@@ -97,13 +96,13 @@ export default function UtilitiesMidiVisualizer () {
 
       const convert_results = layouts.convertNoteLayout(note.midi, "live", "programmer");
       if (!convert_results.success) return;
-      
+
       const midi = convert_results.result;
 
       const parsed_note: typeof grouped_notes[number]["notes"][number] = {
         velocity: note.velocity,
         duration,
-        midi,
+        midi
       };
 
       // Find the group.
@@ -131,22 +130,22 @@ export default function UtilitiesMidiVisualizer () {
   const playMidi = () => {
     if (!state.notes) return;
 
-    /** Get the output choosen. */
-    const output = state.selectedOutputId ? webMidiOutputs()[state.selectedOutputId] : null;
+    /** Get the choosen output. */
+    const output = webMidiDevices()[state.selectedDeviceIndex].output;
 
     state.notes.forEach(group => {
       const start_time = group.start_time;
-      
+
       /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
         group.notes.forEach(note => {
           const color = getHexFromVelocity(note.velocity * 127);
           const duration = note.duration;
-  
+
           // Get the Launchpad element.
           if (!launchpad_ref) return;
           const launchpad = launchpad_ref;
-          
+
           // Get the pad element from the Launchpad.
           const pad: HTMLDivElement | null = launchpad.querySelector(`[data-note="${note.midi}"]`);
           if (!pad) return;
@@ -156,7 +155,7 @@ export default function UtilitiesMidiVisualizer () {
           output?.playNote(note.midi, {
             attack: note.velocity
           });
-  
+
           // Setup the timing for the `noteoff`.
           setTimeout(() => {
             const style = pad.style.backgroundColor;
@@ -165,10 +164,10 @@ export default function UtilitiesMidiVisualizer () {
             const style_hex = chroma(style).hex();
 
             // Check if the current pad color
-            // matches the color of the `noteon`.
+            // Matches the color of the `noteon`.
             //
             // If it doesn't match, it's because
-            // another `noteon` has been played on it.
+            // Another `noteon` has been played on it.
             if (style_hex === color) {
               // Remove the color of the pad for the `noteoff`.
               pad.removeAttribute("style");
@@ -179,7 +178,7 @@ export default function UtilitiesMidiVisualizer () {
       }, start_time);
     });
   };
-  
+
   return (
     <div>
       <header
@@ -215,15 +214,15 @@ export default function UtilitiesMidiVisualizer () {
           <Show when={webMidiInformations.isEnabled}>
             <Select
               title="Select an output..."
-              onChange={(e) => setState({ selectedOutputId: e.currentTarget.value })}
+              onChange={e => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
             >
               <option value="none">
                   None
               </option>
 
-              <For each={Object.keys(webMidiOutputs())}>{output_id => (
-                <option value={output_id}>
-                  {webMidiOutputs()[output_id].name}
+              <For each={webMidiDevices()}>{(device, deviceIndex) => (
+                <option value={deviceIndex()}>
+                  {device.name}
                 </option>
               )}</For>
             </Select>
@@ -246,7 +245,7 @@ export default function UtilitiesMidiVisualizer () {
           >
             Play MIDI
           </button>
-        </div> 
+        </div>
       </Show>
     </div>
   );
