@@ -7,19 +7,19 @@ import type { Component } from "solid-js";
 const utilities = [
   {
     slug: "ableton-parse",
-    description: "Parse Ableton Live Set (.als) file.",
+    description: "Parse Ableton Live Set (.als) file."
   },
   {
     slug: "convert-midi",
-    description: "Convert your MIDI files to Launchpad's programmer or live layout.",
+    description: "Convert your MIDI files to Launchpad's programmer or live layout."
   },
   {
     slug: "midi-checker",
-    description: "Connect your MIDI device and listen to it's IO. You can also send input to them.",
+    description: "Connect your MIDI device and listen to it's IO. You can also send input to them."
   },
   {
     slug: "midi-visualizer",
-    description: "Parse any MIDI file and visualize it on an Launchpad. Useful when making lightshows.",
+    description: "Parse any MIDI file and visualize it on an Launchpad. Useful when making lightshows."
   }
 ];
 

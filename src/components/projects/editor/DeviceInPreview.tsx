@@ -1,6 +1,6 @@
 import type { ParentComponent } from "solid-js";
 
-import Launchpad from "@/components/Launchpad";
+import Launchpad from "@/components/Device";
 
 import { currentProjectStore } from "@/stores/current_project";
 

@@ -11,7 +11,7 @@ import type {
 import { createStore } from "solid-js/store";
 
 import FileInput from "@/components/FileInput";
-import Launchpad from "@/components/Launchpad";
+import Launchpad from "@/components/Device";
 
 import {
   readAbletonFile,
@@ -57,7 +57,7 @@ const AbletonParsedResults: Component<{
           {track => (track.type === "audio") && (
             <div>
               <h4>{track.name}</h4>
-            </div>  
+            </div>
           )}
         </For>
       </div>
@@ -67,10 +67,10 @@ const AbletonParsedResults: Component<{
 
 /**
  * General `MidiDevice` component.
- * 
+ *
  * You only need to pass the `device` prop and
  * it will automatically decides whose component to mount.
- * 
+ *
  * TODO: Maybe more optimizations about the `when` prop ?
  * Help was already
  */
@@ -120,7 +120,7 @@ const MidiDeviceSample: Component<{
 };
 /**
  * Renders a Drum Rack with a Launchpad preview.
- * 
+ *
  * TODO: Optimize the effect and cleanup, if possible (?)
  */
 const MidiDeviceDrumRack: Component<{
@@ -243,7 +243,7 @@ const UtilitiesAbletonParse: Component = () => {
 
     // Reset every states.
     setState({
-      abletonData: null, 
+      abletonData: null,
       error: null
     });
 
@@ -254,12 +254,12 @@ const UtilitiesAbletonParse: Component = () => {
     const reader = new FileReader();
     reader.onload = async () => {
       const buffer = reader.result as ArrayBuffer;
-      
+
       try {
         const ableton_file = await readAbletonFile(buffer);
 
         const parsedAbletonFile = await parseAbletonData(ableton_file);
-        
+
         setState({
           abletonData: parsedAbletonFile,
           error: null
@@ -272,7 +272,7 @@ const UtilitiesAbletonParse: Component = () => {
           abletonData: null,
           error: "An error was thrown while parsing the file."
         });
-      }      
+      }
     };
 
     const file = files[0];
