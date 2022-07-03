@@ -4,9 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "solid-start dev",
-    "lint": "eslint . --ext .ts,.tsx,.js",
+    "lint": "eslint . --ext .ts,.tsx && tsc",
     "build": "pnpm lint && solid-start build",
-    "serve": "node ./build/server.js",
     "release": "pnpm lint && dotenv -e .env.local release-it --"
   },
   "dependencies": {
