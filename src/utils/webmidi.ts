@@ -7,7 +7,9 @@ import { WebMidi } from "webmidi";
 import {
   webMidiDevices,
   setWebMidiDevices,
-  setWebMidiInformations
+  setWebMidiInformations,
+  deviceCustomProfiles,
+  setDeviceCustomProfiles
 } from "@/stores/webmidi";
 
 export const removeInOutFromName = (name: string) => {
@@ -43,7 +45,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
   console.info("[webmidi]: checking devices...");
 
   const devices = webMidiDevices();
-  const profiles: DeviceCustomProfile[] = JSON.parse(localStorage.getItem("devices") ?? "[]");
+  const profiles = deviceCustomProfiles();
 
   /** Check for connected devices. */
   if (isNewDevices) {
@@ -103,6 +105,21 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
 
         input, output
       };
+
+      /**
+       * If the device wasn't saved in the profiles,
+       * we save it for the next time it loads.
+       */
+      if (!device_profile) {
+        console.info(`[webmidi]: saving ${device.name} to the profile...`);
+        profiles.push({
+          raw_name: device.raw_name,
+          name: device.name,
+          type: device.type
+        });
+
+        setDeviceCustomProfiles(profiles);
+      }
 
       console.info(`[webmidi]: adding ${device.name} to the store...`);
       setWebMidiDevices(prev => [...prev, device]);

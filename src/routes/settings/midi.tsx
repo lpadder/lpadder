@@ -1,6 +1,12 @@
 import type { Component } from "solid-js";
 
-import { webMidiDevices, setWebMidiDevices } from "@/stores/webmidi";
+import {
+  webMidiDevices,
+  setWebMidiDevices,
+
+  deviceCustomProfiles,
+  setDeviceCustomProfiles
+} from "@/stores/webmidi";
 
 import Input from "@/components/Input";
 
@@ -13,7 +19,7 @@ const SettingsMidi: Component = () => {
 
       <div>
         <Index each={webMidiDevices()}>
-          {(device, index) => (
+          {(device, deviceIndex) => (
             <div>
               <h4>{
                 device().name === device().raw_name
@@ -22,16 +28,25 @@ const SettingsMidi: Component = () => {
               }</h4>
 
               <Input
-                onInput={(evt) => {
+                autocomplete="off"
+                value={device().name}
+                onChange={(evt) => {
                   const devices = webMidiDevices();
-                  devices[index] = {
+                  devices[deviceIndex] = {
                     ...device(),
                     name: evt.currentTarget.value
                   };
 
+                  const profiles = deviceCustomProfiles();
+                  const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                  profiles[profilIndex] = {
+                    ...profiles[profilIndex],
+                    name: evt.currentTarget.value
+                  };
+
                   setWebMidiDevices([...devices]);
+                  setDeviceCustomProfiles(profiles);
                 }}
-                value={device().name}
               />
             </div>
           )}

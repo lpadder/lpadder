@@ -24,6 +24,14 @@ export interface DeviceCustomProfile {
   type?: DeviceType;
 }
 
+export const deviceCustomProfiles = (): DeviceCustomProfile[] => {
+  return JSON.parse(localStorage.getItem("devices") ?? "[]");
+};
+
+export const setDeviceCustomProfiles = (profiles: DeviceCustomProfile[]) => {
+  return localStorage.setItem("devices", JSON.stringify(profiles));
+};
+
 interface WebMidiInformationsType {
   /**
    * Whether the `enableAndSetup` function
