@@ -1,4 +1,4 @@
-name: Deploy lpadder to Vercel"
+name: Deploy lpadder to Vercel
 
 on:
   release:
