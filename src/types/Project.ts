@@ -1,3 +1,5 @@
+import type { DeviceType } from "@/utils/devices";
+
 export interface ProjectDataSample {
   /** Optionnal friendly name for this sample - because why not ?-? */
   name?: string;
@@ -6,20 +8,27 @@ export interface ProjectDataSample {
 }
 
 export interface ProjectData {
-  /** Data used for launchpads handling. */
-  launchpads: {
-    /** Name of the launchpad (more friendly than default: `Launchpad 0`) */
+  /** Data used for devices handling. */
+  devices: {
+    /** Friendly name of the device in the editor. */
     name: string;
 
-    pages: {
-      /** Name of the page. */
-      name: string;
+    /** Device to use so we can use the good layout. */
+    type: DeviceType;
 
-      /** Samples of the page. */
-      samples: {
-        [pad_id: number]: ProjectDataSample;
-      }
-    }[];
+    /** Device's `raw_name` linked to this device. */
+    device_linked?: string;
+  }[];
+
+  /** Global pages for the project. */
+  pages: {
+    /** Name of the page. */
+    name: string;
+
+    /** Samples of the page. */
+    samples: {
+      [pad_id: number]: ProjectDataSample;
+    }
   }[];
 
   files: {
@@ -38,10 +47,11 @@ export interface ProjectData {
        * Required at export to recompose file names with
        * proper extensions for them.
        */
-      type: string;
+      mime: string;
     }
   }
 
+  /** Defaults at 120 BPM. */
   global_bpm: number;
 }
 
