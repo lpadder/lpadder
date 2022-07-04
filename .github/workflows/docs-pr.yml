@@ -1,7 +1,7 @@
-name: Deploy documentation to production
+name: Preview documentation PRs
 
 on:
-  push:
+  pull_request:
     paths:
       - "docs/**"
       - "!docs/README.md"
@@ -15,14 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Deploy to production
+      - name: Deploy to preview
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORGANIZATION_ID }}
           vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }} 
-          github-comment: false
+          github-comment: true
           working-directory: ./docs
-          vercel-args: "--prod"
+          alias-domains: |
+            preview.docs.lpadder.ml
+            pr-{{PR_NUMBER}}.docs.lpadder.ml
 

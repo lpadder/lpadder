@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Deploy lpadder to Vercel"
 
 on:
   release:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Vercel Deploy
+      - name: Deploy
         id: vercel-deploy
         uses: amondnet/vercel-action@v20
         with:
