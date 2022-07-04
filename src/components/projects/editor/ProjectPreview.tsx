@@ -161,7 +161,6 @@ const ProjectPreview: Component = () => {
     if (isPreviewCanvasFullscreen()) canvasViewTop += (window.innerHeight / 2);
     else canvasViewTop += HEADER_TOP_HEIGHT + (CANVAS_PREVIEW_HEIGHT / 2);
 
-
     return {
       left: canvasViewLeft,
       top: canvasViewTop
@@ -170,7 +169,7 @@ const ProjectPreview: Component = () => {
 
   return (
     <div class="relative h-80 bg-gray-800 overflow-hidden shadow-md shadow-inner">
-      <div class="z-15 absolute top-4 left-4 flex flex-col gap-2">
+      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
         <ProjectPreviewButton
           title="Zoom in"
           action={() =>
@@ -202,7 +201,7 @@ const ProjectPreview: Component = () => {
         />
       </div>
 
-      <div class="z-15 absolute top-4 right-4">
+      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 right-4`}>
         <ProjectPreviewButton
           title="Settings"
           action={() => log("settings", "open")}
@@ -210,20 +209,23 @@ const ProjectPreview: Component = () => {
         />
       </div>
 
-      <div class="z-15 absolute bottom-20 right-4 flex gap-2">
+      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed bottom-4" : "absolute bottom-20"} right-4 flex gap-2`}>
         <ProjectPreviewButton
           title="Reset View"
-          action={() =>
+          action={() => {
             setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
-              x: 0,
-              y: 0
-            })
-          }
+              x: 0, y: 0
+            });
+            canvasCorrectMove();
+          }}
           icon={<IconMdiUndoVariant />}
         />
         <ProjectPreviewButton
           title="Fullscreen"
-          action={() => setPreviewCanvasFullscreen(prev => !prev)}
+          action={() => {
+            setPreviewCanvasFullscreen(prev => !prev);
+            canvasCorrectMove();
+          }}
           icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
         />
       </div>
