@@ -1,4 +1,5 @@
 import type { ProjectData, ProjectMetadata, ProjectStructure } from "@/types/Project";
+import type { ConnectedDeviceData } from "@/stores/webmidi";
 import type { Response } from "@/types/Globals";
 
 import { currentProjectStore, projectSaved, setProjectSaved } from "@/stores/current_project";
@@ -122,13 +123,19 @@ export const checkProjectVersion = async (version: string) => {
   return { success: true } as const;
 };
 
-/**
- * Takes a `slug` parameter and creates a new project with that slug.
- * @param extra - When string, it's the project's name; else, it's the project's data and metadata.
- */
+/** Takes a `slug` parameter and creates/imports a new project with that slug. */
 export const createNewProject = async (
   slug: string,
-  extra: string | { data: ProjectData, metadata: ProjectMetadata }
+  options: {
+    importing: true,
+    project: { data: ProjectData, metadata: ProjectMetadata }
+  } | {
+    importing: false,
+    project: {
+      name: string,
+      devices: ConnectedDeviceData[]
+    }
+  }
 ): Promise<Response<undefined>> => {
   if (!slug) return {
     success: false,
@@ -142,16 +149,22 @@ export const createNewProject = async (
     message: "A project with this slug already exists."
   };
 
-  const data: ProjectData = typeof extra !== "string" ? extra.data : {
-    launchpads: [],
+  const data: ProjectData = options.importing ? options.project.data : {
+    devices: options.project.devices.map(device => ({
+      name: device.name,
+      type: device.type || "launchpad_pro_mk2",
+      device_linked: device.raw_name
+    })),
+
+    pages: [],
     files: {},
 
     /** 120 is the default BPM. */
     global_bpm: 120
   };
 
-  const metadata: ProjectMetadata = typeof extra !== "string" ? extra.metadata : {
-    name: extra, // Here, we use `extra` as the project's name.
+  const metadata: ProjectMetadata = options.importing ? options.project.metadata : {
+    name: options.project.name,
     authors: [],
     creators: [],
 
@@ -164,8 +177,7 @@ export const createNewProject = async (
 
     // The default values of the canvas view position is middle (x=0, y=0)
     defaultCanvasViewPosition: {
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
+      x: 0, y: 0,
       scale: 1 // Default zoom/scale.
     }
   };

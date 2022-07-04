@@ -6,21 +6,37 @@ import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
+import { webMidiDevices } from "@/stores/webmidi";
 
 import { createNewProject } from "@/utils/projects";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
-  const [state, setState] = createStore({
+  const [state, setState] = createStore<{
+    name: string,
+    slug: string,
+    selected_devices: { [raw_name: string]: boolean }
+  }>({
     name: "",
-    slug: ""
+    slug: "",
+    selected_devices: {}
   });
 
   const handleCreation: JSX.EventHandler<HTMLFormElement, Event> = async (event) => {
     event.preventDefault();
     if (!state.name || !state.slug) return;
 
-    const response = await createNewProject(state.slug, state.name);
+    /** Get the selected devices with full informations. */
+    const devices = webMidiDevices().filter(device => state.selected_devices[device.raw_name]);
+
+    const response = await createNewProject(state.slug, {
+      importing: false,
+      project: {
+        name: state.name,
+        devices
+      }
+    });
+
     if (!response.success) return;
 
     navigate(`/projects/${state.slug}`);
@@ -31,7 +47,8 @@ const CreateProjectModal: Component = () => {
   const resetAndClose = () => {
     setState({
       slug: "",
-      name: ""
+      name: "",
+      selected_devices: {}
     });
 
     setModalsStore({ createProjectModal: false });
@@ -67,7 +84,6 @@ const CreateProjectModal: Component = () => {
             required
           />
 
-
           <Input
             autocomplete="off"
             class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
@@ -82,9 +98,28 @@ const CreateProjectModal: Component = () => {
             <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
           </div>
 
-          <p>
-            How many devices do you want to use ?
-          </p>
+          <Show when={webMidiDevices().length > 1}>
+            <p>
+              Should we automatically set-up these devices in the project for you ?
+            </p>
+
+            <div class="flex flex-wrap justify-evenly">
+              <For each={webMidiDevices()}>
+                {device => (
+                  <div
+                    class="h-26 w-26 p-2 border border-pink-500 bg-pink-500 transition-colors cursor-pointer rounded"
+                    onClick={() => setState("selected_devices", device.raw_name, (prev) => !prev)}
+                    classList={{
+                      "bg-opacity-100 hover:bg-opacity-95": state.selected_devices[device.raw_name],
+                      "bg-opacity-20 hover:bg-opacity-40 text-pink-200": !state.selected_devices[device.raw_name]
+                    }}
+                  >
+                    <span>{device.name}</span>
+                  </div>
+                )}
+              </For>
+            </div>
+          </Show>
 
           <div class="flex gap-2 justify-between">
             <button
@@ -92,13 +127,13 @@ const CreateProjectModal: Component = () => {
               class="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
               onClick={resetAndClose}
             >
-            Cancel
+              Cancel
             </button>
             <button
               type="submit"
               class="px-4 py-2 w-full text-sm font-medium text-pink-400 bg-pink-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
             >
-            Create
+              Create
             </button>
           </div>
         </form>
