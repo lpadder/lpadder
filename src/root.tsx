@@ -41,16 +41,16 @@ export default function RootRender () {
         <Title>lpadder.</Title>
         <meta name="title" content="lpadder." />
         <meta name="description" content="Web application that lets you play Launchpad covers directly from your browser." />
-        <link rel="canonical" href="https://lpadder.vexcited.ml/" />
+        <link rel="canonical" href="https://www.lpadder.ml/" />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://lpadder.vexcited.ml/" />
+        <meta property="og:url" content="https://www.lpadder.ml/" />
         <meta property="og:title" content="lpadder." />
         <meta property="og:description" content="Web application that lets you play Launchpad covers directly from your browser." />
         <meta property="og:image" content="/banner.png" />
 
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://lpadder.vexcited.ml/" />
+        <meta property="twitter:url" content="https://www.lpadder.ml/" />
         <meta property="twitter:title" content="lpadder." />
         <meta property="twitter:description" content="Web application that lets you play Launchpad covers directly from your browser." />
         <meta property="twitter:image" content="/banner.png" />
