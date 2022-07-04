@@ -1,0 +1,14 @@
+{
+  "link.item.label.github": {
+    "message": "github",
+    "description": "The label of footer link with label=github linking to https://github.com/Vexcited/lpadder"
+  },
+  "link.item.label.discord": {
+    "message": "discord",
+    "description": "The label of footer link with label=discord linking to https://dsc.gg/lpadder"
+  },
+  "copyright": {
+    "message": "Copyright © 2022 Vexcited & Trobonox",
+    "description": "The footer copyright"
+  }
+}

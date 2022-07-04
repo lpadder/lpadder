@@ -1,0 +1,8 @@
+{
+  "plugins": ["@docusaurus"],
+  "extends": ["plugin:@docusaurus/recommended"],
+  "rules": {
+    "solid/no-react-specific-props": "off",
+    "solid/prefer-for": "off"
+  }
+}
