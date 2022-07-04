@@ -31,7 +31,7 @@ You can see its interface (`ProjectStructure`) in the [`Project.ts`](./src/types
 
 ## Development
 
-lpadder was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com), [solid-start](https://github.com/solidjs/solid-start), [TypeScript](https://www.typescriptlang.org) and [WindiCSS](https://windicss.org). Deployment is powered by [Vercel](https://vercel.com). [PNPm](https://pnpm.io/) is the main package manager. Finally, [MongoDB Atlas](https://www.mongodb.com/atlas/database) is used to host the main database.
+lpadder was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com), [solid-start](https://github.com/solidjs/solid-start), [TypeScript](https://www.typescriptlang.org) and [WindiCSS](https://windicss.org). Deployment is powered by [Vercel](https://vercel.com). [pnpm](https://pnpm.io/) is the main package manager. Finally, [MongoDB Atlas](https://www.mongodb.com/atlas/database) is used to host the main database.
 
 - `pnpm dev`: Starts `solid-start` development server on port `3000`.
   - Note: if you use a reverse proxy to access the development server, you'll need to change the `CLIENT_PORT` environment variable in `.env.local`  - a sample is available under `.env.sample`. The default value is `3000`.
