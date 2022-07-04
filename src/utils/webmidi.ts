@@ -1,4 +1,4 @@
-import type { ConnectedDeviceData, DeviceCustomProfile } from "@/stores/webmidi";
+import type { ConnectedDeviceData } from "@/stores/webmidi";
 
 import { guessDeviceType, devicesConfiguration } from "@/utils/devices";
 import { log } from "@/utils/logger";
