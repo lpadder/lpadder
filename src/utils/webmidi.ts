@@ -28,6 +28,9 @@ export const removeInOutFromName = (name: string) => {
  * => Launchpad Pro MIDI Port (doesn't work)
  */
 const isDeviceBlackListed = (name: string) => {
+  /** With the CFW, there's no "Live Port", only "Standalone Port" is what we're asking. */
+  if (name.toLowerCase() === "launchpad open standalone port") return false;
+
   const regexp = /(MIDI Port)|(Standalone Port)/gi;
   return regexp.test(name);
 };
@@ -55,17 +58,18 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
       const device_raw_name = removeInOutFromName(output.name);
       let device_name = device_raw_name;
 
-      /** We don't put in the store blacklisted devices. */
+      /** We don't put blacklisted devices in the store. */
       if (isDeviceBlackListed(device_name)) continue;
 
-      /** Whether the device already in the store or not. */
+      /**
+       * Whether the device already in the store or not.
+       * When the device is already in the store, skip to the next one.
+       */
       const alreadyInStore = devices.find(device => device.raw_name === device_raw_name);
-
-      /** When the device is already in the store, skip to the next one. */
       if (alreadyInStore) continue;
 
       // When new devices are connected, give them some time to boot before sending version query.
-      await new Promise<void>((res) => setTimeout(() => res(), 50));
+      await new Promise<void>((res) => setTimeout(() => res(), 500));
 
       // Guess the type of the device.
       const type = await guessDeviceType(output, input);

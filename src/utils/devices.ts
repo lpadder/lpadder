@@ -117,7 +117,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       [0, 32, 41, 2, 16, 10, 99, 0]
     ],
 
-    layout_to_use: layouts["drum_rack"]
+    layout_to_use: layouts["programmer"]
   },
   launchpad_pro_mk2_cfw: {
     name: "Launchpad Pro MK2 (Outdated CFW)",
