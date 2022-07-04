@@ -1,6 +1,6 @@
-# lpadder: Play Launchpad covers directly from your browser.
+# lpadder: Build your next cover with lpadder.
 
-![GitHub - Social Banner](https://user-images.githubusercontent.com/59152884/162007722-4f9df4b9-b293-4ae2-bcfa-4b4b8e25ce70.png)
+![GitHub - Social Banner](https://user-images.githubusercontent.com/59152884/177166304-5c79187c-4e43-4b37-8df3-9bd5d5130603.png)
 
 <p align="center">
   <a href="https://lpadder.vercel.app" target="_blank"><img src="https://img.shields.io/static/v1?&label=&message=go to lpadder&color=%231E293B&style=for-the-badge"/></a> 
@@ -42,7 +42,10 @@ lpadder was made using [Vite](https://vitejs.dev), [SolidJS](https://solidjs.com
 
 If you want to contribute, please check [the roadmap](https://github.com/Vexcited/lpadder/projects/1).
 
-## Resources
+## Credits
 
-- Launchpad Pro MK2: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20Pro%20Programmers%20Reference%20Guide%201.01.pdf)
-- Launchpad Pro MK3: [Programmer Documentation](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
+- [mat1jaczyyy](https://github.com/mat1jaczyyy), for the [LP-Firmware-Utility](https://github.com/mat1jaczyyy/LP-Firmware-Utility) where a lot of device identification code has been taken.
+- [203Null](https://github.com/203Null) and [203Electronics](https://github.com/203Electronics) for [Prismatic](https://github.com/203Electronics/Prismatic) where a lot of SysEx initialization code has been taken.
+- [Novation](https://novationmusic.com) for the Launchpads and their programmer documentations.
+  - [Launchpad Pro MK2](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20Pro%20Programmers%20Reference%20Guide%201.01.pdf)
+  - [Launchpad Pro MK3](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
