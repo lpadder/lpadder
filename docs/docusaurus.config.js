@@ -73,7 +73,7 @@ const config = {
         },
         {
           property: "og:image",
-          content: "img/banner.png"
+          content: "/img/banner.png"
         },
         {
           property: "twitter:card",
@@ -93,7 +93,7 @@ const config = {
         },
         {
           property: "twitter:image",
-          content: "img/banner.png"
+          content: "/img/banner.png"
         }
       ],
       colorMode: {
@@ -105,7 +105,7 @@ const config = {
         title: "lpadder",
         logo: {
           alt: "lpadder's logo",
-          src: "img/lpadder_icon.png"
+          src: "/img/lpadder_icon.png"
         },
         items: [
           {
