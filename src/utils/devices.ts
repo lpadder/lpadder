@@ -1,6 +1,11 @@
 import type { Output, Input, MessageEvent } from "webmidi";
 
-export type DeviceLayoutType = number[][];
+export type DeviceGridPadType = {
+  isPhantom?: boolean;
+  isCircle?: boolean;
+  id: number;
+}
+export type DeviceLayoutGridType = number[][];
 
 export type DeviceType =
   | "launchpad_pro_mk3"
@@ -13,7 +18,7 @@ export type DeviceType =
   | "launchpad_x"
 
 /** Private function to build the `drum_rack` layout. */
-const buildDrumRackLayout = (): DeviceLayoutType => {
+const buildDrumRackLayout = (): DeviceLayoutGridType => {
   console.info("building drum_rack layout...");
   const layout = [];
 
@@ -40,7 +45,7 @@ const buildDrumRackLayout = (): DeviceLayoutType => {
 };
 
 /** Private function to build the `programmer` layout. */
-const buildProgrammerLayout = (): DeviceLayoutType => {
+const buildProgrammerLayout = (): DeviceLayoutGridType => {
   console.info("building programmer layout...");
   const layout = [];
 
@@ -62,7 +67,7 @@ const buildProgrammerLayout = (): DeviceLayoutType => {
  * Private function to build the `live_drum_rack` layout.
  * This layout is only used to parse drum racks in Ableton.
  */
-const buildLiveDrumRackLayout = (): DeviceLayoutType => {
+const buildLiveDrumRackLayout = (): DeviceLayoutGridType => {
   console.info("building live_drum_rack layout...");
   const layout = [];
 
@@ -100,7 +105,10 @@ export interface DeviceProperty {
   /** SysEx to be sended when the device is connected or linked. */
   initialization_sysex: (number[])[];
 
-  layout_to_use: DeviceLayoutType;
+  /** Function to get the SysEx sequence to send RGB to the device. */
+  rgb_sysex: (note: number, [r, g, b]: number[]) => number[];
+
+  layout_to_use: DeviceLayoutGridType;
 }
 
 export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } = {
@@ -117,26 +125,52 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       [0, 32, 41, 2, 16, 10, 99, 0]
     ],
 
-    layout_to_use: layouts["programmer"]
-  },
-  launchpad_pro_mk2_cfw: {
-    name: "Launchpad Pro MK2 (Outdated CFW)",
-
-    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L145-L148>. */
-    initialization_sysex: [
-      // Enter "Performance" mode.
-      [0, 32, 41, 2, 16, 33, 1],
-      // Clear canvas.
-      [0, 32, 41, 2, 16, 14, 0]
+    rgb_sysex: (note, [r, g, b]) => [
+      0, 32, 41, 2, 16, 11, note, r >> 2, g >> 2, b >> 2
     ],
 
-    layout_to_use: layouts["drum_rack"]
+    get layout_to_use () {
+      /** The top row goes from 91 to 98. */
+      const top_row = Array.from({ length: 8 }, (_, id) => id + 91);
+      /** The bottom row goes from 1 to 8. */
+      const bottom_row = Array.from({ length: 8 }, (_, id) => id + 1);
+
+      const grid_with_left_and_right_controls = layouts["programmer"].map((row, row_index) => {
+        return [
+          // Right column goes from 108 to 115 (top to bottom).
+          80 - 10 * row_index,
+          ...row,
+          // Left column goes from 100 to 107 (top to bottom).
+          89 - 10 * row_index];
+      });
+
+      return [
+        [-1, ...top_row, -1],
+        ...grid_with_left_and_right_controls,
+        [-1, ...bottom_row, -1]
+      ];
+    }
   },
+  get launchpad_pro_mk2_cfw () {
+    return {
+      ...this.launchpad_pro_mk2,
+      name: "Launchpad Pro MK2 (Outdated CFW)",
+
+      /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L145-L148>. */
+      initialization_sysex: [
+        // Enter "Performance" mode.
+        [0, 32, 41, 2, 16, 33, 1],
+        // Clear canvas.
+        [0, 32, 41, 2, 16, 14, 0]
+      ]
+    };
+  },
+
   /** Same as `launchpad_pro_cfw` but updated. */
   get launchpad_pro_mk2_cfy () {
     return {
       ...this.launchpad_pro_mk2_cfw,
-      name: "Launchpad Pro (CFW)"
+      name: "Launchpad Pro MK2 (CFW)"
     };
   },
 

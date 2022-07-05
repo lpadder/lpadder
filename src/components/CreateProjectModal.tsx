@@ -107,7 +107,7 @@ const CreateProjectModal: Component = () => {
             </p>
 
             <div class="flex flex-wrap justify-evenly my-4 gap-2">
-              <For each={webMidiDevices()}>
+              <For each={webMidiDevices().filter(device => typeof device.type !== "undefined")}>
                 {device => (
                   <button
                     type="button"

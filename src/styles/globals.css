@@ -17,3 +17,11 @@
 * { /** Remove blue highlight on mobile. */
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+/** Utility for the phantoms pads on the devices. */
+.__phantom-pad::after {
+  @apply bg-gray-900 block box-border h-full w-full bg-clip-content;
+  
+  content: "";
+  padding: 2px;
+}

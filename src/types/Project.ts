@@ -86,7 +86,7 @@ export interface ProjectMetadata {
 
     canvasX: number;
     canvasY: number;
-    canvasSize: number;
+    canvasScale: number;
   }[];
 }
 

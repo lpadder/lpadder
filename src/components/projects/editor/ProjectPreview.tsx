@@ -236,7 +236,7 @@ const ProjectPreview: Component = () => {
           <div
             ref={canvas_ref}
             class={`
-              fixed bg-pink-400
+              fixed bg-transparent
               ${isPreviewCanvasFullscreen() ? "z-10 " : "-z-99"}
             `}
             style={{
@@ -248,9 +248,9 @@ const ProjectPreview: Component = () => {
             }}
           >
             {/** Line for Y */}
-            <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span>
+            {/* <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
             {/** Line for X */}
-            <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span>
+            {/* <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
 
             <For each={project.metadata.devices}>
               {device => <DeviceInPreview {...device} />}
@@ -260,7 +260,6 @@ const ProjectPreview: Component = () => {
 
         {/** This is only to make the style gradient at the end of the preview. */}
         <div class="z-5 absolute bottom-0 h-16 w-full bg-gradient-to-b from-transparent to-gray-800"></div>
-
       </div>
     )}</Show>
   );
