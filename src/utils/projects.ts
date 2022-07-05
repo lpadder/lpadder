@@ -169,9 +169,9 @@ export const createNewProject = async (
       device_linked: device.raw_name,
 
       // Default values.
-      canvasSize: 150,
+      canvasScale: 1,
       // Put them next to each other, with a gap of 15px.
-      canvasX: (deviceIndex + 1) * (150 + 15),
+      canvasX: deviceIndex * (150 + 15),
       canvasY: 0
     })),
 

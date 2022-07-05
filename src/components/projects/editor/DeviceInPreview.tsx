@@ -1,13 +1,16 @@
 import type { ParentComponent } from "solid-js";
 import type { ProjectMetadata } from "@/types/Project";
-import type { PadEventFunctionProps } from "@/components/Device";
 
 import Device from "@/components/Device";
+
+import { devicesConfiguration } from "@/utils/devices";
 
 import { currentProjectStore } from "@/stores/current_project";
 import { webMidiDevices } from "@/stores/webmidi";
 
 const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (device) => {
+  let device_ref: HTMLDivElement | undefined;
+
   /**
    * This determines the position of X = 0
    * depending on the width of the canvas.
@@ -25,20 +28,50 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
     current_device => current_device.raw_name === device.device_linked
   );
 
-  const onPadDown: PadEventFunctionProps = (note) => {
-    console.log("down", note);
+  const deviceType = () => linkedDevice()?.type || device.type;
+
+  const onPadDown = (note: number) => {
+    if (!device_ref) return;
+    const device = linkedDevice();
+
+    const device_element = device_ref.querySelector(`[data-note="${note}"]`) as HTMLDivElement;
+    if (!device_element) return;
+
+    if (device) {
+      const sysex = devicesConfiguration[deviceType()].rgb_sysex(note, [255, 255, 255]);
+      device.output.sendSysex([], sysex);
+    }
+
+    device_element.style.backgroundColor = "rgb(255, 255, 255)";
   };
 
-  const onPadUp: PadEventFunctionProps = (note) => {
-    console.log("up", note);
+  const onPadUp = (note: number) => {
+    if (!device_ref) return;
+    const device = linkedDevice();
+
+    const device_element = device_ref.querySelector(`[data-note="${note}"]`) as HTMLDivElement;
+    if (!device_element) return;
+
+    if (device) {
+      const sysex = devicesConfiguration[deviceType()].rgb_sysex(note, [0, 0, 0]);
+      device.output.sendSysex([], sysex);
+    }
+
+    device_element.style.backgroundColor = "rgb(148, 163, 184)";
   };
 
   return (
     <div style={{
       left: canvasX0() + device.canvasX + "px", top: canvasY0() + device.canvasY + "px",
-      height: device.canvasSize + "px", width: device.canvasSize + "px"
-    }} class="bg-gray-600 absolute rounded p-2">
-      <Device linkedDevice={linkedDevice()} defaultDeviceType={device.type} onPadUp={onPadUp} onPadDown={onPadDown}  />
+      height: "200px", width: "200px", transform: `scale(${device.canvasScale})`
+    }} class="bg-gray-900 absolute rounded p-2">
+      <Device
+        ref={device_ref}
+        linkedDevice={linkedDevice()}
+        defaultDeviceType={device.type}
+        onPadUp={onPadUp}
+        onPadDown={onPadDown}
+      />
     </div>
   );
 };

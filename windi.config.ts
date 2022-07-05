@@ -23,7 +23,7 @@ export default defineConfig({
     },
 
     fontFamily: {
-      sans: ["Poppins", "sans-serif "]
+      sans: ["Poppins", "sans-serif"]
     }
   },
 
