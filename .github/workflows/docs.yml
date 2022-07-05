@@ -1,15 +1,21 @@
-name: Deploy documentation to production
+name: Deploy documentation
 
 on:
   push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "!docs/README.md"
+  pull_request:
     paths:
       - "docs/**"
       - "!docs/README.md"
 
 jobs:
-  deploy:
-    name: Deploy
+  deploy_production:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout
@@ -26,3 +32,22 @@ jobs:
           working-directory: ./docs
           vercel-args: "--prod"
 
+  deploy_preview:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Deploy to preview
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORGANIZATION_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }} 
+          github-comment: true
+          working-directory: ./docs
+          alias-domains: |
+            preview-pr-{{PR_NUMBER}}.docs.lpadder.ml
