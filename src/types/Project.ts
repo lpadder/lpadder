@@ -8,18 +8,6 @@ export interface ProjectDataSample {
 }
 
 export interface ProjectData {
-  /** Data used for devices handling. */
-  devices: {
-    /** Friendly name of the device in the editor. */
-    name: string;
-
-    /** Device to use so we can use the good layout. */
-    type: DeviceType;
-
-    /** Device's `raw_name` linked to this device. */
-    device_linked?: string;
-  }[];
-
   /** Global pages for the project. */
   pages: {
     /** Name of the page. */
@@ -84,6 +72,22 @@ export interface ProjectMetadata {
   canvasWidth: number;
   /** View position of the preview canvas. */
   defaultCanvasViewPosition: { x: number, y: number, scale: number };
+
+  /** Devices handling. */
+  devices: {
+    /** Friendly name of the device in the editor. */
+    name: string;
+
+    /** Device to use so we can use the good layout. */
+    type: DeviceType;
+
+    /** Device's `raw_name` linked to this device. */
+    device_linked?: string;
+
+    canvasX: number;
+    canvasY: number;
+    canvasSize: number;
+  }[];
 }
 
 /** Used when the projects' metadata are preloaded. */

@@ -26,14 +26,11 @@ const ProjectPreview: Component = () => {
   const [isPreviewCanvasFullscreen, setPreviewCanvasFullscreen] = createSignal(false);
 
   /** Adds `x` to `left` and `y` to `top`. */
-  const updateCanvasPosition = (x?: number, y?: number) => {
-    setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => {
-      return {
-        x: prev.x + (x || 0),
-        y: prev.y + (y || 0)
-      };
-    });
-  };
+  const updateCanvasPosition = (x?: number, y?: number) =>
+    setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => ({
+      x: prev.x + (x || 0),
+      y: prev.y + (y || 0)
+    }));
 
   /** Correct the position of the canvas after a move. */
   const canvasCorrectMove = () => {
@@ -168,104 +165,104 @@ const ProjectPreview: Component = () => {
   };
 
   return (
-    <div class="relative h-80 bg-gray-800 overflow-hidden shadow-md shadow-inner">
-      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
-        <ProjectPreviewButton
-          title="Zoom in"
-          action={() =>
-            setCurrentProjectStore(
-              "metadata",
-              "defaultCanvasViewPosition",
-              "scale", (prev) => prev + 0.2
-            )
-          }
-          icon={<IconMdiMagnifyPlus />}
-        />
+    <Show when={currentProjectStore.slug !== null && currentProjectStore}>{project => (
+      <div class="relative h-80 bg-gray-800 overflow-hidden shadow-md shadow-inner">
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
+          <ProjectPreviewButton
+            title="Zoom in"
+            action={() =>
+              setCurrentProjectStore(
+                "metadata",
+                "defaultCanvasViewPosition",
+                "scale", (prev) => prev + 0.2
+              )
+            }
+            icon={<IconMdiMagnifyPlus />}
+          />
 
-        <ProjectPreviewButton
-          title="Zoom out"
-          action={() =>
-            setCurrentProjectStore(
-              "metadata",
-              "defaultCanvasViewPosition",
-              "scale", (prev) => {
-                const newValue = prev - 0.2;
+          <ProjectPreviewButton
+            title="Zoom out"
+            action={() =>
+              setCurrentProjectStore(
+                "metadata",
+                "defaultCanvasViewPosition",
+                "scale", (prev) => {
+                  const newValue = prev - 0.2;
 
-                // When the new value is below 0.2, we restore the view at 0.2
-                if (newValue <= 0.2) return 0.2;
-                else return newValue;
-              }
-            )
-          }
-          icon={<IconMdiMagnifyMinus />}
-        />
-      </div>
-
-      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 right-4`}>
-        <ProjectPreviewButton
-          title="Settings"
-          action={() => log("settings", "open")}
-          icon={<IconMdiCog />}
-        />
-      </div>
-
-      <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed bottom-4" : "absolute bottom-20"} right-4 flex gap-2`}>
-        <ProjectPreviewButton
-          title="Reset View"
-          action={() => {
-            setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
-              x: 0, y: 0
-            });
-            canvasCorrectMove();
-          }}
-          icon={<IconMdiUndoVariant />}
-        />
-        <ProjectPreviewButton
-          title="Fullscreen"
-          action={() => {
-            setPreviewCanvasFullscreen(prev => !prev);
-            canvasCorrectMove();
-          }}
-          icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
-        />
-      </div>
-
-      {/** The `clip-path` is used here to clip the "canvas". */}
-      <div class="h-full w-full" style={
-        isPreviewCanvasFullscreen() ? "" : "clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);"
-      }>
-        {/** Canvas where all the devices will be drawn. */}
-        <div ref={canvas_ref}
-          class={`
-            fixed bg-pink-400
-            ${isPreviewCanvasFullscreen() ? "z-10 " : "-z-99"}
-          `}
-
-          style={{
-            /**
-             * We take the height and width from the project's metdata
-             * so we have the same settings for everyone.
-             */
-            height: currentProjectStore.metadata?.canvasHeight + "px",
-            width: currentProjectStore.metadata?.canvasWidth + "px",
-            transform: `scale(${currentProjectStore.metadata?.defaultCanvasViewPosition.scale || 1})`,
-            left: getCanvasRealMiddle().left + (currentProjectStore.metadata?.defaultCanvasViewPosition.x || 0) + "px",
-            top: getCanvasRealMiddle().top + (currentProjectStore.metadata?.defaultCanvasViewPosition.y || 0) + "px"
-          }}
-        >
-          {/** Line for Y */}
-          <span class="absolute bg-gray-700 h-full w-1" style={{ left: (currentProjectStore.metadata?.canvasWidth || 0) / 2 + "px" }}></span>
-          {/** Line for X */}
-          <span class="absolute bg-gray-700 w-full h-1" style={{ top: (currentProjectStore.metadata?.canvasHeight || 0) / 2 + "px" }}></span>
-
-          <DeviceInPreview x={150} y={-60} />
+                  // When the new value is below 0.2, we restore the view at 0.2
+                  if (newValue <= 0.2) return 0.2;
+                  else return newValue;
+                }
+              )
+            }
+            icon={<IconMdiMagnifyMinus />}
+          />
         </div>
+
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 right-4`}>
+          <ProjectPreviewButton
+            title="Settings"
+            action={() => log("settings", "open")}
+            icon={<IconMdiCog />}
+          />
+        </div>
+
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed bottom-4" : "absolute bottom-20"} right-4 flex gap-2`}>
+          <ProjectPreviewButton
+            title="Reset View"
+            action={() => {
+              setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
+                x: 0, y: 0
+              });
+              canvasCorrectMove();
+            }}
+            icon={<IconMdiUndoVariant />}
+          />
+          <ProjectPreviewButton
+            title="Fullscreen"
+            action={() => {
+              setPreviewCanvasFullscreen(prev => !prev);
+              canvasCorrectMove();
+            }}
+            icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
+          />
+        </div>
+
+        {/** The `clip-path` is used here to clip the "canvas". */}
+        <div class="h-full w-full" style={
+          isPreviewCanvasFullscreen() ? "" : "clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);"
+        }>
+          {/** Canvas where all the devices will be drawn. */}
+          <div
+            ref={canvas_ref}
+            class={`
+              fixed bg-pink-400
+              ${isPreviewCanvasFullscreen() ? "z-10 " : "-z-99"}
+            `}
+            style={{
+              height: project.metadata.canvasHeight + "px",
+              width: project.metadata.canvasWidth + "px",
+              transform: `scale(${project.metadata.defaultCanvasViewPosition.scale})`,
+              left: getCanvasRealMiddle().left + project.metadata.defaultCanvasViewPosition.x + "px",
+              top: getCanvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
+            }}
+          >
+            {/** Line for Y */}
+            <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span>
+            {/** Line for X */}
+            <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span>
+
+            <For each={project.metadata.devices}>
+              {device => <DeviceInPreview {...device} />}
+            </For>
+          </div>
+        </div>
+
+        {/** This is only to make the style gradient at the end of the preview. */}
+        <div class="z-5 absolute bottom-0 h-16 w-full bg-gradient-to-b from-transparent to-gray-800"></div>
+
       </div>
-
-      {/** This is only to make the style gradient at the end of the preview. */}
-      <div class="z-5 absolute bottom-0 h-16 w-full bg-gradient-to-b from-transparent to-gray-800"></div>
-
-    </div>
+    )}</Show>
   );
 };
 

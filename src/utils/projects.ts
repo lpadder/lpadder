@@ -150,12 +150,6 @@ export const createNewProject = async (
   };
 
   const data: ProjectData = options.importing ? options.project.data : {
-    devices: options.project.devices.map(device => ({
-      name: device.name,
-      type: device.type || "launchpad_pro_mk2",
-      device_linked: device.raw_name
-    })),
-
     pages: [],
     files: {},
 
@@ -167,6 +161,19 @@ export const createNewProject = async (
     name: options.project.name,
     authors: [],
     creators: [],
+
+    devices: options.project.devices.map((device, deviceIndex) => ({
+      name: device.name,
+      /** Default device to use is the Lanchpad Pro MK2 (without CFW). */
+      type: device.type || "launchpad_pro_mk2",
+      device_linked: device.raw_name,
+
+      // Default values.
+      canvasSize: 150,
+      // Put them next to each other, with a gap of 15px.
+      canvasX: (deviceIndex + 1) * (150 + 15),
+      canvasY: 0
+    })),
 
     // Version of lpadder is defined globally, see `@/global.d.ts`.
     version: import.meta.env.DEV ? "next" : APP_VERSION,

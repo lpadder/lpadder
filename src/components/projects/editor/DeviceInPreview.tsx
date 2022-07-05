@@ -1,13 +1,13 @@
 import type { ParentComponent } from "solid-js";
+import type { ProjectMetadata } from "@/types/Project";
+import type { PadEventFunctionProps } from "@/components/Device";
 
-import Launchpad from "@/components/Device";
+import Device from "@/components/Device";
 
 import { currentProjectStore } from "@/stores/current_project";
+import { webMidiDevices } from "@/stores/webmidi";
 
-const DeviceInPreview: ParentComponent<{
-  x: number,
-  y: number
-}> = (props) => {
+const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (device) => {
   /**
    * This determines the position of X = 0
    * depending on the width of the canvas.
@@ -20,19 +20,25 @@ const DeviceInPreview: ParentComponent<{
    */
   const canvasY0 = () => (currentProjectStore.metadata?.canvasHeight || 0) / 2;
 
-  const onPadDown = () => {
-    console.log("down");
+  /** Check if the linked device is connected or not. */
+  const linkedDevice = () => webMidiDevices().find(
+    current_device => current_device.raw_name === device.device_linked
+  );
+
+  const onPadDown: PadEventFunctionProps = (note) => {
+    console.log("down", note);
   };
 
-  const onPadUp = () => {
-    console.log("up");
+  const onPadUp: PadEventFunctionProps = (note) => {
+    console.log("up", note);
   };
 
   return (
     <div style={{
-      left: canvasX0() + props.x + "px", top: canvasY0() + props.y + "px"
-    }} class="bg-gray-600 h-32 w-32 absolute rounded p-2">
-      <Launchpad onPadUp={onPadUp} onPadDown={onPadDown}  />
+      left: canvasX0() + device.canvasX + "px", top: canvasY0() + device.canvasY + "px",
+      height: device.canvasSize + "px", width: device.canvasSize + "px"
+    }} class="bg-gray-600 absolute rounded p-2">
+      <Device linkedDevice={linkedDevice()} defaultDeviceType={device.type} onPadUp={onPadUp} onPadDown={onPadDown}  />
     </div>
   );
 };

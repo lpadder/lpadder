@@ -4,10 +4,14 @@ import { createStore, SetStoreFunction, StoreSetter } from "solid-js/store";
 /** Know if the current project is saved or not. */
 export const [projectSaved, setProjectSaved] = createSignal<boolean | null>(null);
 
-interface CurrentProjectStore {
-  slug: string | null;
-  metadata: ProjectMetadata | null;
-  data: ProjectData | null;
+type CurrentProjectStore = {
+  slug: null;
+  metadata: null;
+  data: null;
+} | {
+  slug: string;
+  metadata: ProjectMetadata;
+  data: ProjectData;
 }
 
 /**

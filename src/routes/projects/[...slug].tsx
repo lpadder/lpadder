@@ -76,26 +76,32 @@ const ProjectsEditor: Component = () => {
     <>
       <Title>lpadder - projects: {slug()}</Title>
 
-      <Show when={currentProjectStore.data && currentProjectStore.metadata} fallback={
+      <Show when={currentProjectStore.slug !== null && currentProjectStore} fallback={
         <p>Cover {slug()} is currently loading...</p>
       }>
-        <div class="relative w-full -mb-12">
-          <ProjectPreview />
+        {project => (
+          <>
+            <div class="relative w-full -mb-12">
+              <ProjectPreview />
 
-        </div>
-        <div class="z-5 absolute w-full">
+            </div>
+            <div class="z-5 absolute w-full">
 
-          <div class="flex justify-between px-4">
-            <select>
-              <option>add launchpad</option>
-            </select>
-            <select>
-              <option>add page</option>
-            </select>
+              <div class="flex justify-between px-4">
+                <select>
+                  <option>add launchpad</option>
+                </select>
+                <select>
+                  <option>add page</option>
+                </select>
 
-          </div>
+              </div>
 
-        </div>
+              <p>{project.slug}</p>
+
+            </div>
+          </>
+        )}
       </Show>
     </>
   );

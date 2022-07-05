@@ -1,28 +1,22 @@
-import type { Component } from "solid-js";
+import type { Component, JSX } from "solid-js";
+import type { NoteMessageEvent } from "webmidi";
+import type { ConnectedDeviceData } from "@/stores/webmidi";
+import type { DeviceType } from "@/utils/devices";
 
-import type { AvailableLayouts } from "@/utils/LaunchpadLayout";
-import LaunchpadLayout from "@/utils/LaunchpadLayout";
-
-import { For } from "solid-js";
+import { devicesConfiguration } from "@/utils/devices";
 
 export function getPadElementId (padId: number, launchpadId = 0) {
   const elementId = `launchpad-${launchpadId}-pad-${padId}`;
   return elementId;
 }
 
-export type ClickEventFunctionProps = (
-  padId: number,
-  padElement: EventTarget & HTMLDivElement,
-  launchpadId?: number,
+export type PadEventFunctionProps = (
+  padId: number
 ) => void;
 
 export type ContextEventFunctionProps = (
   padId: number,
-  event: MouseEvent & {
-    currentTarget: HTMLDivElement;
-    target: Element;
-  },
-  launchpadId?: number
+  event: Parameters<JSX.EventHandler<HTMLDivElement, MouseEvent>>[number]
 ) => void;
 
 /**
@@ -33,41 +27,81 @@ export type ContextEventFunctionProps = (
  */
 const Device: Component<{
   ref?: HTMLDivElement;
-  launchpadId?: number;
-  layout?: AvailableLayouts;
 
-  /** Events that can be triggered. */
-  onPadDown: ClickEventFunctionProps;
-  onPadUp: ClickEventFunctionProps;
+  /** The device this component should look if no real device is linked to it. */
+  defaultDeviceType: DeviceType;
 
-  /** Optional ustom behaviour on right click. */
+  onPadDown: PadEventFunctionProps;
+  onPadUp: PadEventFunctionProps;
+  /** Optional custom behaviour on right click. */
   onContextMenu?: ContextEventFunctionProps;
-}> = (props) => {
-  const { layouts } = new LaunchpadLayout();
 
-  const layout = () => props.layout || "programmer";
-  const currentLayout = layouts[layout()];
+  /** Optional real device linked with the virtual component. */
+  linkedDevice?: ConnectedDeviceData;
+
+}> = (props) => {
+  /** Layout to use depending of the type of device we use. */
+  const layout = () =>
+    devicesConfiguration[props.linkedDevice?.type
+      ? props.linkedDevice.type
+      : props.defaultDeviceType
+    ].layout_to_use;
+
+  const noteOnHandler = (note: number) => {
+    props.onPadDown(note);
+  };
+
+  const noteOffHandler = (note: number) => {
+    props.onPadUp(note);
+  };
+
+  /** If a device is linked, automatically listen to its inputs. */
+  createEffect(() => {
+    if (!props.linkedDevice) return;
+    console.info("[device]: linking to device", props.linkedDevice.name);
+
+    const deviceNoteOnHandler = (evt: NoteMessageEvent) => {
+      const note = evt.note.number;
+      noteOnHandler(note);
+    };
+
+    const deviceNoteOffHandler = (evt: NoteMessageEvent) => {
+      const note = evt.note.number;
+      noteOffHandler(note);
+    };
+
+    const device = props.linkedDevice;
+    device.input.addListener("noteon", deviceNoteOnHandler);
+    device.input.addListener("noteoff", deviceNoteOffHandler);
+
+    onCleanup(() => {
+      if (!props.linkedDevice) return;
+      console.info("[device]: unlinking to device", props.linkedDevice.name);
+
+      device.input.removeListener("noteon", deviceNoteOnHandler);
+      device.input.removeListener("noteoff", deviceNoteOffHandler);
+    });
+  });
 
   return (
     <div
       ref={props.ref}
       class="flex flex-col gap-1"
     >
-      <For each={currentLayout}>
+      <For each={layout()}>
         {rows => (
           <div class="flex flex-row gap-1">
             <For each={rows}>
               {(padId) => (
                 <div
                   data-note={padId}
-                  data-launchpad-id={props.launchpadId}
 
                   onContextMenu={event => {
                     event.preventDefault();
 
                     // Execute the custom behaviour if it exists.
                     if (!props.onContextMenu) return;
-                    return props.onContextMenu(padId, event, props.launchpadId);
+                    return props.onContextMenu(padId, event);
                   }}
 
                   onTouchStart={down_event => {
@@ -78,16 +112,16 @@ const Device: Component<{
                     down_event.stopPropagation();
 
                     // We save the target pad HTML element.
-                    const pad = down_event.currentTarget;
+                    // Const pad = down_event.currentTarget;
 
                     const handleTouchEnd = (up_event: TouchEvent) => {
                       up_event.preventDefault();
 
-                      props.onPadUp(padId, pad, props.launchpadId);
+                      noteOffHandler(padId);
                       document.removeEventListener("touchend", handleTouchEnd);
                     };
 
-                    props.onPadDown(padId, pad, props.launchpadId);
+                    noteOnHandler(padId);
                     document.addEventListener("touchend", handleTouchEnd);
                   }}
 
@@ -95,16 +129,16 @@ const Device: Component<{
                     if (down_event.button === 2) return;
 
                     // We save the target pad HTML element.
-                    const pad = down_event.currentTarget;
+                    // Const pad = down_event.currentTarget;
 
                     const handleMouseUp = (up_event: MouseEvent) => {
                       if (up_event.button === 2) return;
 
-                      props.onPadUp(padId, pad, props.launchpadId);
+                      noteOffHandler(padId);
                       document.removeEventListener("mouseup", handleMouseUp);
                     };
 
-                    props.onPadDown(padId, pad, props.launchpadId);
+                    noteOnHandler(padId);
                     document.addEventListener("mouseup", handleMouseUp);
                   }}
 
