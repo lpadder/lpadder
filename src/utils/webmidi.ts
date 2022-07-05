@@ -14,8 +14,7 @@ import {
 
 export const removeInOutFromName = (name: string) => {
   const regexp = /(IN)|(OUT)/gi;
-  name.replace(regexp, "");
-  return name;
+  return name.replace(regexp, "");
 };
 
 /**
@@ -55,7 +54,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
         input => removeInOutFromName(input.name) === removeInOutFromName(output.name)
       );
 
-      if (!input) return;
+      if (!input) continue;
 
       const device_raw_name = removeInOutFromName(output.name);
       let device_name = device_raw_name;
