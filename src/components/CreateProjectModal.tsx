@@ -70,29 +70,32 @@ const CreateProjectModal: Component = () => {
             <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">Global informations</h4>
           </div>
 
-          <Input
-            autocomplete="off"
-            class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
-            label="Personal slug"
-            placeholder="some-amazing-project"
-            tip="Slug used to identify the project more easily from URL."
-            onInput={(e) => {
-              const cleanedValue = e.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-              return setState({ ...state, slug: cleanedValue });
-            }}
-            value={state.slug}
-            required
-          />
+          <div class="space-y-2">
+            <Input
+              autocomplete="off"
+              class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
+              label="Personal slug"
+              placeholder="some-amazing-project"
+              tip="Slug used to identify the project more easily from URL."
+              onInput={(e) => {
+                const cleanedValue = e.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+                return setState({ ...state, slug: cleanedValue });
+              }}
+              value={state.slug}
+              required
+            />
 
-          <Input
-            autocomplete="off"
-            class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
-            label="Cover's name"
-            placeholder="Author - Title (Launchpad Cover)"
-            onChange={(e) => setState({ ...state, name: e.currentTarget.value })}
-            value={state.name}
-            required
-          />
+            <Input
+              autocomplete="off"
+              class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
+              label="Cover's name"
+              placeholder="Author - Title (Launchpad Cover)"
+              onChange={(e) => setState({ ...state, name: e.currentTarget.value })}
+              value={state.name}
+              required
+            />
+          </div>
+
 
           <div class="text-center mt-6 mb-4 mx-auto w-full">
             <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
@@ -103,19 +106,20 @@ const CreateProjectModal: Component = () => {
               Should we automatically set-up these devices in the project for you ?
             </p>
 
-            <div class="flex flex-wrap justify-evenly">
+            <div class="flex flex-wrap justify-evenly my-4 gap-2">
               <For each={webMidiDevices()}>
                 {device => (
-                  <div
-                    class="h-26 w-26 p-2 border border-pink-500 bg-pink-500 transition-colors cursor-pointer rounded"
+                  <button
+                    type="button"
+                    class="text-sm h-26 w-26 p-2 border border-pink-500 bg-pink-500 transition-colors cursor-pointer rounded"
                     onClick={() => setState("selected_devices", device.raw_name, (prev) => !prev)}
                     classList={{
                       "bg-opacity-100 hover:bg-opacity-95": state.selected_devices[device.raw_name],
                       "bg-opacity-20 hover:bg-opacity-40 text-pink-200": !state.selected_devices[device.raw_name]
                     }}
                   >
-                    <span>{device.name}</span>
-                  </div>
+                    {device.name}
+                  </button>
                 )}
               </For>
             </div>
