@@ -33,6 +33,9 @@ const TicTacToeGame: Component = () => {
     }
 
     device_element.style.backgroundColor = "rgb(255, 255, 255)";
+
+    const noteT: number = checkPressedField(note);
+    console.log(noteT.toString() + " poggies");
   };
 
   const onPadUp = (note: number) => {
@@ -75,12 +78,32 @@ const TicTacToeGame: Component = () => {
     }
   };
 
+  const checkPressedField = (noteParam: number) => {
+    const fields = [
+      [11, 12, 21, 22],
+      [14, 15, 24, 25] // TODO: add more fields
+    ];
+
+    let fieldIndex = -1;
+    console.log("gave note " + noteParam);
+
+    fields.forEach((field: number[], index: number) => {
+      field.forEach((note: number) => {
+        if (note === noteParam) {
+          fieldIndex = index;
+        }
+      });
+    });
+
+    return fieldIndex;
+  };
+
   return (
     <>
       <Title>lpadder - tic tac toe game</Title>
       <div id="game" class="flex flex-col items-center my-8">
         <h1 class="text-4xl font-bold mb-8">Tic Tac Toe</h1>
-        <div class="bg-gray-900 p-1 h-64 w-64 rounded-md">
+        <div class="bg-gray-900 p-1 h-96 w-96 rounded-md">
           <Device
             ref={device_ref}
             linkedDevice={linkedDevice()}
