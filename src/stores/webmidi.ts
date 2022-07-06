@@ -11,6 +11,8 @@ export interface ConnectedDeviceData {
   name: string;
   /** Same as `guessed_type` when not customized. */
   type?: DeviceType;
+  /** Should the device be used in lpadder and show in the UI. */
+  enabled: boolean;
 
   input: Input;
   output: Output;
@@ -22,6 +24,7 @@ export interface DeviceCustomProfile {
 
   name?: string
   type?: DeviceType;
+  enabled?: boolean;
 }
 
 export const deviceCustomProfiles = (): DeviceCustomProfile[] => {
