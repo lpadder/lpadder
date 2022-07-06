@@ -55,7 +55,7 @@ const MidiOutputSender = () => {
         >
           <option value="none">None</option>
 
-          <For each={webMidiDevices()}>
+          <For each={webMidiDevices().filter(device => device.enabled)}>
             {(device, deviceIndex) => (
               <option value={deviceIndex()}>
                 {device.name}
@@ -144,7 +144,7 @@ const MidiInputChecker = () => {
   createEffect(() => {
     console.group("[midi-checker/mount] Subscribe to listeners.");
 
-    for (const { input, name } of webMidiDevices()) {
+    for (const { input, name } of webMidiDevices().filter(device => device.enabled)) {
       input.addListener("noteon", inputEventCallback);
       input.addListener("noteoff", inputEventCallback);
       input.addListener("controlchange", inputEventCallback);
@@ -160,7 +160,7 @@ const MidiInputChecker = () => {
     onCleanup(() => {
       console.group("[midi-checker/cleanup] Unsubscribe to listeners.");
 
-      for (const { input, name } of webMidiDevices()) {
+      for (const { input, name } of webMidiDevices().filter(device => device.enabled)) {
         input.removeListener("noteon", inputEventCallback);
         input.removeListener("noteoff", inputEventCallback);
         input.removeListener("controlchange", inputEventCallback);

@@ -32,9 +32,7 @@ const SettingsLayout: Component = () => {
         </For>
       </nav>
 
-      <div class="p-4">
-
-
+      <div class="mx-auto container p-4">
         <Outlet />
       </div>
     </>

@@ -17,20 +17,35 @@ const SettingsMidi: Component = () => {
       <h2>MIDI devices profiles</h2>
       <p>Here, you can find the your saved MIDI devices profiles.</p>
 
-      <div>
+      <div class="flex flex-col gap-2 py-4">
         <Index each={webMidiDevices()}>
           {(device, deviceIndex) => (
-            <div>
-              <h4>{
-                device().name === device().raw_name
-                  ? device().name
-                  : `${device().name} (${device().raw_name})`
-              }</h4>
-
+            <div
+              class={`
+                flex flex-col gap-2
+                py-4 px-6 rounded-md
+                
+                ${device().enabled ? "opacity-80" : "opacity-40"}
+                focus-within:opacity-100
+                hover:opacity-100
+                
+                transition-opacity
+                bg-opacity-20
+              `}
+              classList={{
+                "bg-pink-600": !device().enabled,
+                "bg-blue-600": device().enabled
+              }}
+            >
               <Input
+                label="Name"
+                tip={
+                  (device().name !== device().raw_name)
+                    ? `Was ${device().raw_name}` : undefined
+                }
                 autocomplete="off"
                 value={device().name}
-                onChange={(evt) => {
+                onInput={(evt) => {
                   const devices = webMidiDevices();
                   devices[deviceIndex] = {
                     ...device(),
@@ -48,6 +63,32 @@ const SettingsMidi: Component = () => {
                   setDeviceCustomProfiles(profiles);
                 }}
               />
+
+              <label class="flex items-center gap-2">
+                <input
+                  class="w-4 h-4"
+                  type="checkbox"
+                  checked={device().enabled}
+                  onChange={(evt) => {
+                    const devices = webMidiDevices();
+                    devices[deviceIndex] = {
+                      ...device(),
+                      enabled: evt.currentTarget.checked
+                    };
+
+                    const profiles = deviceCustomProfiles();
+                    const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                    profiles[profilIndex] = {
+                      ...profiles[profilIndex],
+                      enabled: evt.currentTarget.checked
+                    };
+
+                    setWebMidiDevices([...devices]);
+                    setDeviceCustomProfiles(profiles);
+                  }}
+                />
+                Enabled
+              </label>
             </div>
           )}
         </Index>
