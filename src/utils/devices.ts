@@ -20,7 +20,7 @@ export type DeviceType =
 /** Private function to build the `drum_rack` layout. */
 const buildDrumRackLayout = (): DeviceLayoutGridType => {
   console.info("building drum_rack layout...");
-  const layout = [];
+  let layout = [];
 
   for (let columns = 64; columns >= 36; columns -= 4) {
     const column = [];
@@ -41,14 +41,34 @@ const buildDrumRackLayout = (): DeviceLayoutGridType => {
     layout.push(column);
   }
 
-  return layout;
+  // Build the controls.
+  layout = layout.map((row, row_index) => {
+    return [
+      // Right column goes from 108 to 115 (top to bottom).
+      108 + row_index,
+      ...row,
+      // Left column goes from 100 to 107 (top to bottom).
+      100 + row_index];
+  });
+
+  /** The top row goes from 28 to 35. */
+  const top_row = Array.from({ length: 8 }, (_, id) => id + 28);
+  /** The bottom row goes from 116 to 123. */
+  const bottom_row = Array.from({ length: 8 }, (_, id) => id + 116);
+
+  return [
+    [-1, ...top_row, -1],
+    ...layout,
+    [-1, ...bottom_row, -1]
+  ];
 };
 
-/** Private function to build the `programmer` layout. */
+/**  Private function to build the full `programmer` layout. */
 const buildProgrammerLayout = (): DeviceLayoutGridType => {
   console.info("building programmer layout...");
-  const layout = [];
+  let layout = [];
 
+  // Build the grid.
   for (let columns = 8; columns >= 1; columns--) {
     const column = [];
 
@@ -60,7 +80,26 @@ const buildProgrammerLayout = (): DeviceLayoutGridType => {
     layout.push(column);
   }
 
-  return layout;
+  // Build the controls.
+  layout = layout.map((row, row_index) => {
+    return [
+      // Right column goes from 80 to 10 (top to bottom).
+      80 - 10 * row_index,
+      ...row,
+      // Left column goes from 89 to 19 (top to bottom).
+      89 - 10 * row_index];
+  });
+
+  /** The top row goes from 91 to 98. */
+  const top_row = Array.from({ length: 8 }, (_, id) => id + 91);
+  /** The bottom row goes from 1 to 8. */
+  const bottom_row = Array.from({ length: 8 }, (_, id) => id + 1);
+
+  return [
+    [-1, ...top_row, -1],
+    ...layout,
+    [-1, ...bottom_row, -1]
+  ];
 };
 
 /**
@@ -129,28 +168,9 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       0, 32, 41, 2, 16, 11, note, r >> 2, g >> 2, b >> 2
     ],
 
-    get layout_to_use () {
-      /** The top row goes from 91 to 98. */
-      const top_row = Array.from({ length: 8 }, (_, id) => id + 91);
-      /** The bottom row goes from 1 to 8. */
-      const bottom_row = Array.from({ length: 8 }, (_, id) => id + 1);
-
-      const grid_with_left_and_right_controls = layouts["programmer"].map((row, row_index) => {
-        return [
-          // Right column goes from 108 to 115 (top to bottom).
-          80 - 10 * row_index,
-          ...row,
-          // Left column goes from 100 to 107 (top to bottom).
-          89 - 10 * row_index];
-      });
-
-      return [
-        [-1, ...top_row, -1],
-        ...grid_with_left_and_right_controls,
-        [-1, ...bottom_row, -1]
-      ];
-    }
+    layout_to_use: layouts["programmer"]
   },
+
   get launchpad_pro_mk2_cfw () {
     return {
       ...this.launchpad_pro_mk2,
@@ -304,4 +324,30 @@ export const guessDeviceType = (output: Output, input: Input): Promise<DeviceTyp
     input.addListener("sysex", inputSysexEventHandler);
     output.sendSysex([], [0x7e, 0x7f, 0x06, 0x01]);
   });
+};
+
+export const convertNoteLayout = (
+  note: number,
+  from: keyof (typeof layouts),
+  to: keyof (typeof layouts)
+): { success: true, result: number } | { success: false, message: string } => {
+  // Search in the `from` layout the note.
+  for (const [index_col, columns] of layouts[from].entries()) {
+    const index = columns.indexOf(note);
+
+    if (index !== -1) {
+      const result = layouts[to][index_col][index];
+
+      return {
+        success: true,
+        result
+      };
+    }
+  }
+
+  // No result.
+  return {
+    success: false,
+    message: "No result found."
+  };
 };

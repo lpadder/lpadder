@@ -5,6 +5,7 @@ import type { DeviceType } from "@/utils/devices";
 import type { DeviceComponentProps } from "@/components/devices";
 
 import { SwitchDevice } from "@/components/devices";
+import { convertNoteLayout } from "@/utils/devices";
 
 export function getPadElementId (padId: number, launchpadId = 0) {
   const elementId = `launchpad-${launchpadId}-pad-${padId}`;
@@ -43,18 +44,36 @@ const Device: Component<{
     props.onPadUp(note);
   };
 
+  const deviceType = () => props.linkedDevice?.type || props.defaultDeviceType;
+
+  /**
+   * We need to process note to use the proper layout.
+   * ex: Launchpad PRO uses programmer but CFW uses Drum Rack layout in events.
+   */
+  const processNote = (note: number) => {
+    const type = deviceType();
+    if (type === "launchpad_pro_mk2_cfw" || type === "launchpad_pro_mk2_cfy") {
+      const noteConvertion = convertNoteLayout(note, "drum_rack", "programmer");
+      if (!noteConvertion.success) return note;
+      return noteConvertion.result;
+    }
+
+    return note;
+  };
+
   /** If a device is linked, automatically listen to its inputs. */
   createEffect(() => {
     if (!props.linkedDevice) return;
     console.info("[device]: linking to device", props.linkedDevice.name);
 
     const deviceNoteOnHandler = (evt: NoteMessageEvent) => {
-      const note = evt.note.number;
+      console.log(evt.note.number);
+      const note = processNote(evt.note.number);
       noteOnHandler(note);
     };
 
     const deviceNoteOffHandler = (evt: NoteMessageEvent) => {
-      const note = evt.note.number;
+      const note = processNote(evt.note.number);
       noteOffHandler(note);
     };
 
@@ -62,12 +81,12 @@ const Device: Component<{
     const deviceControlChangeHandler = (evt: ControlChangeMessageEvent) => {
       /** Event: noteoff */
       if (evt.rawValue === 0) {
-        const note = evt.controller.number;
+        const note = processNote(evt.controller.number);
         noteOffHandler(note);
       }
       /** Event: noteon */
       else if (evt.rawValue === 127) {
-        const note = evt.controller.number;
+        const note = processNote(evt.controller.number);
         noteOnHandler(note);
       }
     };
@@ -90,7 +109,7 @@ const Device: Component<{
   return (
     <SwitchDevice
       ref={props.ref}
-      type={props.linkedDevice?.type || props.defaultDeviceType}
+      type={deviceType()}
       onPadDown={noteOnHandler}
       onPadUp={noteOffHandler}
       onContext={(note, event) => {

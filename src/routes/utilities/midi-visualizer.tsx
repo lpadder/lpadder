@@ -5,7 +5,7 @@ import Launchpad from "@/components/Device";
 import Select from "@/components/Select";
 import FileInput from "@/components/FileInput";
 
-import LaunchpadLayout from "@/utils/LaunchpadLayout";
+import { convertNoteLayout } from "@/utils/devices";
 import { getHexFromVelocity } from "@/utils/novationPalette";
 import chroma from "chroma-js";
 
@@ -71,8 +71,6 @@ export default function UtilitiesMidiVisualizer () {
   };
 
   const loadMidiData = (midi_data: MidiJSON) => {
-    const layouts = new LaunchpadLayout();
-
     // TODO: Maybe a track selector ?
     /** Notes of the first track of the MIDI file. */
     const notes_data = midi_data.tracks[0].notes;
@@ -94,7 +92,7 @@ export default function UtilitiesMidiVisualizer () {
       const start_time = note.time * 1000;
       const duration = (note.duration * 1000) + delay;
 
-      const convert_results = layouts.convertNoteLayout(note.midi, "live", "programmer");
+      const convert_results = convertNoteLayout(note.midi, "live", "programmer");
       if (!convert_results.success) return;
 
       const midi = convert_results.result;
@@ -233,7 +231,7 @@ export default function UtilitiesMidiVisualizer () {
           >
             <Launchpad
               ref={launchpad_ref}
-              layout="programmer"
+              defaultDeviceType={"launchpad_pro_mk2_cfy"}
               onPadDown={() => null}
               onPadUp={() => null}
             />
