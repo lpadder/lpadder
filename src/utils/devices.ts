@@ -203,7 +203,27 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       [0, 32, 41, 2, 12, 14, 1]
     ],
 
-    layout_to_use: layouts["programmer"]
+    rgb_sysex: (note, [r, g, b]) => [
+      0, 32, 41, 2, 12, 3, 3, note, r >> 1, g >> 1, b >> 1
+    ],
+
+    get layout_to_use () {
+      let layout = layouts["programmer"];
+
+      layout = layout.map((row, rowIndex) => {
+        // Remove the first item, since we don't have left column.
+        row.shift();
+
+        // Add the `99` pad on the last item in the first row (0)
+        if (rowIndex === 0) row[row.length - 1] = 99;
+        return row;
+      });
+
+      // Remove the last row since we don't have the bottom row.
+      layout.pop();
+
+      return layout;
+    }
   },
 
   launchpad_pro_mk3: {

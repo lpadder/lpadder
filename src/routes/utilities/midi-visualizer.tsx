@@ -92,10 +92,11 @@ export default function UtilitiesMidiVisualizer () {
       const start_time = note.time * 1000;
       const duration = (note.duration * 1000) + delay;
 
-      const convert_results = convertNoteLayout(note.midi, "live", "programmer");
-      if (!convert_results.success) return;
+      // Const convert_results = convertNoteLayout(note.midi, "drum_rack", "programmer");
+      // If (!convert_results.success) return;
 
-      const midi = convert_results.result;
+      // Const midi = convert_results.result;
+      const midi = note.midi;
 
       const parsed_note: typeof grouped_notes[number]["notes"][number] = {
         velocity: note.velocity,
