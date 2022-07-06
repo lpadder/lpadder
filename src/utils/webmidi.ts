@@ -1,8 +1,9 @@
 import type { ConnectedDeviceData } from "@/stores/webmidi";
 
-import { guessDeviceType, devicesConfiguration } from "@/utils/devices";
-import { log } from "@/utils/logger";
 import { WebMidi } from "webmidi";
+
+import { guessDeviceType, devicesConfiguration } from "@/utils/devices";
+import { log, error } from "@/utils/logger";
 
 import {
   webMidiDevices,
@@ -12,6 +13,7 @@ import {
   setDeviceCustomProfiles
 } from "@/stores/webmidi";
 
+/** Neutralize the "IN" and "OUT" from the device names. */
 export const removeInOutFromName = (name: string) => {
   const regexp = /(IN)|(OUT)/gi;
   return name.replace(regexp, "");
@@ -30,18 +32,18 @@ export const removeInOutFromName = (name: string) => {
  */
 const isDeviceBlackListed = (name: string) => {
   /** With the CFW, there's no "Live Port", only "Standalone Port" is what we're asking. */
-  if (name.toLowerCase() === "launchpad open standalone port") return false;
+  if (name.match(/Launchpad Open(.*)Standalone Port/gi)) return false;
 
-  const regexp = /(MIDI Port)|(Standalone Port)/gi;
-  return regexp.test(name);
+  return name.match(/(MIDI Port)|(Standalone Port)/gi);
 };
 
 /**
- * This checks for devices and refresh the `webMidiDevices` signal.
- * @param isNewDevices - When `true`, will check for new devices.
+ * This checks for connected or disconnected devices
+ * depending on the `isNewDevices` prop and updates
+ * the `webMidiDevices` signal.
  */
-const checkWebMidiDevices = async (isNewDevices = true) => {
-  console.info("[webmidi]: checking devices...");
+const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) => {
+  log("webmidi", "checking devices...");
 
   const devices = webMidiDevices();
   const profiles = deviceCustomProfiles();
@@ -49,18 +51,22 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
   /** Check for connected devices. */
   if (isNewDevices) {
     for (const output of WebMidi.outputs) {
-      // Find the input to pair with the output.
       const input = WebMidi.inputs.find(
         input => removeInOutFromName(input.name) === removeInOutFromName(output.name)
       );
 
+      // Skip to the next one if we can't pair the output with an input.
       if (!input) continue;
+      let device_enabled = true;
 
       const device_raw_name = removeInOutFromName(output.name);
       let device_name = device_raw_name;
 
       /** We don't put blacklisted devices in the store. */
-      if (isDeviceBlackListed(device_name)) continue;
+      if (isDeviceBlackListed(device_name)) {
+        device_enabled = false;
+        continue;
+      }
 
       /**
        * Whether the device already in the store or not.
@@ -77,11 +83,16 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
       const device_guessed_type = type;
       let device_type = device_guessed_type;
 
+      // When we can't find the type of the device, we disable it.
+      if (!device_type) device_enabled = false;
+
+      // Check if the device have a saved profile and use these settings if they exists..
       const device_profile = profiles.find(profile => profile.raw_name === device_raw_name);
       if (device_profile) {
         log("profile", "found the profile for", device_raw_name);
         if (device_profile.name) device_name = device_profile.name;
         if (device_profile.type) device_type = device_profile.type;
+        if (device_profile.enabled) device_enabled = device_profile.enabled;
       }
 
       // Send the initialization sysex to devices for instant setup.
@@ -90,7 +101,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
         for (const messageToSend of initialization_sysex) {
           setTimeout(() => {
             output.sendSysex([], messageToSend);
-            console.info(`[webmidi/init]: sent sysex message to ${device_name} (${device_type})`, messageToSend);
+            log("webmidi/init", `sent sysex message to ${device_name} (${device_type})`, messageToSend);
           }, 2000);
         }
       }
@@ -101,6 +112,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
 
         raw_name: device_raw_name,
         name: device_name,
+        enabled: device_enabled,
 
         input, output
       };
@@ -110,7 +122,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
        * we save it for the next time it loads.
        */
       if (!device_profile) {
-        console.info(`[webmidi]: saving ${device.name} to the profile...`);
+        log("webmidi", `saving ${device.name} to the profile...`);
         profiles.push({
           raw_name: device.raw_name,
           name: device.name,
@@ -120,12 +132,14 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
         setDeviceCustomProfiles(profiles);
       }
 
-      console.info(`[webmidi]: adding ${device.name} to the store...`);
+      log("webmidi", `adding ${device.name} to the store...`);
       setWebMidiDevices(prev => [...prev, device]);
     }
   }
+
   /** Check for disconnected devices. */
   else {
+    // Keep only the still connected devices.
     const filteredDevices = [...devices].filter(device => {
       const isStillConnected = WebMidi.outputs.find(
         output => output.id === device.output.id)
@@ -134,7 +148,7 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
       );
 
       if (!isStillConnected)
-        console.info(`[webmidi]: removing ${device.name} from the store...`);
+        log("webmidi", `removing ${device.name} from the store...`);
       return isStillConnected;
     });
 
@@ -153,17 +167,17 @@ const checkWebMidiDevices = async (isNewDevices = true) => {
 export const enableAndSetup = async () => {
   try {
     const midi = await WebMidi.enable({ sysex: true });
-    console.info("[webmidi]: successfully enabled");
+    log("webmidi", "successfully enabled");
 
     // Refresh the devices store with already connected devices.
-    checkWebMidiDevices();
+    checkWebMidiDevices({ isNewDevices: true });
 
     let connect_event_timeout: NodeJS.Timeout | undefined;
     midi.addListener("connected", () => {
       clearTimeout(connect_event_timeout);
 
       // Check the devices only after all the devices have been connected.
-      connect_event_timeout = setTimeout(checkWebMidiDevices, 100);
+      connect_event_timeout = setTimeout(() => checkWebMidiDevices({ isNewDevices: true }), 100);
     });
 
     let disconnect_event_timeout: NodeJS.Timeout | undefined;
@@ -171,14 +185,14 @@ export const enableAndSetup = async () => {
       clearTimeout(disconnect_event_timeout);
 
       // Check the devices only after all the devices have been disconnected.
-      disconnect_event_timeout = setTimeout(() => checkWebMidiDevices(false), 100);
+      disconnect_event_timeout = setTimeout(() => checkWebMidiDevices({ isNewDevices: false }), 100);
     });
 
     setWebMidiInformations({ isEnabled: true, wasRequested: true });
     return true;
   }
-  catch (error) {
-    console.error("[webmidi]:", error);
+  catch (err) {
+    error("webmidi", err);
     setWebMidiInformations({ isEnabled: false, wasRequested: true });
     return false;
   }
