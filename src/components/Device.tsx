@@ -67,7 +67,6 @@ const Device: Component<{
     console.info("[device]: linking to device", props.linkedDevice.name);
 
     const deviceNoteOnHandler = (evt: NoteMessageEvent) => {
-      console.log(evt.note.number);
       const note = processNote(evt.note.number);
       noteOnHandler(note);
     };
