@@ -22,7 +22,7 @@ const LaunchpadX: DeviceComponent = (props) => {
                       rowIndex() === 0
                       || padId.toString()[1] === "9"
                     )
-                      ? "__phantom-pad" : "",
+                      ? "__phantom-pad rounded-sm" : "",
                     "bg-gray-400 h-full w-full aspect-square rounded-sm"
                   )}
                   id={padId}
