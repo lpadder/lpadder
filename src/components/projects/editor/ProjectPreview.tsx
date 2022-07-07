@@ -236,8 +236,8 @@ const ProjectPreview: Component = () => {
           <div
             ref={canvas_ref}
             class={`
-              fixed bg-transparent
-              ${isPreviewCanvasFullscreen() ? "z-10 " : "-z-99"}
+              fixed 
+              ${isPreviewCanvasFullscreen() ? "z-10 bg-gray-800" : "-z-99 bg-transparent"}
             `}
             style={{
               height: project.metadata.canvasHeight + "px",
