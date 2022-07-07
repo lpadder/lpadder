@@ -28,9 +28,14 @@ const MidiOutputSender = () => {
     e.preventDefault();
 
     const deviceIndex = selectedDeviceIndex();
-    if (!deviceIndex) return;
-    const output = webMidiDevices()[deviceIndex].output;
-    output.sendSysex([], [0, 32, 41, 2, 16, 10, 99, 0]);
+    const devices = webMidiDevices();
+
+    if (deviceIndex === null) return;
+    const output = devices[deviceIndex].output;
+
+    const sysex = [0, 32, 41, 2, 14, 3, 3, 99, 255 >> 1, 255 >> 1, 255 >> 1];
+    console.log(sysex);
+    output.sendSysex([], sysex);
   };
 
   return (
