@@ -48,5 +48,6 @@ If you want to contribute, please check [the roadmap](https://github.com/Vexcite
 - [203Null](https://github.com/203Null) and [203Electronics](https://github.com/203Electronics) for [Prismatic](https://github.com/203Electronics/Prismatic) where a lot of SysEx initialization code has been taken.
 - [Novation](https://novationmusic.com) for the Launchpads and their programmer documentations.
   - [Launchpad Pro MK2](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20Pro%20Programmers%20Reference%20Guide%201.01.pdf)
+  - [Launchpad MK2](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20MK2%20Programmers%20Reference%20Manual%20v1.03.pdf)
   - [Launchpad Pro MK3](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/LPP3_prog_ref_guide_200415.pdf)
   - [Launchpad X](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20X%20-%20Programmers%20Reference%20Manual.pdf)
