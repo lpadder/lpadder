@@ -208,15 +208,16 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     ],
 
     get layout_to_use () {
-      let layout = layouts["programmer"];
+      let layout = [...layouts["programmer"]];
 
       layout = layout.map((row, rowIndex) => {
         // Remove the first item, since we don't have left column.
-        row.shift();
+        const new_row = [...row];
+        new_row.shift();
 
         // Add the `99` pad on the last item in the first row (0)
-        if (rowIndex === 0) row[row.length - 1] = 99;
-        return row;
+        if (rowIndex === 0) new_row[new_row.length - 1] = 99;
+        return new_row;
       });
 
       // Remove the last row since we don't have the bottom row.
