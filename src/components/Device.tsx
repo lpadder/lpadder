@@ -55,7 +55,7 @@ const Device: Component<{
     if (type === "launchpad_pro_mk2_cfw" || type === "launchpad_pro_mk2_cfy") {
       const noteConvertion = convertNoteLayout(note, "drum_rack", "programmer");
       if (!noteConvertion.success) return note;
-      return noteConvertion.result;
+      return noteConvertion.note;
     }
 
     return note;
