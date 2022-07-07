@@ -8,7 +8,6 @@ import novation from "@/assets/novation-inline.svg";
 
 const LaunchpadX: DeviceComponent = (props) => {
   const configuration = devicesConfiguration["launchpad_x"];
-  console.log(configuration.layout_to_use);
 
   return (
     <div class="flex flex-col gap-1" ref={props.ref}>
