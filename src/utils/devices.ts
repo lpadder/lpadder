@@ -241,7 +241,28 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
   launchpad_mk2: {
     name: "Launchpad MK2",
     initialization_sysex: [],
-    layout_to_use: layouts["programmer"]
+
+    rgb_sysex: (note, [r, g, b]) => [
+
+    ],
+
+    get layout_to_use () {
+      let layout = [...layouts["programmer"]];
+
+      layout = layout.map(row => {
+        // Remove the first item, since we don't have left column.
+        const new_row = [...row];
+        new_row.shift();
+
+        return new_row;
+      });
+
+      // Remove the last row since we don't have the bottom row.
+      layout.pop();
+      console.log(layout);
+
+      return layout;
+    }
   },
 
   launchpad_mini_mk2: {
