@@ -19,7 +19,6 @@ export type DeviceType =
 
 /** Private function to build the `drum_rack` layout. */
 const buildDrumRackLayout = (): DeviceLayoutGridType => {
-  console.info("building drum_rack layout...");
   let layout = [];
 
   for (let columns = 64; columns >= 36; columns -= 4) {
@@ -65,7 +64,6 @@ const buildDrumRackLayout = (): DeviceLayoutGridType => {
 
 /**  Private function to build the full `programmer` layout. */
 const buildProgrammerLayout = (): DeviceLayoutGridType => {
-  console.info("building programmer layout...");
   let layout = [];
 
   // Build the grid.
@@ -107,7 +105,6 @@ const buildProgrammerLayout = (): DeviceLayoutGridType => {
  * This layout is only used to parse drum racks in Ableton.
  */
 const buildLiveDrumRackLayout = (): DeviceLayoutGridType => {
-  console.info("building live_drum_rack layout...");
   const layout = [];
 
   for (let columns = 92; columns >= 64; columns -= 4) {
@@ -232,10 +229,32 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     initialization_sysex: [
       // Enter "Programmer" mode.
-      [0, 32, 41, 2, 12, 14, 0, 17, 0]
+      [0, 32, 41, 2, 14, 14, 1]
     ],
 
-    layout_to_use: layouts["programmer"]
+    rgb_sysex: (note, [r, g, b]) => [
+      0, 32, 41, 2, 14, 3, 3, note, r >> 1, g >> 1, b >> 1
+    ],
+
+    get layout_to_use () {
+      let layout = [...layouts["programmer"]];
+
+      layout = layout.map((row, rowIndex) => {
+        const new_row = [...row];
+
+        // Add the `99` pad on the last item in the first row (0)
+        if (rowIndex === 0) new_row[new_row.length - 1] = 99;
+        return new_row;
+      });
+
+      const bottom_additional_row = Array.from({ length: 8 }, (_, id) => id + 101);
+
+      const last_row = layout.pop() as number[];
+      layout.push([-1, ...bottom_additional_row, -1]);
+      layout.push(last_row);
+
+      return layout;
+    }
   },
 
   launchpad_mk2: {
@@ -243,7 +262,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     initialization_sysex: [],
 
     rgb_sysex: (note, [r, g, b]) => [
-
+      0, 32, 41, 2, 24, 11, note, r >> 2, g >> 2, b >> 2
     ],
 
     get layout_to_use () {
