@@ -14,7 +14,6 @@ export type DeviceType =
   | "launchpad_pro_mk2_cfw" // Old CFW
   | "launchpad_pro_mk2_cfy" // Latest CFW
   | "launchpad_mk2"
-  | "launchpad_mini_mk2"
   | "launchpad_x"
 
 /** Private function to build the `drum_rack` layout. */
@@ -147,22 +146,23 @@ export interface DeviceProperty {
   layout_to_use: DeviceLayoutGridType;
 }
 
+const SYSEX_HEADER_NOVATION = [0x00, 0x20, 0x29];
+
 export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } = {
   launchpad_pro_mk2: {
     name: "Launchpad Pro MK2",
 
-    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L7-L11>. */
     initialization_sysex: [
       // Enter "Live" mode.
-      [0, 32, 41, 2, 16, 33, 0],
+      [...SYSEX_HEADER_NOVATION, 2, 16, 33, 0],
       // Clear canvas.
-      [0, 32, 41, 2, 16, 14, 0],
-      // Turn off "mode" light.
-      [0, 32, 41, 2, 16, 10, 99, 0]
+      [...SYSEX_HEADER_NOVATION, 2, 16, 14, 0],
+      // Clear "mode" light.
+      [...SYSEX_HEADER_NOVATION, 2, 16, 10, 99, 0]
     ],
 
     rgb_sysex: (note, [r, g, b]) => [
-      0, 32, 41, 2, 16, 11, note, r >> 2, g >> 2, b >> 2
+      ...SYSEX_HEADER_NOVATION, 2, 16, 11, note, r >> 2, g >> 2, b >> 2
     ],
 
     layout_to_use: layouts["programmer"]
@@ -173,12 +173,13 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       ...this.launchpad_pro_mk2,
       name: "Launchpad Pro MK2 (Outdated CFW)",
 
-      /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L145-L148>. */
       initialization_sysex: [
         // Enter "Performance" mode.
-        [0, 32, 41, 2, 16, 33, 1],
+        [...SYSEX_HEADER_NOVATION, 2, 16, 33, 1],
         // Clear canvas.
-        [0, 32, 41, 2, 16, 14, 0]
+        [...SYSEX_HEADER_NOVATION, 2, 16, 14, 0],
+        // Clear "mode" light.
+        [...SYSEX_HEADER_NOVATION, 2, 16, 10, 99, 0]
       ]
     };
   },
@@ -194,7 +195,6 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
   launchpad_x: {
     name: "Launchpad X",
 
-    /** Taken from <https://github.com/203Electronics/Prismatic/blob/master/src/deviceConfigs.js#L332-L334>. */
     initialization_sysex: [
       // Enter "Programmer" mode.
       [0, 32, 41, 2, 12, 14, 1]
@@ -229,11 +229,11 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     initialization_sysex: [
       // Enter "Programmer" mode.
-      [0, 32, 41, 2, 14, 14, 1]
+      [...SYSEX_HEADER_NOVATION, 2, 14, 14, 1]
     ],
 
     rgb_sysex: (note, [r, g, b]) => [
-      0, 32, 41, 2, 14, 3, 3, note, r >> 1, g >> 1, b >> 1
+      ...SYSEX_HEADER_NOVATION, 2, 14, 3, 3, note, r >> 1, g >> 1, b >> 1
     ],
 
     get layout_to_use () {
@@ -262,7 +262,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     initialization_sysex: [],
 
     rgb_sysex: (note, [r, g, b]) => [
-      0, 32, 41, 2, 24, 11, note, r >> 2, g >> 2, b >> 2
+      ...SYSEX_HEADER_NOVATION, 2, 24, 11, note, r >> 2, g >> 2, b >> 2
     ],
 
     get layout_to_use () {
@@ -284,16 +284,20 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     }
   },
 
-  launchpad_mini_mk2: {
-    name: "Launchpad Mini MK2",
-    initialization_sysex: [],
-    layout_to_use: layouts["drum_rack"]
-  },
+  get launchpad_mini_mk3 (): DeviceProperty {
+    return {
+      ...this.launchpad_x,
+      name: "Launchpad Mini MK3",
 
-  launchpad_mini_mk3: {
-    name: "Launchpad Mini MK3",
-    initialization_sysex: [],
-    layout_to_use: layouts["programmer"]
+      initialization_sysex: [
+        // Enter "Programmer" mode.
+        [...SYSEX_HEADER_NOVATION, 2, 13, 14, 1]
+      ],
+
+      rgb_sysex: (note, [r, g, b]) => [
+        ...SYSEX_HEADER_NOVATION, 2, 13, 3, 3, note,  r >> 1, g >> 1, b >> 1
+      ]
+    };
   }
 };
 
@@ -321,7 +325,12 @@ export const guessDeviceType = (output: Output, input: Input): Promise<DeviceTyp
       if (evt.message.data.length === 17) {
         const msg = evt.message.data.slice(1, evt.message.data.length - 1);
 
-        if (msg[4] === 0x00 && msg[5] === 0x20 && msg[6] === 0x29) {
+        // Check if the response header starts with the novation identifier.
+        if (
+          msg[4] === SYSEX_HEADER_NOVATION[0]
+          && msg[5] === SYSEX_HEADER_NOVATION[1]
+          && msg[6] === SYSEX_HEADER_NOVATION[2]
+        ) {
           switch (msg[7]) {
           // Launchpad X
           case 0x03: {
@@ -387,28 +396,23 @@ export const guessDeviceType = (output: Output, input: Input): Promise<DeviceTyp
   });
 };
 
+/** Converts a note from layout A to layout B. */
 export const convertNoteLayout = (
   note: number,
   from: keyof (typeof layouts),
   to: keyof (typeof layouts)
-): { success: true, result: number } | { success: false, message: string } => {
+): { success: true, note: number } | { success: false } => {
   // Search in the `from` layout the note.
   for (const [index_col, columns] of layouts[from].entries()) {
     const index = columns.indexOf(note);
 
     if (index !== -1) {
-      const result = layouts[to][index_col][index];
-
       return {
         success: true,
-        result
+        note: layouts[to][index_col][index]
       };
     }
   }
 
-  // No result.
-  return {
-    success: false,
-    message: "No result found."
-  };
+  return { success: false };
 };
