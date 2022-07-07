@@ -5,8 +5,8 @@ import Launchpad from "@/components/Device";
 import Select from "@/components/Select";
 import FileInput from "@/components/FileInput";
 
-import { convertNoteLayout } from "@/utils/devices";
-import { getHexFromVelocity } from "@/utils/novationPalette";
+import { devicesConfiguration, convertNoteLayout } from "@/utils/devices";
+import { novationLaunchpadPalette } from "@/utils/palettes";
 import chroma from "chroma-js";
 
 import { webMidiDevices, webMidiInformations } from "@/stores/webmidi";
@@ -41,6 +41,9 @@ export default function UtilitiesMidiVisualizer () {
     notes: null,
     selectedDeviceIndex: 0
   });
+
+  const selectedDevice = () => webMidiDevices()[state.selectedDeviceIndex];
+  const deviceConfiguration = () => devicesConfiguration[selectedDevice().type || "launchpad_pro_mk2_cfy"];
 
   /** When a file is uploaded, parse and load it.  */
   const onFileChange: JSX.EventHandler<HTMLInputElement, Event> = (event) => {
@@ -92,11 +95,10 @@ export default function UtilitiesMidiVisualizer () {
       const start_time = note.time * 1000;
       const duration = (note.duration * 1000) + delay;
 
-      // Const convert_results = convertNoteLayout(note.midi, "drum_rack", "programmer");
-      // If (!convert_results.success) return;
+      const convert_results = convertNoteLayout(note.midi, "drum_rack", "programmer");
+      if (!convert_results.success) return;
 
-      // Const midi = convert_results.result;
-      const midi = note.midi;
+      const midi = convert_results.result;
 
       const parsed_note: typeof grouped_notes[number]["notes"][number] = {
         velocity: note.velocity,
@@ -128,9 +130,7 @@ export default function UtilitiesMidiVisualizer () {
   /** Play the MIDI file on the selected output. */
   const playMidi = () => {
     if (!state.notes) return;
-
-    /** Get the choosen output. */
-    const output = webMidiDevices()[state.selectedDeviceIndex].output;
+    const device = selectedDevice();
 
     state.notes.forEach(group => {
       const start_time = group.start_time;
@@ -138,7 +138,7 @@ export default function UtilitiesMidiVisualizer () {
       /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
         group.notes.forEach(note => {
-          const color = getHexFromVelocity(note.velocity * 127);
+          const color = novationLaunchpadPalette[note.velocity * 127];
           const duration = note.duration;
 
           // Get the Launchpad element.
@@ -150,27 +150,33 @@ export default function UtilitiesMidiVisualizer () {
           if (!pad) return;
 
           // Set the color of the pad for the `noteon`.
-          pad.style.backgroundColor = color;
-          output?.playNote(note.midi, {
-            attack: note.velocity
-          });
+          pad.style.backgroundColor = `rgb(${color.join(",")})`;
+
+
+          if (device) {
+            const sysex = deviceConfiguration().rgb_sysex(note.midi, color);
+            device.output.sendSysex([], sysex);
+          }
 
           // Setup the timing for the `noteoff`.
           setTimeout(() => {
             const style = pad.style.backgroundColor;
             if (!style) return;
 
-            const style_hex = chroma(style).hex();
+            const style_hex = chroma(style).rgb();
 
             // Check if the current pad color
             // Matches the color of the `noteon`.
             //
             // If it doesn't match, it's because
             // Another `noteon` has been played on it.
-            if (style_hex === color) {
+            if (style_hex.toString() === color.toString()) {
               // Remove the color of the pad for the `noteoff`.
               pad.removeAttribute("style");
-              output?.stopNote(note.midi);
+              if (device) {
+                const sysex = deviceConfiguration().rgb_sysex(note.midi, [0, 0, 0]);
+                device.output.sendSysex([], sysex);
+              }
             }
           }, duration);
         });
@@ -216,7 +222,7 @@ export default function UtilitiesMidiVisualizer () {
               onChange={e => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
             >
               <option value="none">
-                  None
+                None
               </option>
 
               <For each={webMidiDevices()}>{(device, deviceIndex) => (
@@ -232,6 +238,7 @@ export default function UtilitiesMidiVisualizer () {
           >
             <Launchpad
               ref={launchpad_ref}
+              linkedDevice={selectedDevice()}
               defaultDeviceType={"launchpad_pro_mk2_cfy"}
               onPadDown={() => null}
               onPadUp={() => null}
