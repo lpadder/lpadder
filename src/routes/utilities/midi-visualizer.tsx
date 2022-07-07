@@ -98,7 +98,7 @@ export default function UtilitiesMidiVisualizer () {
       const convert_results = convertNoteLayout(note.midi, "drum_rack", "programmer");
       if (!convert_results.success) return;
 
-      const midi = convert_results.result;
+      const midi = convert_results.note;
 
       const parsed_note: typeof grouped_notes[number]["notes"][number] = {
         velocity: note.velocity,
