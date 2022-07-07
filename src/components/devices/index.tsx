@@ -66,6 +66,7 @@ export const DeviceButton: Component<{
 
 // Devices
 import LaunchpadProMK2 from "@/components/devices/LaunchpadProMK2";
+import LaunchpadMK2 from "@/components/devices/LaunchpadMK2";
 import LaunchpadX from "@/components/devices/LaunchpadX";
 
 export const SwitchDevice: Component<DeviceComponentProps & { type: DeviceType }> = (props) => {
@@ -78,9 +79,13 @@ export const SwitchDevice: Component<DeviceComponentProps & { type: DeviceType }
       }>
         <LaunchpadProMK2 {...props} />
       </Match>
+      <Match when={props.type === "launchpad_mk2"}>
+        <LaunchpadMK2 {...props} />
+      </Match>
       <Match when={props.type === "launchpad_x"}>
         <LaunchpadX {...props} />
       </Match>
+
     </Switch>
   );
 };
