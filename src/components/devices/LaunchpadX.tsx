@@ -4,8 +4,11 @@ import { DeviceButton } from "@/components/devices";
 import { devicesConfiguration } from "@/utils/devices";
 import { classNames } from "@/utils/styling";
 
+import novation from "@/assets/novation-inline.svg";
+
 const LaunchpadX: DeviceComponent = (props) => {
   const configuration = devicesConfiguration["launchpad_x"];
+  console.log(configuration.layout_to_use);
 
   return (
     <div class="flex flex-col gap-1" ref={props.ref}>
@@ -13,7 +16,7 @@ const LaunchpadX: DeviceComponent = (props) => {
         {(rows, rowIndex) => (
           <div class="flex flex-row gap-1">
             <For each={rows}>
-              {(padId) => (padId !== -1)
+              {(padId) => (padId !== -1 && padId !== 99)
                 ? <DeviceButton
                   class={classNames(
                     (
@@ -27,7 +30,18 @@ const LaunchpadX: DeviceComponent = (props) => {
                   context={props.onContext}
                   up={props.onPadUp}
                   down={props.onPadDown}
-                /> : <div class="h-full w-full" />
+                /> : (padId === 99)
+                  ? (
+                    <div
+                      class="h-full w-full bg-gray-400 rounded-sm aspect-square"
+                      data-note={padId}
+                    >
+                      <img
+                        class="h-full w-full"
+                        src={novation}
+                      />
+                    </div>
+                  ) : <div class="h-full w-full" />
               }
             </For>
           </div>
