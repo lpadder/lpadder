@@ -242,8 +242,14 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       layout = layout.map((row, rowIndex) => {
         const new_row = [...row];
 
-        // Add the `99` pad on the last item in the first row (0)
-        if (rowIndex === 0) new_row[new_row.length - 1] = 99;
+        if (rowIndex === 0) {
+          // Add the `99` pad on the last item of the first row (0)
+          new_row[new_row.length - 1] = 99;
+
+          // Also add the `90` pad on the first item of the first row (0)
+          new_row[0] = 90;
+        }
+
         return new_row;
       });
 

@@ -36,7 +36,8 @@ const LaunchpadProMK3: DeviceComponent = (props) => {
                         ? "__phantom-pad __lp_pro_mk3_bottom_pad after:rounded-sm"
                         /** All the other pads are gray squares. */
                         : "aspect-square",
-                    "bg-gray-400 h-full w-full rounded-sm"
+                    "bg-gray-400 rounded-sm h-full w-full",
+                    padId === 90 &&"transform scale-50"
                   )}
                   id={padId}
                   context={props.onContext}
@@ -45,7 +46,7 @@ const LaunchpadProMK3: DeviceComponent = (props) => {
                 /> : (padId === 99)
                   ? (
                     <div
-                      class="h-full w-full bg-gray-400 rounded-sm aspect-square"
+                      class="h-full w-full bg-gray-400 rounded-sm aspect-square transform scale-75"
                       data-note={padId}
                     >
                       <img
