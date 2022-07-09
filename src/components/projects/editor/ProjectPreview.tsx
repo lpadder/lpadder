@@ -247,11 +247,6 @@ const ProjectPreview: Component = () => {
               top: getCanvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
             }}
           >
-            {/** Line for Y */}
-            {/* <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
-            {/** Line for X */}
-            {/* <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
-
             <For each={project.metadata.devices}>
               {device => <DeviceInPreview {...device} />}
             </For>
