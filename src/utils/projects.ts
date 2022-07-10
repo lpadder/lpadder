@@ -170,17 +170,18 @@ export const createNewProject = async (
 
       // Default values.
       canvasScale: 1,
-      // Put them next to each other, with a gap of 15px.
-      canvasX: deviceIndex * (150 + 15),
-      canvasY: 0
+      // Put them next to each other, in the middle of the canvas, with a gap of 15px.
+      // Original equation: `(deviceIndex * (200 + 15)) - ((200 + (15 / 2)) * options.project.devices.length / 2)`.
+      canvasX: (215 * deviceIndex) - (103.75 * options.project.devices.length),
+      canvasY: -(200 / 2)
     })),
 
     // Version of lpadder is defined globally, see `@/global.d.ts`.
     version: import.meta.env.DEV ? "next" : APP_VERSION,
 
-    // The default values of the canvas is the user's window height and width.
-    canvasHeight: window.innerHeight,
-    canvasWidth: window.innerWidth,
+    // The default values of the canvas are 2x the user's window height and width.
+    canvasHeight: window.innerHeight * 2,
+    canvasWidth: window.innerWidth * 2,
 
     // The default values of the canvas view position is middle (x=0, y=0)
     defaultCanvasViewPosition: {
