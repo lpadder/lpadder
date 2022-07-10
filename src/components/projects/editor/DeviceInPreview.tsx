@@ -39,7 +39,6 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
 
     if (device) {
       const sysex = devicesConfiguration[deviceType()].rgb_sysex(note, [255, 255, 255]);
-      console.log(sysex);
       device.output.sendSysex([], sysex);
     }
 
