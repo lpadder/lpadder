@@ -6,10 +6,12 @@ export const [projectSaved, setProjectSaved] = createSignal<boolean | null>(null
 
 type CurrentProjectStore = {
   slug: null;
+  current_page: null;
   metadata: null;
   data: null;
 } | {
   slug: string;
+  current_page: null | number;
   metadata: ProjectMetadata;
   data: ProjectData;
 }
@@ -20,6 +22,7 @@ type CurrentProjectStore = {
  */
 export const [currentProjectStore, setCurrentProjectStoreRaw] = createStore<CurrentProjectStore>({
   slug: null,
+  current_page: null,
   metadata: null,
   data: null
 });
@@ -38,6 +41,7 @@ export const setCurrentProjectStore: SetStoreFunction<CurrentProjectStore> = (..
 export const resetCurrentProjectStore = () => {
   setCurrentProjectStoreRaw({
     slug: null,
+    current_page: null,
     metadata: null,
     data: null
   });

@@ -1,6 +1,6 @@
 import { Component, createEffect } from "solid-js";
 
-import { currentProjectStore, setCurrentProjectStore, resetCurrentProjectStore, setProjectSaved } from "@/stores/current_project";
+import { currentProjectStore, setCurrentProjectStore, resetCurrentProjectStore, setProjectSaved, setCurrentProjectStoreRaw } from "@/stores/current_project";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
@@ -9,6 +9,7 @@ import { syncProjectDataGlobally } from "@/utils/projects";
 import { log, error, logStart, logEnd } from "@/utils/logger";
 
 import ProjectPreview from "@/components/projects/editor/ProjectPreview";
+import DropdownButton from "@/components/DropdownButton";
 
 const ProjectsEditor: Component = () => {
   const navigate = useNavigate();
@@ -85,19 +86,47 @@ const ProjectsEditor: Component = () => {
               <ProjectPreview />
 
             </div>
-            <div class="z-5 absolute w-full">
+            <div class="z-5 absolute w-full px-4">
 
-              <div class="flex justify-between px-4">
-                <select>
-                  <option>add launchpad</option>
-                </select>
-                <select>
-                  <option>add page</option>
-                </select>
+              <div class="absolute right-4">
+                <DropdownButton
+                  buttonClassName="bg-gray-600 px-4 py-2 rounded"
+                  buttonIcon={
+                    <Show when={project.current_page !== null} fallback="Select a page !">
+                      {project.data.pages[project.current_page as number].name}
+                    </Show>
+                  }
+                  items={[
+                    [
+                      {
+                        name: "Create a new page",
+                        action: () => {
+                          const newPageIndex = project.data.pages.length;
 
+                          batch(() => {
+                            setCurrentProjectStore("data", "pages", (prev) => [...prev, {
+                              name: `Page ${newPageIndex}`,
+                              samples: {}
+                            }]);
+
+                            /**
+                             * Here, we use the raw method to prevent
+                             * the save button to show up when only selecting a page.
+                             */
+                            setCurrentProjectStoreRaw("current_page", newPageIndex);
+                          });
+                        }
+                      }
+                    ],
+                    project.data.pages.map((page, pageIndex) => ({
+                      name: page.name,
+                      action: () => setCurrentProjectStoreRaw("current_page", pageIndex)
+                    }))
+                  ]}
+                />
               </div>
 
-              <p>{project.slug}</p>
+              <p>{project.current_page}</p>
 
             </div>
           </>
