@@ -8,9 +8,13 @@ import {
   setDeviceCustomProfiles
 } from "@/stores/webmidi";
 
+import { devicesConfiguration, DeviceType } from "@/utils/devices";
+
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 
 const SettingsMidi: Component = () => {
+
   return (
     <>
       <Title>lpadder - settings: MIDI</Title>
@@ -63,6 +67,39 @@ const SettingsMidi: Component = () => {
                   setDeviceCustomProfiles(profiles);
                 }}
               />
+
+              <Select
+                value={device().type || "none"}
+                onChange={(evt) => {
+                  const type = evt.currentTarget.value === "none"
+                    ? undefined
+                    : evt.currentTarget.value as DeviceType;
+
+                  const devices = webMidiDevices();
+                  devices[deviceIndex] = {
+                    ...device(),
+                    type
+                  };
+
+                  const profiles = deviceCustomProfiles();
+                  const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                  profiles[profilIndex] = {
+                    ...profiles[profilIndex],
+                    type
+                  };
+
+                  setWebMidiDevices([...devices]);
+                  setDeviceCustomProfiles(profiles);
+                }}
+              >
+                <option value="none">Unknown</option>
+
+                <For each={Object.keys(devicesConfiguration) as DeviceType[]}>
+                  {(device_type) => (
+                    <option value={device_type}>{devicesConfiguration[device_type].name}</option>
+                  )}
+                </For>
+              </Select>
 
               <label class="flex items-center gap-2">
                 <input

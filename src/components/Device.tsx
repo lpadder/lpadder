@@ -7,11 +7,6 @@ import type { DeviceComponentProps } from "@/components/devices";
 import { SwitchDevice } from "@/components/devices";
 import { convertNoteLayout } from "@/utils/devices";
 
-export function getPadElementId (padId: number, launchpadId = 0) {
-  const elementId = `launchpad-${launchpadId}-pad-${padId}`;
-  return elementId;
-}
-
 /**
  * We create a new device component which its layout
  * is based the the `linkedDevice`'s type or `defaultDeviceType`
@@ -47,15 +42,15 @@ const Device: Component<{
   const deviceType = () => props.linkedDevice?.type || props.defaultDeviceType;
 
   /**
-   * We need to process note to use the proper layout.
-   * ex: Launchpad PRO uses programmer but CFW uses Drum Rack layout in events.
+   * We need to process note to use the programmer layout.
+   * ex: Launchpad Pro MK2 uses programmer but CFW uses Drum Rack layout in events.
    */
   const processNote = (note: number) => {
     const type = deviceType();
     if (type === "launchpad_pro_mk2_cfw" || type === "launchpad_pro_mk2_cfy") {
       const noteConvertion = convertNoteLayout(note, "drum_rack", "programmer");
       if (!noteConvertion.success) return note;
-      return noteConvertion.result;
+      return noteConvertion.note;
     }
 
     return note;

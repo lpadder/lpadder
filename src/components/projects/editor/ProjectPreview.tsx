@@ -130,20 +130,34 @@ const ProjectPreview: Component = () => {
     window.addEventListener("touchend", touchEndFunction);
   };
 
+  const [windowWidth, setWindowWidth] = createSignal(window.innerWidth);
+  const [windowHeight, setWindowHeight] = createSignal(window.innerHeight);
+
+  /** Corect the canvas when the window is resized to prevent gaps. */
+  const windowResizePreview = () => {
+    batch(() => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    });
+    canvasCorrectMove();
+  };
+
   onMount(() => {
     if (!canvas_ref) return;
     canvas_ref.addEventListener("mousedown", canvasMouseDown);
     canvas_ref.addEventListener("touchstart", canvasTouchStart);
+    window.addEventListener("resize", windowResizePreview);
   });
 
   onCleanup(() => {
     if (!canvas_ref) return;
     canvas_ref.removeEventListener("mousedown", canvasMouseDown);
+    window.removeEventListener("resize", windowResizePreview);
   });
 
-  const getCanvasRealMiddle = () => {
+  const canvasRealMiddle = () => {
     /** Whether we're on the desktop view or not. */
-    const isDesktopView = window.innerWidth >= 768;
+    const isDesktopView = windowWidth() >= 768;
     const DESKTOP_NAVBAR_LEFT_WIDTH = 288;
     const HEADER_TOP_HEIGHT = 80;
     const CANVAS_PREVIEW_HEIGHT = 320;
@@ -151,11 +165,11 @@ const ProjectPreview: Component = () => {
     const canvasViewWidth = currentProjectStore.metadata?.canvasWidth || 0;
     const canvasViewHeight = currentProjectStore.metadata?.canvasHeight || 0;
 
-    let canvasViewLeft = (-canvasViewWidth / 2) + (window.innerWidth / 2);
+    let canvasViewLeft = (-canvasViewWidth / 2) + (windowWidth() / 2);
     if (isDesktopView && !isPreviewCanvasFullscreen()) canvasViewLeft += DESKTOP_NAVBAR_LEFT_WIDTH / 2;
 
     let canvasViewTop = (-canvasViewHeight / 2);
-    if (isPreviewCanvasFullscreen()) canvasViewTop += (window.innerHeight / 2);
+    if (isPreviewCanvasFullscreen()) canvasViewTop += (windowHeight() / 2);
     else canvasViewTop += HEADER_TOP_HEIGHT + (CANVAS_PREVIEW_HEIGHT / 2);
 
     return {
@@ -236,22 +250,17 @@ const ProjectPreview: Component = () => {
           <div
             ref={canvas_ref}
             class={`
-              fixed bg-transparent
-              ${isPreviewCanvasFullscreen() ? "z-10 " : "-z-99"}
+              fixed 
+              ${isPreviewCanvasFullscreen() ? "z-10 bg-gray-800" : "-z-99 bg-transparent"}
             `}
             style={{
               height: project.metadata.canvasHeight + "px",
               width: project.metadata.canvasWidth + "px",
               transform: `scale(${project.metadata.defaultCanvasViewPosition.scale})`,
-              left: getCanvasRealMiddle().left + project.metadata.defaultCanvasViewPosition.x + "px",
-              top: getCanvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
+              left: canvasRealMiddle().left + project.metadata.defaultCanvasViewPosition.x + "px",
+              top: canvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
             }}
           >
-            {/** Line for Y */}
-            {/* <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
-            {/** Line for X */}
-            {/* <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
-
             <For each={project.metadata.devices}>
               {device => <DeviceInPreview {...device} />}
             </For>

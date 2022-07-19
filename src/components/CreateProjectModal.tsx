@@ -12,6 +12,8 @@ import { createNewProject } from "@/utils/projects";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
+  const usableDevices = () => webMidiDevices().filter(device => device.enabled && typeof device.type !== "undefined");
+
   const [state, setState] = createStore<{
     name: string,
     slug: string,
@@ -101,13 +103,13 @@ const CreateProjectModal: Component = () => {
             <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
           </div>
 
-          <Show when={webMidiDevices().length > 1}>
+          <Show when={usableDevices().length > 0}>
             <p>
               Should we automatically set-up these devices in the project for you ?
             </p>
 
             <div class="flex flex-wrap justify-evenly my-4 gap-2">
-              <For each={webMidiDevices().filter(device => typeof device.type !== "undefined")}>
+              <For each={usableDevices()}>
                 {device => (
                   <button
                     type="button"
