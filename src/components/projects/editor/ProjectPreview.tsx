@@ -26,11 +26,12 @@ const ProjectPreview: Component = () => {
   const [isPreviewCanvasFullscreen, setPreviewCanvasFullscreen] = createSignal(false);
 
   /** Adds `x` to `left` and `y` to `top`. */
-  const updateCanvasPosition = (x?: number, y?: number) =>
+  const updateCanvasPosition = (x?: number, y?: number) => {
     setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => ({
       x: prev.x + (x || 0),
       y: prev.y + (y || 0)
     }));
+  };
 
   /** Correct the position of the canvas after a move. */
   const canvasCorrectMove = () => {
@@ -160,17 +161,16 @@ const ProjectPreview: Component = () => {
     const isDesktopView = windowWidth() >= 768;
     const DESKTOP_NAVBAR_LEFT_WIDTH = 288;
     const HEADER_TOP_HEIGHT = 80;
-    const CANVAS_PREVIEW_HEIGHT = 320;
 
     const canvasViewWidth = currentProjectStore.metadata?.canvasWidth || 0;
     const canvasViewHeight = currentProjectStore.metadata?.canvasHeight || 0;
 
-    let canvasViewLeft = (-canvasViewWidth / 2) + (windowWidth() / 2);
+    let canvasViewLeft = (-canvasViewWidth + windowWidth()) / 2;
     if (isDesktopView && !isPreviewCanvasFullscreen()) canvasViewLeft += DESKTOP_NAVBAR_LEFT_WIDTH / 2;
 
     let canvasViewTop = (-canvasViewHeight / 2);
     if (isPreviewCanvasFullscreen()) canvasViewTop += (windowHeight() / 2);
-    else canvasViewTop += HEADER_TOP_HEIGHT + (CANVAS_PREVIEW_HEIGHT / 2);
+    else canvasViewTop += (HEADER_TOP_HEIGHT + windowHeight()) / 2;
 
     return {
       left: canvasViewLeft,
@@ -180,7 +180,7 @@ const ProjectPreview: Component = () => {
 
   return (
     <Show when={currentProjectStore.slug !== null && currentProjectStore}>{project => (
-      <div class="relative h-80 bg-gray-800 overflow-hidden shadow-md shadow-inner">
+      <div class="relative h-full bg-gray-800 overflow-hidden">
         <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
           <ProjectPreviewButton
             title="Zoom in"
@@ -221,7 +221,7 @@ const ProjectPreview: Component = () => {
           />
         </div>
 
-        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed bottom-4" : "absolute bottom-20"} right-4 flex gap-2`}>
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} right-4 bottom-4 flex gap-2 md:flex-col`}>
           <ProjectPreviewButton
             title="Reset View"
             action={() => {
@@ -261,14 +261,16 @@ const ProjectPreview: Component = () => {
               top: canvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
             }}
           >
+            {/** Line for Y */}
+            {/* <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
+            {/** Line for X */}
+            {/* <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
+
             <For each={project.metadata.devices}>
               {device => <DeviceInPreview {...device} />}
             </For>
           </div>
         </div>
-
-        {/** This is only to make the style gradient at the end of the preview. */}
-        <div class="z-5 absolute bottom-0 h-16 w-full bg-gradient-to-b from-transparent to-gray-800"></div>
       </div>
     )}</Show>
   );
