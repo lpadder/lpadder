@@ -13,6 +13,18 @@ const TicTacToeGame: Component = () => {
 
   let device_ref: HTMLDivElement | undefined;
 
+  const validFields = [
+    [11, 12, 21, 22],
+    [14, 15, 24, 25],
+    [17, 18, 27, 28],
+    [41, 42, 51, 52],
+    [44, 45, 54, 55],
+    [47, 48, 57, 58],
+    [71, 72, 81, 82],
+    [74, 75, 84, 85],
+    [77, 78, 87, 88]
+  ];
+
   const linkedDevice = () => webMidiDevices().find(
     current_device => current_device.raw_name === device.raw_name
   );
@@ -34,7 +46,7 @@ const TicTacToeGame: Component = () => {
 
     device_element.style.backgroundColor = "rgb(255, 255, 255)";
 
-    const noteT: number = checkPressedField(note);
+    const noteT: number = returnPressedField(note);
     console.log(noteT.toString() + " poggies");
   };
 
@@ -78,16 +90,10 @@ const TicTacToeGame: Component = () => {
     }
   };
 
-  const checkPressedField = (noteParam: number) => {
-    const fields = [
-      [11, 12, 21, 22],
-      [14, 15, 24, 25] // TODO: add more fields
-    ];
-
+  // Returns index of pressed field, or -1 if an invalid field is pressed
+  const returnPressedField = (noteParam: number) => {
     let fieldIndex = -1;
-    console.log("gave note " + noteParam);
-
-    fields.forEach((field: number[], index: number) => {
+    validFields.forEach((field: number[], index: number) => {
       field.forEach((note: number) => {
         if (note === noteParam) {
           fieldIndex = index;
@@ -101,18 +107,32 @@ const TicTacToeGame: Component = () => {
   return (
     <>
       <Title>lpadder - tic tac toe game</Title>
-      <div id="game" class="flex flex-col items-center my-8">
-        <h1 class="text-4xl font-bold mb-8">Tic Tac Toe</h1>
-        <div class="bg-gray-900 p-1 h-96 w-96 rounded-md">
-          <Device
-            ref={device_ref}
-            linkedDevice={linkedDevice()}
-            defaultDeviceType={deviceType()}
-            onPadUp={onPadUp}
-            onPadDown={onPadDown}
-          />
+      <div id="game" class="flex flex-col items-start my-8 mx-8">
+        <Link href="/games" class="flex flex-center justify-center bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80 mb-2 group">
+          <IconMdiArrowBack class="mr-1 group-hover:text-blue-500" />
+          <span class="group-hover:text-blue-500">Go back</span>
+        </Link>
+        <h1 class="text-4xl font-bold mb-1">Tic Tac Toe</h1>
+        <span class="mb-8">Play a game of TicTacToe against a friend, right on your Launchpad!</span>
+        <div id="main-frame" class="flex flex-row gap-12">
+          <div id="launchpad-frame">
+            <div class="bg-gray-900 p-2 h-[32rem] w-[32rem] rounded-md">
+              <Device
+                ref={device_ref}
+                linkedDevice={linkedDevice()}
+                defaultDeviceType={deviceType()}
+                onPadUp={onPadUp}
+                onPadDown={onPadDown}
+              />
+            </div>
+            <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>Start Game</button>
+          </div>
+          <div id="info-frame">
+            <h2 class="text-2xl font-bold">Game status & settings</h2>
+            <p>Status: playing</p>
+            <p>It is Player 1's turn!</p>
+          </div>
         </div>
-        <button class="p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>Start Game</button>
       </div>
     </>
   );
