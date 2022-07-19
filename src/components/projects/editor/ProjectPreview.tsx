@@ -221,7 +221,7 @@ const ProjectPreview: Component = () => {
           />
         </div>
 
-        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed bottom-4" : "absolute bottom-20"} right-4 flex gap-2`}>
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} right-4 bottom-4 flex gap-2 md:flex-col`}>
           <ProjectPreviewButton
             title="Reset View"
             action={() => {
