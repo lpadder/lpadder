@@ -38,7 +38,8 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[deviceType()].rgb_sysex(note, [255, 255, 255]);
+      const led = { note, color: [255, 255, 255] };
+      const sysex = devicesConfiguration[deviceType()].rgb_sysex([led]);
       device.output.sendSysex([], sysex);
     }
 
@@ -53,7 +54,8 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[deviceType()].rgb_sysex(note, [0, 0, 0]);
+      const led = { note, color: [0, 0, 0] };
+      const sysex = devicesConfiguration[deviceType()].rgb_sysex([led]);
       device.output.sendSysex([], sysex);
     }
 
