@@ -11,6 +11,7 @@ import { webMidiInformations } from "@/stores/webmidi";
  */
 const WebMidiErrorModal: Component = () => {
   const [forceClose, setForceClose] = createSignal(false);
+  const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
   return (
     <Modal
@@ -32,32 +33,44 @@ const WebMidiErrorModal: Component = () => {
             your browser supports WebMIDI
           </a>.
           If it does, then try to restart the application with the button below.
-          If it still doesn't fix the problem, try to use another browser such as <span class="font-medium text-blue-200">Chrome, Opera or Brave</span>.
+          If it still doesn't fix the problem, try to use another browser such as <span class="font-medium text-blue-200">Chrome, Opera, Brave or the latest versions of Firefox</span>.
         </p>
+
+        <Show when={isFirefox}>
+          <p class="p-4 bg-pink-400 border border-pink-400 text-pink-200 bg-opacity-20 rounded">
+            Since you're using Firefox, please make sure to have downloaded the <span class="font-medium">lpadder site permissions</span> to allow the usage of MIDI devices on lpadder.
+          </p>
+        </Show>
 
         <h3 class="font-medium text text-pink-300">
           {">"} What are the downsides of my browser not supporting WebMIDI ?
         </h3>
 
-        <ul class="list-disc ml-8 pr-2">
-          <li class="pb-2">
+        <ul class="list-disc ml-8 pr-2 space-y-2">
+          <li>
             You <span class="font-medium text-pink-200">can't use your MIDI devices</span> with lpadder.
           </li>
 
-          <li class="pb-2">
+          <li>
             Sections where MIDI devices are needed <span class="font-medium text-pink-200">will be unacessible</span>.
           </li>
 
-          <li class="pb-2">
-            Also, some <span class="font-medium text-pink-200">utilities will not be usable and games unplayable</span>.
+          <li>
+            Also, some <span class="font-medium text-pink-200">utilities and games will not be usable or playable</span>.
           </li>
         </ul>
+
+        <Show when={isFirefox}>
+          <a class="py-2 text-center border text-blue-200 border-blue-200 rounded bg-blue-300 bg-opacity-0 transition hover:bg-opacity-20" href="https://addons.mozilla.org/firefox/downloads/file/3978142/35d4da3054064b769297-1.0.xpi">
+            Request the site permission addons
+          </a>
+        </Show>
 
         <button
           class="py-2 border text-blue-200 border-transparent rounded bg-blue-600 bg-opacity-20 transition hover:(bg-opacity-40 border-blue-400)"
           onClick={() => document.location.reload()}
         >
-          Restart
+          Refresh the page
         </button>
 
         <button
