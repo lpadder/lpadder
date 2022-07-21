@@ -140,12 +140,13 @@ export interface DeviceProperty {
   /** SysEx to be sended when the device is connected or linked. */
   initialization_sysex: (number[])[];
 
-  /** Function to get the SysEx sequence to send RGB to the device. */
-  rgb_sysex: (note: number, [r, g, b]: number[]) => number[];
+  /** Get the SysEx message to send RGB. */
+  rgb_sysex: (leds: { note: number, color: number[] }[]) => number[];
 
   layout_to_use: DeviceLayoutGridType;
 }
 
+/** SysEx header for Novation devices. */
 const SYSEX_HEADER_NOVATION = [0x00, 0x20, 0x29];
 
 export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } = {
@@ -161,8 +162,9 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       [...SYSEX_HEADER_NOVATION, 2, 16, 10, 99, 0]
     ],
 
-    rgb_sysex: (note, [r, g, b]) => [
-      ...SYSEX_HEADER_NOVATION, 2, 16, 11, note, r >> 2, g >> 2, b >> 2
+    rgb_sysex: (leds) => [
+      ...SYSEX_HEADER_NOVATION, 2, 16, 11,
+      ...leds.map(led => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
     ],
 
     layout_to_use: layouts["programmer"]
@@ -197,11 +199,12 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     initialization_sysex: [
       // Enter "Programmer" mode.
-      [0, 32, 41, 2, 12, 14, 1]
+      [...SYSEX_HEADER_NOVATION, 2, 12, 14, 1]
     ],
 
-    rgb_sysex: (note, [r, g, b]) => [
-      0, 32, 41, 2, 12, 3, 3, note, r >> 1, g >> 1, b >> 1
+    rgb_sysex: (leds) => [
+      ...SYSEX_HEADER_NOVATION, 2, 12, 3, 3,
+      ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -232,8 +235,9 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       [...SYSEX_HEADER_NOVATION, 2, 14, 14, 1]
     ],
 
-    rgb_sysex: (note, [r, g, b]) => [
-      ...SYSEX_HEADER_NOVATION, 2, 14, 3, 3, note, r >> 1, g >> 1, b >> 1
+    rgb_sysex: (leds) => [
+      ...SYSEX_HEADER_NOVATION, 2, 14, 3, 3,
+      ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -267,8 +271,9 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     name: "Launchpad MK2",
     initialization_sysex: [],
 
-    rgb_sysex: (note, [r, g, b]) => [
-      ...SYSEX_HEADER_NOVATION, 2, 24, 11, note, r >> 2, g >> 2, b >> 2
+    rgb_sysex: (leds) => [
+      ...SYSEX_HEADER_NOVATION, 2, 24, 11,
+      ...leds.map(led => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
     ],
 
     get layout_to_use () {
@@ -300,8 +305,9 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
         [...SYSEX_HEADER_NOVATION, 2, 13, 14, 1]
       ],
 
-      rgb_sysex: (note, [r, g, b]) => [
-        ...SYSEX_HEADER_NOVATION, 2, 13, 3, 3, note,  r >> 1, g >> 1, b >> 1
+      rgb_sysex: (leds) => [
+        ...SYSEX_HEADER_NOVATION, 2, 13, 3, 3,
+        ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
       ]
     };
   }

@@ -7,7 +7,6 @@ import FileInput from "@/components/FileInput";
 
 import { devicesConfiguration, convertNoteLayout } from "@/utils/devices";
 import { novationLaunchpadPalette } from "@/utils/palettes";
-import chroma from "chroma-js";
 
 import { webMidiDevices, webMidiInformations } from "@/stores/webmidi";
 import { JSX } from "solid-js";
@@ -32,13 +31,13 @@ export default function UtilitiesMidiVisualizer () {
   const [state, setState] = createStore<{
     loaded: boolean,
     midi: Midi | null,
-    notes: GroupedNotes[] | null,
+    note_groups: GroupedNotes[] | null,
 
     selectedDeviceIndex: number
   }>({
     loaded: false,
     midi: null,
-    notes: null,
+    note_groups: null,
     selectedDeviceIndex: 0
   });
 
@@ -67,14 +66,13 @@ export default function UtilitiesMidiVisualizer () {
       const notesData = loadMidiData(midi_data);
 
       // Store the MIDI object and the parsed notes.
-      setState({ midi: midiObject, notes: notesData, loaded: true });
+      setState({ midi: midiObject, note_groups: notesData, loaded: true });
     };
 
     reader.readAsArrayBuffer(file);
   };
 
   const loadMidiData = (midi_data: MidiJSON) => {
-    // TODO: Maybe a track selector ?
     /** Notes of the first track of the MIDI file. */
     const notes_data = midi_data.tracks[0].notes;
 
@@ -129,11 +127,23 @@ export default function UtilitiesMidiVisualizer () {
 
   /** Play the MIDI file on the selected output. */
   const playMidi = () => {
-    if (!state.notes) return;
+    if (!state.note_groups) return;
     const device = selectedDevice();
 
-    state.notes.forEach(group => {
+    state.note_groups.forEach(group => {
       const start_time = group.start_time;
+      const leds =
+        group.notes.map(note => ({
+          note: note.midi,
+          color: novationLaunchpadPalette[note.velocity * 127]
+        }));
+
+      if (device) {
+        const sysex = deviceConfiguration().rgb_sysex(leds);
+        device.output.sendSysex([], sysex, {
+          time: `+${start_time}`
+        });
+      }
 
       /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
@@ -149,32 +159,30 @@ export default function UtilitiesMidiVisualizer () {
           const pad: HTMLDivElement | null = launchpad.querySelector(`[data-note="${note.midi}"]`);
           if (!pad) return;
 
+          /** Browsers always convert values to RGB according to some spec. (TODO: [source ?](#)) */
+          const colored_pad_style = `rgb(${color.join(", ")})`;
+
           // Set the color of the pad for the `noteon`.
-          pad.style.backgroundColor = `rgb(${color.join(",")})`;
-
-
-          if (device) {
-            const sysex = deviceConfiguration().rgb_sysex(note.midi, color);
-            device.output.sendSysex([], sysex);
-          }
+          pad.style.backgroundColor = colored_pad_style;
 
           // Setup the timing for the `noteoff`.
           setTimeout(() => {
-            const style = pad.style.backgroundColor;
-            if (!style) return;
+            const current_style = pad.style.backgroundColor;
+            if (!current_style) return;
 
-            const style_hex = chroma(style).rgb();
-
-            // Check if the current pad color
-            // Matches the color of the `noteon`.
-            //
-            // If it doesn't match, it's because
-            // Another `noteon` has been played on it.
-            if (style_hex.toString() === color.toString()) {
+            /**
+             * Check if the pad haven't been triggered.
+             * If triggered with another color, then we do nothing
+             * and let the other trigger, handle everything.
+             * If it's still the same color, we remove it.
+             */
+            if (current_style === colored_pad_style) {
               // Remove the color of the pad for the `noteoff`.
               pad.removeAttribute("style");
               if (device) {
-                const sysex = deviceConfiguration().rgb_sysex(note.midi, [0, 0, 0]);
+                const sysex = deviceConfiguration().rgb_sysex([{
+                  note: note.midi, color: novationLaunchpadPalette[0]
+                }]);
                 device.output.sendSysex([], sysex);
               }
             }
@@ -233,9 +241,7 @@ export default function UtilitiesMidiVisualizer () {
             </Select>
           </Show>
 
-          <div
-            class="max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-4 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg"
-          >
+          <div class="relative max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-3 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg">
             <Launchpad
               ref={launchpad_ref}
               linkedDevice={selectedDevice()}
