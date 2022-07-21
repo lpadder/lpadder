@@ -1,6 +1,11 @@
 import { Component, createEffect } from "solid-js";
 
-import { currentProjectStore, setCurrentProjectStore, resetCurrentProjectStore, setProjectSaved, setCurrentProjectStoreRaw } from "@/stores/current_project";
+import {
+  currentProjectStore,
+  setCurrentProjectStore,
+  resetCurrentProjectStore,
+  setProjectSaved
+} from "@/stores/current_project";
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
@@ -9,9 +14,7 @@ import { syncProjectDataGlobally } from "@/utils/projects";
 import { log, error, logStart, logEnd } from "@/utils/logger";
 
 import ProjectPreview from "@/components/projects/editor/ProjectPreview";
-import Playback from "@/components/projects/editor/Playback";
-
-import DropdownButton from "@/components/DropdownButton";
+import ProjectRootUI from "@/components/projects/editor/ProjectRootUI";
 
 const ProjectsEditor: Component = () => {
   const navigate = useNavigate();
@@ -79,14 +82,12 @@ const ProjectsEditor: Component = () => {
     <>
       <Title>lpadder - projects: {slug()}</Title>
 
-      <Show when={currentProjectStore.slug !== null && currentProjectStore} fallback={
+      <Show when={currentProjectStore.slug !== null} fallback={
         <p>Cover {slug()} is currently loading...</p>
       }>
-        {project => (
-          <>
-            <ProjectPreview />
+        <ProjectPreview />
 
-            {/* <div class="absolute z-5 right-4">
+        {/* <div class="absolute z-5 right-4">
               <DropdownButton
                 buttonClassName="bg-gray-600 px-4 py-2 rounded shadow"
                 buttonIcon={
@@ -124,10 +125,8 @@ const ProjectsEditor: Component = () => {
               />
             </div> */}
 
-            {/* <Playback /> */}
-            <Playback />
-          </>
-        )}
+        {/* <Playback /> */}
+        <ProjectRootUI />
       </Show>
     </>
   );

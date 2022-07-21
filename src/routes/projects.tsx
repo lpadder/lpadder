@@ -14,10 +14,11 @@ import NavbarHeadItem from "@/components/projects/NavbarHeadItem";
 // Utilities
 import { syncProjectDataGlobally, createImportProject } from "@/utils/projects";
 import exportCurrentCoverToZip from "@/utils/exportCurrentCoverToZip";
+import { correctCanvasMove, setPreviewCanvasFullscreen } from "@/components/projects/editor/ProjectPreview";
 import { log, logStart, logEnd } from "@/utils/logger";
 
 // Stores
-import { currentProjectStore, projectSaved } from "@/stores/current_project";
+import { currentProjectStore, projectSaved, setCurrentProjectStore } from "@/stores/current_project";
 import { setModalsStore } from   "@/stores/modals";
 import {
   projectsMetadataLocal,
@@ -78,11 +79,24 @@ const ProjectsLayout: Component = () => {
                     items={[
                       [
                         {
-                          name: "Export to .zip",
-                          action: exportCurrentCoverToZip
+                          name: "Fullscreen",
+                          action: () => setPreviewCanvasFullscreen(true)
+                        },
+                        {
+                          name: "Center preview canvas",
+                          action: () => {
+                            setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
+                              x: 0, y: 0
+                            });
+                            correctCanvasMove();
+                          }
                         }
                       ],
                       [
+                        {
+                          name: "Export to .zip",
+                          action: exportCurrentCoverToZip
+                        },
                         {
                           name: "Collaborate online",
                           action: () => console.info("Collaborate")
