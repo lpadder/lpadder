@@ -73,6 +73,8 @@ const TicTacToeGame: Component = () => {
   };
 
   const startGame = () => {
+    if (gameStarted()) return;
+
     setGameStart(true);
     drawGameGrid();
   };
@@ -106,6 +108,7 @@ const TicTacToeGame: Component = () => {
     }
 
     fillPressedField(pressedFieldIndex);
+    playerNumber() === 1 ? setPlayerNumber(2) : setPlayerNumber(1);
   };
 
   const drawGameGrid = () => {
