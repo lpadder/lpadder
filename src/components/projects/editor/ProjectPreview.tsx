@@ -5,6 +5,9 @@ import { log } from "@/utils/logger";
 
 import DeviceInPreview from "@/components/projects/editor/DeviceInPreview";
 
+const [isPreviewCanvasFullscreen, setPreviewCanvasFullscreen] = createSignal(false);
+export { setPreviewCanvasFullscreen };
+
 const ProjectPreviewButton: Component<{
   title: string;
   icon: JSX.Element;
@@ -19,56 +22,51 @@ const ProjectPreviewButton: Component<{
   </button>
 );
 
+/** Adds `x` to `left` and `y` to `top`. */
+const updateCanvasPosition = (x?: number, y?: number) => {
+  setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => ({
+    x: prev.x + (x || 0),
+    y: prev.y + (y || 0)
+  }));
+};
+
+let canvas_ref: HTMLDivElement | undefined;
+export const correctCanvasMove = () => {
+  if (!canvas_ref) return;
+
+  // Correcting left/width from the left.
+  const widthOffset = canvas_ref.offsetLeft;
+  if (widthOffset > 0) {
+    setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + widthOffset);
+    updateCanvasPosition(-widthOffset, undefined);
+  }
+
+  // Correcting top/height from the top.
+  const heightOffset = canvas_ref.offsetTop;
+  if (heightOffset > 0) {
+    setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + heightOffset);
+    updateCanvasPosition(undefined, -heightOffset);
+  }
+
+  // Correcting left/width from the right.
+  const widthRightOffset = canvas_ref.offsetWidth + canvas_ref.offsetLeft - window.innerWidth;
+  if (widthRightOffset <= 0) {
+    const missingOffset = -widthRightOffset;
+    setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + missingOffset);
+  }
+
+  // Correcting top/height from the bottom.
+  const heightBottomOffset = canvas_ref.offsetHeight + canvas_ref.offsetTop - window.innerHeight;
+  if (heightBottomOffset <= 0) {
+    const missingOffset = -heightBottomOffset;
+    setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + missingOffset);
+  }
+};
+
 const ProjectPreview: Component = () => {
-  let canvas_ref: HTMLDivElement | undefined;
-
-  /** When this is true, the preview canvas takes all the screen. */
-  const [isPreviewCanvasFullscreen, setPreviewCanvasFullscreen] = createSignal(false);
-
-  /** Adds `x` to `left` and `y` to `top`. */
-  const updateCanvasPosition = (x?: number, y?: number) => {
-    setCurrentProjectStore("metadata", "defaultCanvasViewPosition", (prev) => ({
-      x: prev.x + (x || 0),
-      y: prev.y + (y || 0)
-    }));
-  };
-
-  /** Correct the position of the canvas after a move. */
-  const canvasCorrectMove = () => {
-    if (!canvas_ref) return;
-
-    // Correcting left/width from the left.
-    const widthOffset = canvas_ref.offsetLeft;
-    if (widthOffset > 0) {
-      setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + widthOffset);
-      updateCanvasPosition(-widthOffset, undefined);
-    }
-
-    // Correcting top/height from the top.
-    const heightOffset = canvas_ref.offsetTop;
-    if (heightOffset > 0) {
-      setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + heightOffset);
-      updateCanvasPosition(undefined, -heightOffset);
-    }
-
-    // Correcting left/width from the right.
-    const widthRightOffset = canvas_ref.offsetWidth + canvas_ref.offsetLeft - window.innerWidth;
-    if (widthRightOffset <= 0) {
-      const missingOffset = -widthRightOffset;
-      setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + missingOffset);
-    }
-
-    // Correcting top/height from the bottom.
-    const heightBottomOffset = canvas_ref.offsetHeight + canvas_ref.offsetTop - window.innerHeight;
-    if (heightBottomOffset <= 0) {
-      const missingOffset = -heightBottomOffset;
-      setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + missingOffset);
-    }
-  };
-
   const canvasMouseMove = (evt: MouseEvent) => {
     updateCanvasPosition(evt.movementX, evt.movementY);
-    canvasCorrectMove();
+    correctCanvasMove();
   };
 
   const canvasMouseDown = (evt: MouseEvent) => {
@@ -100,7 +98,7 @@ const ProjectPreview: Component = () => {
     const movementY = currentScreenY - previousTouchY;
 
     updateCanvasPosition(movementX, movementY);
-    canvasCorrectMove();
+    correctCanvasMove();
 
     // Updating the touch old position values.
     previousTouchX = currentScreenX, previousTouchY = currentScreenY;
@@ -140,7 +138,7 @@ const ProjectPreview: Component = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
     });
-    canvasCorrectMove();
+    correctCanvasMove();
   };
 
   onMount(() => {
@@ -228,7 +226,6 @@ const ProjectPreview: Component = () => {
               setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
                 x: 0, y: 0
               });
-              canvasCorrectMove();
             }}
             icon={<IconMdiUndoVariant />}
           />
@@ -236,7 +233,6 @@ const ProjectPreview: Component = () => {
             title="Fullscreen"
             action={() => {
               setPreviewCanvasFullscreen(prev => !prev);
-              canvasCorrectMove();
             }}
             icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
           />
