@@ -42,7 +42,7 @@ const TicTacToeGame: Component = () => {
     clearPad(note);
   };
 
-  const lightUpPad = (note: number, color: [number, number, number]) => {
+  const lightUpPad = (note: number, color: number[]) => {
     if (!device_ref) return;
     const device = linkedDevice();
 
@@ -50,7 +50,7 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex(note, color);
+      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex([{ note, color: color }]);
       device.output.sendSysex([], sysex);
     }
 
@@ -65,7 +65,7 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex(note, [0, 0, 0]);
+      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex([{ note, color: [0, 0, 0] }]);
       device.output.sendSysex([], sysex);
     }
 
@@ -120,14 +120,7 @@ const TicTacToeGame: Component = () => {
     const device = linkedDevice();
     if (device) {
       gridNotes.forEach(note => {
-        // First, set grid on actual launchpad
-        const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex(note, [255, 255, 255]);
-        device.output.sendSysex([], sysex);
-        // Then, set the grid on the virtual launchpad
-        if (!device_ref) return;
-        const device_element = device_ref.querySelector(`[data-note="${note}"]`) as HTMLDivElement;
-        if (!device_element) return;
-        device_element.style.backgroundColor = "rgb(255, 255, 255)";
+        lightUpPad(note, [255, 255, 255]);
       });
     }
   };
