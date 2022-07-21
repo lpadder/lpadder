@@ -8,7 +8,6 @@ import { webMidiDevices } from "@/stores/webmidi";
 
 const TicTacToeGame: Component = () => {
   const devices = webMidiDevices();
-  console.log(devices); // TODO: remove
   const device = devices[1];
 
   let device_ref: HTMLDivElement | undefined;
@@ -25,6 +24,9 @@ const TicTacToeGame: Component = () => {
     [77, 78, 87, 88]
   ];
 
+  const [gameStarted, setGameStart] = createSignal(false);
+  const [playerNumber, setPlayerNumber] = createSignal(1);
+
   const linkedDevice = () => webMidiDevices().find(
     current_device => current_device.raw_name === device.raw_name
   );
@@ -32,7 +34,15 @@ const TicTacToeGame: Component = () => {
   const deviceType = () => linkedDevice()?.type || device.type || "launchpad_pro_mk2_cfy";
 
   const onPadDown = (note: number) => {
-    console.log("pog");
+    if (gameStarted()) gameLoop(note);
+  };
+
+  const onPadUp = (note: number) => {
+    if (gameStarted()) return;
+    clearPad(note);
+  };
+
+  const lightUpPad = (note: number, color: [number, number, number]) => {
     if (!device_ref) return;
     const device = linkedDevice();
 
@@ -40,17 +50,14 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex(note, [255, 255, 255]);
+      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex(note, color);
       device.output.sendSysex([], sysex);
     }
 
-    device_element.style.backgroundColor = "rgb(255, 255, 255)";
-
-    const noteT: number = returnPressedField(note);
-    console.log(noteT.toString() + " poggies");
+    device_element.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
   };
 
-  const onPadUp = (note: number) => {
+  const clearPad = (note: number) => {
     if (!device_ref) return;
     const device = linkedDevice();
 
@@ -66,7 +73,39 @@ const TicTacToeGame: Component = () => {
   };
 
   const startGame = () => {
+    setGameStart(true);
     drawGameGrid();
+  };
+
+  const resetGame = () => {
+    setGameStart(false);
+    for (let index = 0; index < 98; index++) {
+      clearPad(index);
+    }
+    setPlayerNumber(1);
+  };
+
+  const gameLoop = (note: number) => {
+    const pressedFieldIndex = returnPressedField(note);
+
+    if (!device_ref) return;
+    const device_element = device_ref.querySelector(`[data-note="${note}"]`) as HTMLDivElement;
+    if (!device_element) return;
+
+    if (device_element.style.backgroundColor === "rgb(0, 42, 255)" || device_element.style.backgroundColor === "rgb(255, 0, 0)") {
+      console.log("Cannot place field here, it is already occupied.");
+
+      // Set color of pad once again, only on Launchpad to prevent weird behavior
+      const rgbString = device_element.style.backgroundColor.replace(/[^\d,]/g, "").split(",");
+      const rgb = rgbString.map(str => {
+        return Number(str);
+      });
+      fillPressedField(pressedFieldIndex, [rgb[0], rgb[1], rgb[2]]);
+
+      return;
+    }
+
+    fillPressedField(pressedFieldIndex);
   };
 
   const drawGameGrid = () => {
@@ -104,6 +143,17 @@ const TicTacToeGame: Component = () => {
     return fieldIndex;
   };
 
+  const fillPressedField = (fieldIndex: number, color?: [number, number, number]) => {
+    if (fieldIndex === -1) return;
+
+    let fillColor: [number, number, number] = playerNumber() === 1 ? [0, 42, 255] : [255, 0, 0];
+    if (color) fillColor = color;
+
+    validFields[fieldIndex].forEach((field: number) => {
+      lightUpPad(field, (fillColor || color));
+    });
+  };
+
   return (
     <>
       <Title>lpadder - tic tac toe game</Title>
@@ -125,12 +175,17 @@ const TicTacToeGame: Component = () => {
                 onPadDown={onPadDown}
               />
             </div>
-            <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>Start Game</button>
+            <div class="flex flex-col items-center w-full">
+              <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>Start Game</button>
+              <button class="hover:text-blue-500" onClick={resetGame}>Reset Game</button>
+            </div>
           </div>
           <div id="info-frame">
             <h2 class="text-2xl font-bold">Game status & settings</h2>
-            <p>Status: playing</p>
-            <p>It is Player 1's turn!</p>
+            <p>Status: {gameStarted() ? "Playing" : "Game stopped"}</p>
+            <Show when={gameStarted()}>
+              <p class="mt-8 font-bold tracking-wide text-xl">It is Player {playerNumber}'s turn! (color: {playerNumber() === 1 ? "blue" : "red"})</p>
+            </Show>
           </div>
         </div>
       </div>
