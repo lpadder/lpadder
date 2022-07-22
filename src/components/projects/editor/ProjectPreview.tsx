@@ -219,21 +219,20 @@ const ProjectPreview: Component = () => {
           />
         </div>
 
-        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} right-4 bottom-4 flex gap-2 md:flex-col`}>
+        <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} right-4 bottom-4 hidden sm:(flex flex-col) gap-2`}>
           <ProjectPreviewButton
             title="Reset View"
             action={() => {
               setCurrentProjectStore("metadata", "defaultCanvasViewPosition", {
                 x: 0, y: 0
               });
+              correctCanvasMove();
             }}
             icon={<IconMdiUndoVariant />}
           />
           <ProjectPreviewButton
             title="Fullscreen"
-            action={() => {
-              setPreviewCanvasFullscreen(prev => !prev);
-            }}
+            action={() => setPreviewCanvasFullscreen(prev => !prev)}
             icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
           />
         </div>
