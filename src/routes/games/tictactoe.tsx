@@ -231,8 +231,10 @@ const TicTacToeGame: Component = () => {
               />
             </div>
             <div class="flex flex-col items-center w-full">
-              <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>{gameWon() ? "Play Again" : "Start Game"}</button>
-              <button class="hover:text-blue-500" onClick={clearAllButtons}>Clear Launchpad Output</button>
+              <Show when={!gameStarted()}>
+                <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 mt-4 rounded-md" onClick={startGame}>{gameWon() ? "Play Again" : "Start Game"}</button>
+              </Show>
+              <button class="mt-2 hover:text-blue-500" onClick={clearAllButtons}>Clear Launchpad Output</button>
             </div>
           </div>
           <div id="info-frame">
