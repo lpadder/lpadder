@@ -1,4 +1,4 @@
-/* @refresh reload */
+// @refresh reload
 import "@fontsource/poppins/latin-300.css";
 import "@fontsource/poppins/latin-400.css";
 import "@fontsource/poppins/latin-500.css";
@@ -32,7 +32,6 @@ export default function RootRender () {
 
         <Show when={!import.meta.env.DEV}>
           <link rel="manifest" href="/manifest.webmanifest" />
-          <script src="registerSW.js" />
         </Show>
 
         <Title>lpadder.</Title>
