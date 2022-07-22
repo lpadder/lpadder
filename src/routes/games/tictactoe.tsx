@@ -40,14 +40,17 @@ const TicTacToeGame: Component = () => {
     [77, 78, 87, 88]
   ];
 
+  /** Handler for pad press */
   const onPadDown = (note: number) => {
     if (gameStarted()) gameLoop(note);
   };
 
+  /** Handler for pad lift (when press is over) */
   const onPadUp = () => {
     if (gameStarted()) return;
   };
 
+  /** Lights up a pad of a specified note number in a specified color */
   const lightUpPad = (note: number, color: number[]) => {
     if (!device_ref) return;
     const device = linkedDevice();
@@ -63,6 +66,7 @@ const TicTacToeGame: Component = () => {
     device_element.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
   };
 
+  /** Clears the pad of the specified note param */
   const clearPad = (note: number) => {
     if (!device_ref) return;
     const device = linkedDevice();
@@ -78,16 +82,16 @@ const TicTacToeGame: Component = () => {
     device_element.style.backgroundColor = "rgb(148, 163, 184)";
   };
 
+  /** Clears all the pads */
   const clearAllButtons = () => {
     for (let index = 0; index < 98; index++) {
       clearPad(index);
     }
   };
 
+  /** Init logic for starting the game */
   const startGame = () => {
     if (gameStarted()) return;
-
-    console.log("poggies");
 
     setGameStart(true);
     setGameWon(false);
@@ -95,6 +99,7 @@ const TicTacToeGame: Component = () => {
     setPlayerNumber(1);
   };
 
+  /** Draws the game grid */
   const drawGameGrid = () => {
     const gridNotes = [13, 23, 33, 43, 53, 63, 73, 83, // First vertical row (left)
       16, 26, 36, 46, 56, 66, 76, 86, // Second vertical row (right)
@@ -108,11 +113,13 @@ const TicTacToeGame: Component = () => {
 
   };
 
+  /** Clears all pads and draws a new grid */
   const clearGameGrid = () => {
     clearAllButtons();
     drawGameGrid();
   };
 
+  /** Logic which is called on every move (button press) */
   const gameLoop = (note: number) => {
     const pressedFieldIndex = returnPressedField(note);
 
@@ -121,7 +128,7 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device_element.style.backgroundColor === "rgb(0, 42, 255)" || device_element.style.backgroundColor === "rgb(255, 0, 0)") {
-      console.log("Cannot place field here, it is already occupied.");
+      console.log("Cannot place field here, it is already occupied."); // TODO: Add a sound or visible error
 
       // Set color of pad once again, only on Launchpad to prevent weird behavior
       const rgbString = device_element.style.backgroundColor.replace(/[^\d,]/g, "").split(",");
@@ -143,6 +150,7 @@ const TicTacToeGame: Component = () => {
     playerNumber() === 1 ? setPlayerNumber(2) : setPlayerNumber(1);
   };
 
+  /** Check filled fields of current player to check if there is a winning combination after they placed a field */
   const checkForWinner = () => {
     const winningCombinations = [
       [0, 1, 2],
@@ -179,6 +187,7 @@ const TicTacToeGame: Component = () => {
     return fieldIndex;
   };
 
+  /** Return array of indices of filled fields (from 0-8) */
   const getFilledFieldsOfCurrentPlayer = () => {
     const filledFields: number[] = [];
     const currentPlayerColor = playerNumber() === 1 ? [0, 42, 255] : [255, 0, 0];
@@ -198,6 +207,7 @@ const TicTacToeGame: Component = () => {
     return filledFields;
   };
 
+  /** Fill field of the specified index with the specified color */
   const fillPressedField = (fieldIndex: number, color?: [number, number, number]) => {
     if (fieldIndex === -1) return;
 
