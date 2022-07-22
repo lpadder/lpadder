@@ -5,6 +5,7 @@ import aspectRatioPlugin from "windicss/plugin/aspect-ratio";
 
 export default defineConfig({
   darkMode: "class",
+  attributify: false,
 
   theme: {
     extend: {
