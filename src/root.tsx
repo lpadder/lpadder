@@ -10,10 +10,10 @@ import { Links, Meta, Routes, Scripts } from "solid-start/root";
 import { ErrorBoundary } from "solid-start/error-boundary";
 
 import FullLoader from "@/components/FullLoader";
-import WebMidiErrorModal from "@/components/WebMidiErrorModal";
-import CreateProjectModal from "@/components/CreateProjectModal";
-import ImportProjectModal from "@/components/ImportProjectModal";
-import LpadderUpdaterModal from "@/components/LpadderUpdaterModal";
+import WebMidiErrorModal from "@/components/modals/WebMidiErrorModal";
+import CreateProjectModal from "@/components/modals/CreateProjectModal";
+import ImportProjectModal from "@/components/modals/ImportProjectModal";
+import LpadderUpdaterModal from "@/components/modals/LpadderUpdaterModal";
 
 import { enableAndSetup } from "@/utils/webmidi";
 import { webMidiInformations } from "@/stores/webmidi";

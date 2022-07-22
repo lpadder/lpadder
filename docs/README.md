@@ -25,3 +25,4 @@ pnpm install
 
 - `pnpm start`: Starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 - `pnpm build`: Generates static content into the `build` directory and can be served using any static contents hosting service.
+- `pnpm lint`: Lints the code and check for code-style errors.
