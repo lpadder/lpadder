@@ -14,13 +14,13 @@ import { syncProjectDataGlobally } from "@/utils/projects";
 import { log, error, logStart, logEnd } from "@/utils/logger";
 
 import ProjectPreview from "@/components/projects/editor/ProjectPreview";
-import ProjectRootUI from "@/components/projects/editor/ProjectRootUI";
+import ProjectEditorOverlay from "@/components/projects/editor/ProjectEditorOverlay";
 
 const ProjectsEditor: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  /** Short-hand */
+  /** Shorthand */
   const slug = () => params.slug;
 
   const platform = navigator.userAgentData?.platform || navigator.platform;
@@ -126,7 +126,7 @@ const ProjectsEditor: Component = () => {
             </div> */}
 
         {/* <Playback /> */}
-        <ProjectRootUI />
+        <ProjectEditorOverlay />
       </Show>
     </>
   );
