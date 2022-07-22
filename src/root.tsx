@@ -1,4 +1,3 @@
-/* eslint-disable solid/prefer-show */
 /* @refresh reload */
 import "@fontsource/poppins/latin-300.css";
 import "@fontsource/poppins/latin-400.css";
@@ -31,12 +30,10 @@ export default function RootRender () {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#0F172A" />
 
-        {!import.meta.env.DEV && (
-          <>
-            <link rel="manifest" href="/manifest.webmanifest" />
-            <script src="registerSW.js"></script>
-          </>
-        )}
+        <Show when={!import.meta.env.DEV}>
+          <link rel="manifest" href="/manifest.webmanifest" />
+          <script src="registerSW.js" />
+        </Show>
 
         <Title>lpadder.</Title>
         <meta name="title" content="lpadder." />

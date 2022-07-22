@@ -12,8 +12,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:solid/typescript",
-    "plugin:@typescript-eslint/recommended",
-    "./.eslintrc-auto-import.json"
+    "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "brace-style": [

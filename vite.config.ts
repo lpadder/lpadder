@@ -84,7 +84,6 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
     solid({ adapter: vercel() }),
     AutoImport({
       dts: "./src/auto-imports.d.ts",
-      eslintrc: { enabled: true },
 
       resolvers: [
         IconsResolver({
