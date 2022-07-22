@@ -1,6 +1,7 @@
 import type { Component } from "solid-js";
 
 import Device from "@/components/Device";
+import Select from "@/components/Select";
 
 import { devicesConfiguration } from "@/utils/devices";
 
@@ -256,7 +257,23 @@ const TicTacToeGame: Component = () => {
             <Show when={gameWon()}>
               <p class="mt-8 font-bold tracking-wide text-4xl text-pink-600">Player {playerNumber} won!</p>
             </Show>
-            <h2 class="text-2xl font-bold mt-8">Settings</h2>
+            <h2 class="text-2xl font-bold mt-8 mb-4">Settings</h2>
+            <label for="dropdown">Output device:</label>
+            <Select
+              id="dropdown"
+              title="Select an output..."
+              onChange={e => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
+            >
+              <option value="none">
+                None
+              </option>
+
+              <For each={webMidiDevices()}>{(device, deviceIndex) => (
+                <option value={deviceIndex()}>
+                  {device.name}
+                </option>
+              )}</For>
+            </Select>
           </div>
         </div>
       </div>
