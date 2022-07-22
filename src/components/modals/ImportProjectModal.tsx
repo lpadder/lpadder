@@ -18,7 +18,7 @@ const ImportProjectModal: Component = () => {
     if (!slug() || !modalsStore.importProjectModalData) return;
     const project_data = unwrap(modalsStore.importProjectModalData);
 
-    const response = await createNewProject(slug(), project_data);
+    const response = await createNewProject(slug(), { importing: true, project: project_data });
     if (!response.success) {
       alert(response.message);
       return;
