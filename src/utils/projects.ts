@@ -13,7 +13,7 @@ import {
 import { produce, unwrap } from "solid-js/store";
 
 import { log, error, logStart, logEnd } from "@/utils/logger";
-import JSZip from "jszip";
+// Import JSZip from "jszip";
 
 /** Saves the current project to localForage. */
 export const syncProjectDataGlobally = async () => {
@@ -259,15 +259,16 @@ export const createImportProject = () => {
     const reader = new FileReader();
     reader.onload = async () => {
       const arrayBuffer = reader.result as ArrayBuffer;
-      const zip_content = await JSZip.loadAsync(arrayBuffer);
+      /*
+      Const zip_content = await JSZip.loadAsync(arrayBuffer);
 
       const coverDataFile = zip_content.file("cover.json");
       if (!coverDataFile) return console.error(
         "This zip file doesn't contain a `cover.json` file in root directory."
       );
 
-      const coverData = await coverDataFile.async("string");
-      const parsedCoverData: ProjectStructure = JSON.parse(coverData);
+      const coverData = await coverDataFile.async("string"); */
+      const parsedCoverData: ProjectStructure = {} as ProjectStructure; // JSON.parse(coverData);
 
       /**
        * Check if the project's version matches

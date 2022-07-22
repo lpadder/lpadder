@@ -1,8 +1,8 @@
 import type { ProjectStructure } from "@/types/Project";
-import JSZip from "jszip";
+// Import JSZip from "jszip";
 
 import { currentProjectStore } from "@/stores/current_project";
-import downloadBlob from "@/utils/downloadBlob";
+// Import downloadBlob from "@/utils/downloadBlob";
 
 export default async function exportCurrentCoverToZip ( ) {
   const current_project = currentProjectStore;
@@ -21,10 +21,12 @@ export default async function exportCurrentCoverToZip ( ) {
     data: project_data,
     metadata: project_metadata
   };
-
-  const zip = new JSZip();
+  console.log(project);
+  /*
+  Const zip = new JSZip();
   zip.file("cover.json", JSON.stringify(project, null, 2));
 
   const blob = await zip.generateAsync({ type: "uint8array" });
   downloadBlob(blob, `${current_project.slug}.zip`, "application/zip");
+  */
 }
