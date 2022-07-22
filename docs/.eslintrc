@@ -1,8 +1,52 @@
 {
-  "plugins": ["@docusaurus"],
-  "extends": ["plugin:@docusaurus/recommended"],
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@docusaurus",
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@docusaurus/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "rules": {
-    "solid/no-react-specific-props": "off",
-    "solid/prefer-for": "off"
+    "brace-style": [
+      "error", "stroustrup"
+    ],
+    "quotes": [
+      "error", "double"
+    ],
+    "indent": [
+      "error", 2
+    ],
+    "semi": [
+      "error", "always"
+    ],
+    "capitalized-comments": [
+      "error", "always"
+    ],
+    "eol-last": [
+      "error", "always"
+    ],
+    "eqeqeq": [
+      "error", "always"
+    ],
+    "comma-dangle": [
+      "error", "never"
+    ],
+    
+    "no-return-await": "error",
+    "no-trailing-spaces": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
