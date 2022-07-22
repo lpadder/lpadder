@@ -7,10 +7,26 @@ import { devicesConfiguration } from "@/utils/devices";
 import { webMidiDevices } from "@/stores/webmidi";
 
 const TicTacToeGame: Component = () => {
-  const devices = webMidiDevices();
-  const device = devices[1];
+  /**
+   * Device init logic
+   */
+  const [state, setState] = createStore<{
+    selectedDeviceIndex: number
+  }>({
+    selectedDeviceIndex: 0
+  });
+
+  const linkedDevice = () => webMidiDevices()[state.selectedDeviceIndex];
+  const deviceConfiguration = () => devicesConfiguration[linkedDevice().type || "launchpad_pro_mk2_cfy"];
 
   let device_ref: HTMLDivElement | undefined;
+
+  /**
+   * Game logic
+  */
+  const [gameStarted, setGameStart] = createSignal(false);
+  const [playerNumber, setPlayerNumber] = createSignal(1);
+  const [gameWon, setGameWon] = createSignal(false);
 
   const validFields = [
     [11, 12, 21, 22],
@@ -24,22 +40,12 @@ const TicTacToeGame: Component = () => {
     [77, 78, 87, 88]
   ];
 
-  const [gameStarted, setGameStart] = createSignal(false);
-  const [playerNumber, setPlayerNumber] = createSignal(1);
-
-  const linkedDevice = () => webMidiDevices().find(
-    current_device => current_device.raw_name === device.raw_name
-  );
-
-  const deviceType = () => linkedDevice()?.type || device.type || "launchpad_pro_mk2_cfy";
-
   const onPadDown = (note: number) => {
     if (gameStarted()) gameLoop(note);
   };
 
-  const onPadUp = (note: number) => {
+  const onPadUp = () => {
     if (gameStarted()) return;
-    clearPad(note);
   };
 
   const lightUpPad = (note: number, color: number[]) => {
@@ -50,7 +56,7 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex([{ note, color: color }]);
+      const sysex = deviceConfiguration().rgb_sysex([{ note, color: color }]);
       device.output.sendSysex([], sysex);
     }
 
@@ -65,26 +71,46 @@ const TicTacToeGame: Component = () => {
     if (!device_element) return;
 
     if (device) {
-      const sysex = devicesConfiguration[device.type || "launchpad_pro_mk2_cfy"].rgb_sysex([{ note, color: [0, 0, 0] }]);
+      const sysex = deviceConfiguration().rgb_sysex([{ note, color: [0, 0, 0] }]);
       device.output.sendSysex([], sysex);
     }
 
     device_element.style.backgroundColor = "rgb(148, 163, 184)";
   };
 
-  const startGame = () => {
-    if (gameStarted()) return;
-
-    setGameStart(true);
-    drawGameGrid();
-  };
-
-  const resetGame = () => {
-    setGameStart(false);
+  const clearAllButtons = () => {
     for (let index = 0; index < 98; index++) {
       clearPad(index);
     }
+  };
+
+  const startGame = () => {
+    if (gameStarted()) return;
+
+    console.log("poggies");
+
+    setGameStart(true);
+    setGameWon(false);
+    clearGameGrid();
     setPlayerNumber(1);
+  };
+
+  const drawGameGrid = () => {
+    const gridNotes = [13, 23, 33, 43, 53, 63, 73, 83, // First vertical row (left)
+      16, 26, 36, 46, 56, 66, 76, 86, // Second vertical row (right)
+      31, 32, 34, 35, 37, 38, // First horizontal row (bottom)
+      61, 62, 64, 65, 67, 68]; // Second horizontal row (top)
+
+
+    gridNotes.forEach(note => {
+      lightUpPad(note, [255, 255, 255]);
+    });
+
+  };
+
+  const clearGameGrid = () => {
+    clearAllButtons();
+    drawGameGrid();
   };
 
   const gameLoop = (note: number) => {
@@ -107,22 +133,36 @@ const TicTacToeGame: Component = () => {
       return;
     }
 
+    // If note is not in valid fields, return
+    if (!validFields.find(field => field.includes(note))) return;
+
     fillPressedField(pressedFieldIndex);
+    checkForWinner();
+    if (gameWon()) return;
+
     playerNumber() === 1 ? setPlayerNumber(2) : setPlayerNumber(1);
   };
 
-  const drawGameGrid = () => {
-    const gridNotes = [13, 23, 33, 43, 53, 63, 73, 83, // First vertical row (left)
-      16, 26, 36, 46, 56, 66, 76, 86, // Second vertical row (right)
-      31, 32, 34, 35, 37, 38, // First horizontal row (bottom)
-      61, 62, 64, 65, 67, 68]; // Second horizontal row (top)
+  const checkForWinner = () => {
+    const winningCombinations = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
 
-    const device = linkedDevice();
-    if (device) {
-      gridNotes.forEach(note => {
-        lightUpPad(note, [255, 255, 255]);
-      });
-    }
+    const currentFilledFields = getFilledFieldsOfCurrentPlayer();
+    winningCombinations.forEach(element => {
+      if (currentFilledFields.includes(element[0]) && currentFilledFields.includes(element[1]) && currentFilledFields.includes(element[2])) {
+        console.log("Player " + playerNumber() + " won!");
+        setGameWon(true);
+        setGameStart(false);
+      }
+    });
   };
 
   // Returns index of pressed field, or -1 if an invalid field is pressed
@@ -137,6 +177,25 @@ const TicTacToeGame: Component = () => {
     });
 
     return fieldIndex;
+  };
+
+  const getFilledFieldsOfCurrentPlayer = () => {
+    const filledFields: number[] = [];
+    const currentPlayerColor = playerNumber() === 1 ? [0, 42, 255] : [255, 0, 0];
+
+    validFields.forEach((field: number[], index: number) => {
+      field.forEach((note: number) => {
+        if (!device_ref) return;
+        const device_element = device_ref.querySelector(`[data-note="${note}"]`) as HTMLDivElement;
+        if (device_element.style.backgroundColor === `rgb(${currentPlayerColor[0]}, ${currentPlayerColor[1]}, ${currentPlayerColor[2]})`) {
+          if (filledFields.includes(index)) return;
+
+          filledFields.push(index);
+        }
+      });
+    });
+
+    return filledFields;
   };
 
   const fillPressedField = (fieldIndex: number, color?: [number, number, number]) => {
@@ -162,26 +221,30 @@ const TicTacToeGame: Component = () => {
         <span class="mb-8">Play a game of TicTacToe against a friend, right on your Launchpad!</span>
         <div id="main-frame" class="flex flex-row gap-12">
           <div id="launchpad-frame">
-            <div class="bg-gray-900 p-2 h-[32rem] w-[32rem] rounded-md">
+            <div class="relative bg-gray-900 p-2 h-[32rem] w-[32rem] rounded-md">
               <Device
                 ref={device_ref}
                 linkedDevice={linkedDevice()}
-                defaultDeviceType={deviceType()}
+                defaultDeviceType={"launchpad_pro_mk2_cfy"}
                 onPadUp={onPadUp}
                 onPadDown={onPadDown}
               />
             </div>
             <div class="flex flex-col items-center w-full">
-              <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>Start Game</button>
-              <button class="hover:text-blue-500" onClick={resetGame}>Reset Game</button>
+              <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 my-4 rounded-md" onClick={startGame}>{gameWon() ? "Play Again" : "Start Game"}</button>
+              <button class="hover:text-blue-500" onClick={clearAllButtons}>Clear Launchpad Output</button>
             </div>
           </div>
           <div id="info-frame">
-            <h2 class="text-2xl font-bold">Game status & settings</h2>
+            <h2 class="text-2xl font-bold">Game status</h2>
             <p>Status: {gameStarted() ? "Playing" : "Game stopped"}</p>
-            <Show when={gameStarted()}>
-              <p class="mt-8 font-bold tracking-wide text-xl">It is Player {playerNumber}'s turn! (color: {playerNumber() === 1 ? "blue" : "red"})</p>
+            <Show when={gameStarted() && !gameWon()}>
+              <p class="mt-8 italic tracking-wide text-xl text-blue-300">It is Player {playerNumber}'s turn! (color: {playerNumber() === 1 ? "blue" : "red"})</p>
             </Show>
+            <Show when={gameWon()}>
+              <p class="mt-8 font-bold tracking-wide text-4xl text-pink-600">Player {playerNumber} won!</p>
+            </Show>
+            <h2 class="text-2xl font-bold mt-8">Settings</h2>
           </div>
         </div>
       </div>
