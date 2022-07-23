@@ -5,7 +5,8 @@ import "@fontsource/poppins/latin-500.css";
 import "@/styles/globals.css";
 import "virtual:windi.css";
 
-import { Links, Meta, Routes, Scripts } from "solid-start/root";
+import { Links, Meta, FileRoutes, Scripts } from "solid-start/root";
+import { Routes } from "solid-app-router";
 import { ErrorBoundary } from "solid-start/error-boundary";
 
 import FullLoader from "@/components/FullLoader";
@@ -55,10 +56,12 @@ export default function RootRender () {
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-        <Show when={webMidiInformations.wasRequested} fallback={
-          <FullLoader message="Requesting WebMIDI..." />
-        }>
-          {/** Internal related modals. */}
+        {/* <Show
+          when={webMidiInformations.wasRequested || isServer}
+          fallback={<FullLoader message="Requesting WebMIDI..." />}
+        > */}
+        {/** Internal related modals. */}
+        <Show when={!isServer}>
           <LpadderUpdaterModal />
 
           {/** Error modals. */}
@@ -67,13 +70,15 @@ export default function RootRender () {
           {/** Application modals. */}
           <ImportProjectModal />
           <CreateProjectModal />
-
-          <ErrorBoundary>
-            <Suspense fallback={<FullLoader message="Loading route..." />}>
-              <Routes />
-            </Suspense>
-          </ErrorBoundary>
         </Show>
+        <ErrorBoundary>
+          <Suspense fallback={<FullLoader message="Loading route..." />}>
+            <Routes>
+              <FileRoutes />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
+        {/* </Show> */}
 
         <Scripts />
       </body>
