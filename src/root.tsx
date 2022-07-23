@@ -6,8 +6,8 @@ import "@/styles/globals.css";
 import "virtual:windi.css";
 
 import { Links, Meta, FileRoutes, Scripts } from "solid-start/root";
-import { Routes } from "solid-app-router";
 import { ErrorBoundary } from "solid-start/error-boundary";
+import { Routes } from "solid-app-router";
 
 import FullLoader from "@/components/FullLoader";
 import WebMidiErrorModal from "@/components/modals/WebMidiErrorModal";
@@ -56,29 +56,27 @@ export default function RootRender () {
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-        {/* <Show
+        <Show
           when={webMidiInformations.wasRequested || isServer}
           fallback={<FullLoader message="Requesting WebMIDI..." />}
-        > */}
-        {/** Internal related modals. */}
-        <Show when={!isServer}>
-          <LpadderUpdaterModal />
+        >
+          {/** We don't render the modals server-side. */}
+          <Show when={!isServer}>
+            <LpadderUpdaterModal />
+            <WebMidiErrorModal />
 
-          {/** Error modals. */}
-          <WebMidiErrorModal />
+            <ImportProjectModal />
+            <CreateProjectModal />
+          </Show>
 
-          {/** Application modals. */}
-          <ImportProjectModal />
-          <CreateProjectModal />
+          <ErrorBoundary>
+            <Suspense fallback={<FullLoader message="Loading route..." />}>
+              <Routes>
+                <FileRoutes />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </Show>
-        <ErrorBoundary>
-          <Suspense fallback={<FullLoader message="Loading route..." />}>
-            <Routes>
-              <FileRoutes />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-        {/* </Show> */}
 
         <Scripts />
       </body>
