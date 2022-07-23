@@ -1,4 +1,4 @@
-// @refresh reload
+/* @refresh reload */
 import "@fontsource/poppins/latin-300.css";
 import "@fontsource/poppins/latin-400.css";
 import "@fontsource/poppins/latin-500.css";
@@ -56,10 +56,11 @@ export default function RootRender () {
         <Links />
       </head>
       <body class="overscroll-contain text-gray-300 bg-gray-800 select-none">
-        <Show
-          when={webMidiInformations.wasRequested || isServer}
-          fallback={<FullLoader message="Requesting WebMIDI..." />}
-        >
+        <Show when={!webMidiInformations.wasRequested || isServer}>
+          <FullLoader message="Requesting WebMIDI..." />
+        </Show>
+
+        <Show when={webMidiInformations.wasRequested || isServer}>
           {/** We don't render the modals server-side. */}
           <Show when={!isServer}>
             <LpadderUpdaterModal />
@@ -70,7 +71,9 @@ export default function RootRender () {
           </Show>
 
           <ErrorBoundary>
-            <Suspense fallback={<FullLoader message="Loading route..." />}>
+            <Suspense
+              fallback={<FullLoader message="Loading route..." />}
+            >
               <Routes>
                 <FileRoutes />
               </Routes>

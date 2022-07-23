@@ -6,7 +6,7 @@ const FullLoader: Component<{
 }> = (props) => {
   return (
     <div
-      class="flex fixed top-0 left-0 flex-col gap-6 justify-center items-center w-screen h-screen bg-gray-900 bg-opacity-60"
+      class="z-99 flex fixed top-0 left-0 flex-col gap-6 justify-center items-center w-screen h-screen bg-gray-800"
     >
       <div
         class="flex flex-col gap-4 justify-center items-center"
