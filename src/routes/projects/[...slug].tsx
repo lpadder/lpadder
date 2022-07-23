@@ -12,7 +12,7 @@ import { projectsDataLocal } from "@/stores/projects_data";
 import { useParams, useNavigate } from "solid-app-router";
 import { syncProjectDataGlobally } from "@/utils/projects";
 import { log, error, logStart, logEnd } from "@/utils/logger";
-
+import { isServer } from "solid-js/web";
 import ProjectPreview from "@/components/projects/editor/ProjectPreview";
 import ProjectEditorOverlay from "@/components/projects/editor/ProjectEditorOverlay";
 
@@ -23,7 +23,7 @@ const ProjectsEditor: Component = () => {
   /** Shorthand */
   const slug = () => params.slug;
 
-  const platform = navigator.userAgentData?.platform || navigator.platform;
+  const platform = isServer ? "server" : navigator.userAgentData?.platform || navigator.platform;
   const saveProjectShortcut = (e: KeyboardEvent) => {
     if (e.key === "s" && (platform.match(/mac/i) ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
