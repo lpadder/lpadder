@@ -10,7 +10,7 @@ const DropdownButton: Component<{
   forceOpenToRight?: boolean
 }> = (props) => {
   return (
-    <Popover class="relative z-99">
+    <Popover defaultOpen={false} class="relative z-99">
       {({ isOpen, setState }) => (
         <>
           <PopoverButton class={classNames("flex", props.buttonClassName)}>
