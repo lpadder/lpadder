@@ -1,4 +1,3 @@
-import type { UserConfigExport } from "vite";
 import { defineConfig } from "vite";
 import pkg from "./package.json";
 import dotenv from "dotenv";
@@ -9,7 +8,7 @@ import WindiCSS from "vite-plugin-windicss";
 import type { VitePWAOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
 
-import solid from "solid-start";
+import solid from "solid-start/vite";
 import vercel from "solid-start-vercel";
 
 import Icons from "unplugin-icons/vite";
@@ -76,12 +75,12 @@ const pwaOptions: Partial<VitePWAOptions> = {
 };
 
 // Loaded from ".env.local".
-const CLIENT_PORT = parseInt(process.env.CLIENT_PORT as string) || 3000;
+// Const CLIENT_PORT = parseInt(process.env.CLIENT_PORT as string) || 3000;
 
-const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
+export default defineConfig({
   plugins: [
     WindiCSS(),
-    solid({ adapter: vercel() }),
+    solid({ ssr: false, adapter: vercel() }),
     AutoImport({
       dts: "./src/auto-imports.d.ts",
 
@@ -93,14 +92,38 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
       ],
 
       imports: [
-        "solid-app-router",
         "solid-js",
         {
           // "@solid-primitives/i18n": [
           //   "useI18n",
           //   "createI18nContext"
           // ],
-          "solid-meta": [
+          "@solidjs/router": [
+            "Link",
+            "NavLink",
+            "Navigate",
+            "Outlet",
+            "Route",
+            "Router",
+            "Routes",
+            "_mergeSearchString",
+            "createIntegration",
+            "hashIntegration",
+            "normalizeIntegration",
+            "pathIntegration",
+            "staticIntegration",
+            "useHref",
+            "useIsRouting",
+            "useLocation",
+            "useMatch",
+            "useNavigate",
+            "useParams",
+            "useResolvedPath",
+            "useRouteData",
+            "useRoutes",
+            "useSearchParams"
+          ],
+          "@solidjs/meta": [
             "Title"
           ]
         }
@@ -120,24 +143,20 @@ const viteOptions: UserConfigExport & { ssr: { noExternal: string[] } } = {
     }
   },
 
-  ssr: {
-    noExternal: [
-      "solid-headless"
-    ]
-  },
+  // Ssr: {
+  //   NoExternal: [
+  //     "solid-headless"
+  //   ]
+  // },
 
   build: {
-    target: "esnext",
-    polyfillDynamicImport: false
+    ssr: false
   },
 
   server: {
-    strictPort: true,
-
-    hmr: {
-      clientPort: CLIENT_PORT
-    }
+    port: 3000
+    // Hmr: {
+    //   ClientPort: CLIENT_PORT
+    // }
   }
-};
-
-export default defineConfig(viteOptions);
+});

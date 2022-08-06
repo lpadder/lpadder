@@ -9,7 +9,6 @@ import {
 import { projectsMetadataStore } from "@/stores/projects_metadata";
 import { projectsDataLocal } from "@/stores/projects_data";
 
-import { useParams, useNavigate } from "solid-app-router";
 import { syncProjectDataGlobally } from "@/utils/projects";
 import { log, error, logStart, logEnd } from "@/utils/logger";
 import { isServer } from "solid-js/web";
