@@ -93,36 +93,12 @@ export default defineConfig({
 
       imports: [
         "solid-js",
+        "@solidjs/router",
         {
           // "@solid-primitives/i18n": [
           //   "useI18n",
           //   "createI18nContext"
           // ],
-          "@solidjs/router": [
-            "Link",
-            "NavLink",
-            "Navigate",
-            "Outlet",
-            "Route",
-            "Router",
-            "Routes",
-            "_mergeSearchString",
-            "createIntegration",
-            "hashIntegration",
-            "normalizeIntegration",
-            "pathIntegration",
-            "staticIntegration",
-            "useHref",
-            "useIsRouting",
-            "useLocation",
-            "useMatch",
-            "useNavigate",
-            "useParams",
-            "useResolvedPath",
-            "useRouteData",
-            "useRoutes",
-            "useSearchParams"
-          ],
           "@solidjs/meta": [
             "Title"
           ]
