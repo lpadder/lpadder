@@ -7,20 +7,27 @@
 		}
 	},
 
-	// Set *default* container specific settings.json values on container create.
+  // Default settings.
+  // Basically, what we have in `/.vscode/settings.json`.
 	"settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+
+    // Indentation.
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
     "editor.tabSize": 2
   },
 
-	// Add the IDs of extensions you want installed when the container is created.
+	// Required extensions.
+  // Basically, what we have in `/.vscode/extensions.json`
 	"extensions": [
 		"dbaeumer.vscode-eslint",
 		"voorjaar.windicss-intellisense"
 	],
 
-  // Vite's development server port.
+  // Vite.
 	"forwardPorts": [3000],
 
   // Install dependencies after creating.

@@ -1,10 +1,10 @@
 {
-  // ESLint.
+  // ESLint
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
 
-  // Indentation.
+  // Indentation
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
   "editor.tabSize": 2
