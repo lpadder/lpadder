@@ -19,6 +19,7 @@
       "vite/client",
       "vite-plugin-pwa/client",
       "unplugin-icons/types/solid",
+      "vite-plugin-pages/client-solid",
       "./node_modules/user-agent-data-types"
     ]
   },

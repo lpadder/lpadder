@@ -7,12 +7,10 @@ auto-imports.d.ts
 .eslintrc-auto-import.json
 
 # Production
-.solid
+dist
 
 # Variables
 .env.local
 
 # Vercel
 .vercel
-
-dist
