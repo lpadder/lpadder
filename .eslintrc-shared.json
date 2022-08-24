@@ -12,9 +12,6 @@
     "semi": [
       "error", "always"
     ],
-    "capitalized-comments": [
-      "error", "always"
-    ],
     "eol-last": [
       "error", "always"
     ],
