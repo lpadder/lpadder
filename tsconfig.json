@@ -4,17 +4,19 @@
     "isolatedModules": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "noEmit": true,
-    "baseUrl": "src",
     "resolveJsonModule": true,
+    
+    "baseUrl": "src",
     "paths": {
       "@/*": ["./*"]
     },
+
     "types": [
       "vite/client",
       "vite-plugin-pwa/client",
@@ -23,5 +25,6 @@
       "./node_modules/user-agent-data-types"
     ]
   },
+
   "include": ["src"]
 }

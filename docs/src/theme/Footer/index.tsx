@@ -10,17 +10,14 @@ interface LinkType {
 }
 
 function Footer () {
-  const {footer} = useThemeConfig();
-  if (!footer) {
-    return null;
-  }
+  const { footer } = useThemeConfig();
+  if (!footer) return null;
 
   const links = footer.links as LinkType[];
 
   const githubLink = links.filter(link => {
     return link.label === "github";
   })[0];
-
 
   const discordLink = links.filter(link => {
     return link.label === "discord";

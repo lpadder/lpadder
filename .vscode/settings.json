@@ -4,6 +4,8 @@
     "source.fixAll.eslint": true
   },
 
+  "eslint.validate": [ "javascript", "javascriptreact", "html", "typescriptreact" ],
+
   // Indentation
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,

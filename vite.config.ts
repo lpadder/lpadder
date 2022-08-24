@@ -2,25 +2,34 @@ import { defineConfig } from "vite";
 import pkg from "./package.json";
 import path from "path";
 
-import pages from "vite-plugin-pages";
 import solid from "vite-plugin-solid";
 import windi from "vite-plugin-windicss";
 import { VitePWA as pwa } from "vite-plugin-pwa";
 
-import Icons from "unplugin-icons/vite";
-import IconsResolver from "unplugin-icons/resolver";
-import AutoImport from "unplugin-auto-import/vite";
+import pages from "vite-plugin-pages";
+import imports from "unplugin-auto-import/vite";
+
+import icons from "unplugin-icons/vite";
+import icons_resolver from "unplugin-icons/resolver";
 
 export default defineConfig({
   plugins: [
     solid(),
     windi(),
-    pages({ dirs: "./src/routes" }),
-    AutoImport({
+
+    icons({
+      compiler: "solid"
+    }),
+
+    pages({
+      dirs: "./src/routes"
+    }),
+
+    imports({
       dts: "./src/auto-imports.d.ts",
 
       resolvers: [
-        IconsResolver({
+        icons_resolver({
           prefix: "Icon",
           extension: "jsx"
         })
@@ -40,7 +49,7 @@ export default defineConfig({
         }
       ]
     }),
-    Icons({ compiler: "solid" }),
+
     pwa({
       includeAssets: [
         "robots.txt",
@@ -55,8 +64,8 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "lpadder.",
-        short_name: "lpadder.",
+        name: "lpadder",
+        short_name: "lpadder",
         description: "Web application that lets you play Launchpad covers directly from your browser.",
 
         background_color: "#1E293B", // WindiCSS: slate.800

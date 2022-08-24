@@ -21,7 +21,7 @@ const HomepageHeader = () => {
         </h1>
         <p className="hero__subtitle">
           <Translate id="hero.subtitle">
-            With lpadder you'll be able to create covers more easily.
+            With lpadder you&apos;ll be able to create covers more easily.
           </Translate>
         </p>
         <div className={styles.buttons}>
@@ -42,7 +42,7 @@ const HomepageHeader = () => {
 const Home = () => {
   return (
     <Layout
-      title="lpadder documentation"
+      title="lpadder's documentation"
       description="Welcome to lpadder's documentation !">
       <Head>
         <title>lpadder: build your next cover</title>

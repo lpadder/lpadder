@@ -1,20 +1,4 @@
 {
-  "root": true,
-  "env": {
-    "browser": true,
-    "node": true
-  },
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@docusaurus",
-    "@typescript-eslint"
-  ],
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@docusaurus/recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
   "rules": {
     "brace-style": [
       "error", "stroustrup"
@@ -43,10 +27,5 @@
     
     "no-return-await": "error",
     "no-trailing-spaces": "error"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
   }
 }
