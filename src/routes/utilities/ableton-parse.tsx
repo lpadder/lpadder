@@ -113,7 +113,7 @@ const MidiDeviceSample: Component<{
           style={{
             width: `${duration_percent()}%`,
             left: `${start_time_percent()}%`
-          }}></div>
+          }} />
       </div>
     </div>
   );

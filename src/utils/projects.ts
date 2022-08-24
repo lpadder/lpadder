@@ -258,9 +258,9 @@ export const createImportProject = () => {
   fileInput.addEventListener("change", () => {
     const reader = new FileReader();
     reader.onload = async () => {
-      const arrayBuffer = reader.result as ArrayBuffer;
+      // const arrayBuffer = reader.result as ArrayBuffer;
       /*
-      Const zip_content = await JSZip.loadAsync(arrayBuffer);
+      const zip_content = await JSZip.loadAsync(arrayBuffer);
 
       const coverDataFile = zip_content.file("cover.json");
       if (!coverDataFile) return console.error(
