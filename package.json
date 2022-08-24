@@ -4,35 +4,35 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ignore-pattern '/docs/' --ext .ts,.tsx ",
     "build": "pnpm lint && vite build",
     "release": "pnpm lint && dotenv -e .env.local release-it --"
   },
   "dependencies": {
-    "@fontsource/poppins": "^4.5.0",
+    "@fontsource/poppins": "^4.5.9",
     "@solidjs/meta": "^0.28.0",
     "@solidjs/router": "^0.4.2",
     "@tonejs/midi": "^2.0.28",
     "localforage": "^1.10.0",
     "pako": "^2.0.4",
-    "solid-headless": "^0.12.4",
+    "solid-headless": "^0.12.6",
     "solid-js": "^1.4.8",
     "wavesurfer.js": "^6.2.0",
     "webmidi": "^3.0.21"
   },
   "devDependencies": {
-    "@iconify-json/mdi": "^1.1.21",
+    "@iconify-json/mdi": "^1.1.30",
     "@types/pako": "^2.0.0",
     "@types/wavesurfer.js": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^5.35.0",
     "@typescript-eslint/parser": "^5.35.0",
     "dotenv-cli": "^6.0.0",
-    "eslint": "^8.16.0",
+    "eslint": "^8.22.0",
     "eslint-plugin-solid": "^0.7.1",
-    "release-it": "^15.3.0",
-    "typescript": "^4.7.2",
-    "unplugin-auto-import": "^0.11.1",
-    "unplugin-icons": "^0.14.5",
+    "release-it": "^15.4.0",
+    "typescript": "^4.7.4",
+    "unplugin-auto-import": "^0.11.2",
+    "unplugin-icons": "^0.14.8",
     "user-agent-data-types": "^0.3.0",
     "vite": "3.0.9",
     "vite-plugin-pages": "^0.25.0",
@@ -40,7 +40,7 @@
     "vite-plugin-solid": "^2.3.0",
     "vite-plugin-windicss": "^1.8.7",
     "windicss": "^3.5.6",
-    "workbox-window": "^6.5.3"
+    "workbox-window": "^6.5.4"
   },
   "author": {
     "name": "Mikkel RINGAUD",
