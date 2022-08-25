@@ -1,8 +1,8 @@
-/**
- * Default RGB palette from Novation on Launchpads.
- * Starts from velocity 0 to 127.
- */
-export const novationLaunchpadPalette = [
+/** From WindiCSS: "gray-400" */
+export const DEFAULT_RGB_UI_PAD = [148, 163, 184];
+
+/** Default RGB palette from Novation on Launchpads. */
+export const DEFAULT_NOVATION_PALETTE = [
   [0, 0, 0],
   [28, 28, 28],
   [124, 124, 124],
