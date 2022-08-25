@@ -18,6 +18,7 @@ specifiers:
   release-it: ^15.4.0
   solid-headless: ^0.12.6
   solid-js: ^1.4.8
+  solid-toast: ^0.3.4
   typescript: ^4.7.4
   unplugin-auto-import: ^0.11.2
   unplugin-icons: ^0.14.8
@@ -41,6 +42,7 @@ dependencies:
   pako: 2.0.4
   solid-headless: 0.12.6_solid-js@1.4.8
   solid-js: 1.4.8
+  solid-toast: 0.3.4_solid-js@1.4.8
   wavesurfer.js: 6.2.0
   webmidi: 3.0.21
 
@@ -5198,6 +5200,14 @@ packages:
       '@babel/types': 7.18.13
       solid-js: 1.4.8
     dev: true
+
+  /solid-toast/0.3.4_solid-js@1.4.8:
+    resolution: {integrity: sha512-f4eXJPTlcPPNYW8hgN6NslvA8tqGF07TLX2smX0lDbVbsY7vrbwFIM2rUNbhPpFz5gzVOit0iDfFSYpXUZfJeg==}
+    peerDependencies:
+      solid-js: ^1.4.2
+    dependencies:
+      solid-js: 1.4.8
+    dev: false
 
   /solid-use/0.5.0_solid-js@1.4.8:
     resolution: {integrity: sha512-z1AaS99SL3gNP70K4+XIVKGXDRI56m3Q6Q4X63bfgw0kaN6cwT4SAyFZAmIRjHcvf5rOMRQfNgUV4YVDha+LcQ==}

@@ -17,6 +17,7 @@
     "pako": "^2.0.4",
     "solid-headless": "^0.12.6",
     "solid-js": "^1.4.8",
+    "solid-toast": "^0.3.4",
     "wavesurfer.js": "^6.2.0",
     "webmidi": "^3.0.21"
   },

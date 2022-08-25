@@ -4,6 +4,7 @@ import { WebMidi } from "webmidi";
 
 import { guessDeviceType, devicesConfiguration } from "@/utils/devices";
 import { log, error } from "@/utils/logger";
+import toast from "solid-toast";
 
 import {
   webMidiDevices,
@@ -134,6 +135,8 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
 
       log("webmidi", `adding ${device.name} to the store...`);
       setWebMidiDevices(prev => [...prev, device]);
+
+      toast(`${device.name} connected!`);
     }
   }
 
@@ -167,6 +170,7 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
 export const enableAndSetup = async () => {
   try {
     const midi = await WebMidi.enable({ sysex: true });
+    toast("WebMidi enabled!");
     log("webmidi", "successfully enabled");
 
     // Refresh the devices store with already connected devices.

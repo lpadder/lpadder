@@ -6,23 +6,23 @@ import solid from "vite-plugin-solid";
 import windi from "vite-plugin-windicss";
 import { VitePWA as pwa } from "vite-plugin-pwa";
 
-import pages from "vite-plugin-pages";
-import imports from "unplugin-auto-import/vite";
-
 import icons from "unplugin-icons/vite";
 import icons_resolver from "unplugin-icons/resolver";
+
+import pages from "vite-plugin-pages";
+import imports from "unplugin-auto-import/vite";
 
 export default defineConfig({
   plugins: [
     solid(),
     windi(),
 
-    icons({
-      compiler: "solid"
-    }),
-
     pages({
       dirs: "./src/routes"
+    }),
+
+    icons({
+      compiler: "solid"
     }),
 
     imports({

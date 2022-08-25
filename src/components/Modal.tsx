@@ -1,7 +1,5 @@
 import type { ParentComponent } from "solid-js";
 
-import { Portal } from "solid-js/web";
-
 import {
   Transition,
   TransitionChild,
