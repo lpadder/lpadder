@@ -42,10 +42,10 @@ const buildDrumRackLayout = (): DeviceLayoutGridType => {
   // Build the controls.
   layout = layout.map((row, row_index) => {
     return [
-      // Right column goes from 108 to 115 (top to bottom).
+      // Left column goes from 108 to 115 (top to bottom).
       108 + row_index,
       ...row,
-      // Left column goes from 100 to 107 (top to bottom).
+      // Right column goes from 100 to 107 (top to bottom).
       100 + row_index];
   });
 
@@ -80,10 +80,10 @@ const buildProgrammerLayout = (): DeviceLayoutGridType => {
   // Build the controls.
   layout = layout.map((row, row_index) => {
     return [
-      // Right column goes from 80 to 10 (top to bottom).
+      // Left column goes from 80 to 10 (top to bottom).
       80 - 10 * row_index,
       ...row,
-      // Left column goes from 89 to 19 (top to bottom).
+      // Right column goes from 89 to 19 (top to bottom).
       89 - 10 * row_index];
   });
 
@@ -104,7 +104,7 @@ const buildProgrammerLayout = (): DeviceLayoutGridType => {
  * This layout is only used to parse drum racks in Ableton.
  */
 const buildLiveDrumRackLayout = (): DeviceLayoutGridType => {
-  const layout = [];
+  let layout = [];
 
   for (let columns = 92; columns >= 64; columns -= 4) {
     const column = [];
@@ -125,7 +125,27 @@ const buildLiveDrumRackLayout = (): DeviceLayoutGridType => {
     layout.unshift(column);
   }
 
-  return layout;
+  // Build the controls.
+  layout = layout.map((row, row_index) => {
+    return [
+      // Left column goes from 20 to 13 (top to bottom).
+      20 - row_index,
+      ...row,
+      // Right column goes from 28 to 21 (top to bottom).
+      28 - row_index
+    ];
+  });
+
+  /** The top row goes from 100 to 93. */
+  const top_row = Array.from({ length: 8 }, (_, id) => 100 - id);
+  /** The top row goes from 12 to 5. */
+  const bottom_row = Array.from({ length: 8 }, (_, id) => 12 - id);
+
+  return [
+    [-1, ...top_row, -1],
+    ...layout,
+    [-1, ...bottom_row, -1]
+  ];
 };
 
 export const layouts = {
