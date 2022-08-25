@@ -150,8 +150,11 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
         input => input.id === device.input.id
       );
 
-      if (!isStillConnected)
+      if (!isStillConnected) {
         log("webmidi", `removing ${device.name} from the store...`);
+        toast(`${device.name} disconnected.`);
+      }
+
       return isStillConnected;
     });
 
@@ -170,7 +173,6 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
 export const enableAndSetup = async () => {
   try {
     const midi = await WebMidi.enable({ sysex: true });
-    toast("WebMidi enabled!");
     log("webmidi", "successfully enabled");
 
     // Refresh the devices store with already connected devices.

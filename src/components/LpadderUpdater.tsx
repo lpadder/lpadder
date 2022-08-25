@@ -20,7 +20,7 @@ const LpadderUpdaterModal: Component = () => {
 
   createEffect(() => {
     if (offlineReady()) {
-      toast("lpadder is ready to be used offline !", {});
+      toast("lpadder is ready to be used offline !");
     }
   });
 
