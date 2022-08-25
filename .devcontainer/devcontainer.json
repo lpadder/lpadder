@@ -7,19 +7,6 @@
 		}
 	},
 
-  // Default settings.
-  // Basically, what we have in `/.vscode/settings.json`.
-	"settings": {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
-    },
-
-    // Indentation.
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2
-  },
-
 	// Required extensions.
   // Basically, what we have in `/.vscode/extensions.json`
 	"extensions": [

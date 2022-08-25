@@ -4,7 +4,9 @@
     "source.fixAll.eslint": true
   },
 
-  "eslint.validate": [ "javascript", "javascriptreact", "html", "typescriptreact" ],
+  // WindiCSS
+  "windicss.enableAttrUtilityCompletion": false,
+  "windicss.enableAttrVariantCompletion": false,
 
   // Indentation
   "editor.detectIndentation": false,
