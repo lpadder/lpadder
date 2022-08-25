@@ -18,6 +18,8 @@ import {
   parseAbletonData
 } from "@/utils/parseAbletonData";
 
+import { convertNoteLayout } from "@/utils/devices";
+
 const AbletonParsedResults: Component<{
   abletonData: ParsedAbletonData
 }> = (props) => {
@@ -172,12 +174,14 @@ const MidiDeviceDrumRack: Component<{
       <div class="w-full max-w-60 sm:w-64">
         <Launchpad
           ref={launchpad_ref}
-          layout="drum_rack"
+          defaultDeviceType="launchpad_pro_mk2"
           onPadDown={() => null}
           onPadUp={(note_id) => {
-            const branch = props.drum_rack.branches.findIndex(branch => branch.receivingNote === note_id);
-            if (branch === -1) return;
+            const branch = props.drum_rack.branches.findIndex(
+              branch => branch.receivingNote === note_id
+            );
 
+            if (branch === -1) return;
             setSelectedBranch(branch);
           }}
         />
@@ -222,7 +226,7 @@ const MidiDeviceInstrumentRack: Component<{
         </For>
       </div>
 
-      <For each={props.instrument_rack.branches[selectedBranch()].devices}>
+      <For each={props.instrument_rack.branches[selectedBranch()]?.devices}>
         {device => <MidiDevice device={device}/>}
       </For>
     </div>

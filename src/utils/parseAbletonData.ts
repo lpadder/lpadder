@@ -14,6 +14,7 @@ import type {
 } from "@/types/AbletonData";
 
 import pako from "pako";
+import { convertNoteLayout } from "./devices";
 
 /**
  * Read an Ableton Live Set (.als) and returns its data in XML.
@@ -281,9 +282,17 @@ function parseDrumRack (device: Element): MidiDeviceDrumRackData {
       .getElementsByTagName("ReceivingNote")[0]
       .getAttribute("Value") || "-1");
 
+
+    // We convert the note from Live's drum rack layout to programmer layout.
+    let parsedReceivingNote = receivingNote;
+    const convert = convertNoteLayout(receivingNote, "live_drum_rack", "programmer");
+    if (convert.success) {
+      parsedReceivingNote = convert.note;
+    }
+
     parsed_branches.push({
       name: branch_name,
-      receivingNote,
+      receivingNote: parsedReceivingNote,
       devices: getDevicesFromMidiGroup(branch, "device")
     });
   }
