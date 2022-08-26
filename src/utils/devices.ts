@@ -223,8 +223,8 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     ],
 
     rgb_sysex: (leds) => [
-      ...SYSEX_HEADER_NOVATION, 2, 12, 3, 3,
-      ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+      ...SYSEX_HEADER_NOVATION, 2, 12, 3,
+      ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -256,8 +256,8 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     ],
 
     rgb_sysex: (leds) => [
-      ...SYSEX_HEADER_NOVATION, 2, 14, 3, 3,
-      ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+      ...SYSEX_HEADER_NOVATION, 2, 14, 3,
+      ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -326,8 +326,8 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
       ],
 
       rgb_sysex: (leds) => [
-        ...SYSEX_HEADER_NOVATION, 2, 13, 3, 3,
-        ...leds.map(led => [led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+        ...SYSEX_HEADER_NOVATION, 2, 13, 3,
+        ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
       ]
     };
   }
