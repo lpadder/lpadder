@@ -1,13 +1,12 @@
 import type { Component } from "solid-js";
-import type { AvailableLayouts } from "@/utils/LaunchpadLayout";
+import type { layouts } from "@/utils/devices";
 
 import { Midi } from "@tonejs/midi";
-
 import downloadBlob from "@/utils/downloadBlob";
 
 const UtilitiesConvertMidi: Component = () => {
-  const [fromLayout, setFromLayout] = createSignal<AvailableLayouts>("live");
-  const [toLayout, setToLayout] = createSignal<AvailableLayouts>("programmer");
+  const [fromLayout, setFromLayout] = createSignal<keyof typeof layouts>("drum_rack");
+  const [toLayout, setToLayout] = createSignal<keyof typeof layouts>("programmer");
 
   const [uploadedFiles, setUploadedFiles] = createSignal<FileList | null>(null);
 
@@ -67,11 +66,11 @@ const UtilitiesConvertMidi: Component = () => {
       </label>
       <select
         value={fromLayout()}
-        onChange={(e) => setFromLayout(e.currentTarget.value as AvailableLayouts)}
+        onChange={(e) => setFromLayout(e.currentTarget.value as keyof typeof layouts)}
         id="midiLayoutFrom"
       >
-        <option value="live">
-          Live Layout
+        <option value="drum_rack">
+          Drum Rack Layout
         </option>
         <option value="programmer">
           Programmer Layout
@@ -85,11 +84,11 @@ const UtilitiesConvertMidi: Component = () => {
       </label>
       <select
         value={toLayout()}
-        onChange={(e) => setToLayout(e.currentTarget.value as AvailableLayouts)}
+        onChange={(e) => setToLayout(e.currentTarget.value as keyof typeof layouts)}
         id="midiLayoutTo"
       >
-        <option value="live">
-          Live Layout
+        <option value="drum_rack">
+          Drum Rack Layout
         </option>
         <option value="programmer">
           Programmer Layout
