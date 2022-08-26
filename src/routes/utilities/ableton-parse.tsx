@@ -18,8 +18,6 @@ import {
   parseAbletonData
 } from "@/utils/parseAbletonData";
 
-import { convertNoteLayout } from "@/utils/devices";
-
 const AbletonParsedResults: Component<{
   abletonData: ParsedAbletonData
 }> = (props) => {
