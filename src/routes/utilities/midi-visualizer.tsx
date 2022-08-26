@@ -1,29 +1,18 @@
+import type { JSX } from "solid-js";
+import type { GroupedNotes } from "@/types/Midi";
+
 import { createStore } from "solid-js/store";
-import { Midi, MidiJSON } from "@tonejs/midi";
+import { Midi } from "@tonejs/midi";
 
 import Launchpad from "@/components/Device";
 import Select from "@/components/Select";
 import FileInput from "@/components/FileInput";
 
-import { devicesConfiguration, convertNoteLayout } from "@/utils/devices";
-import { novationLaunchpadPalette } from "@/utils/palettes";
+import { parseMidiData } from "@/utils/midi";
+import { devicesConfiguration } from "@/utils/devices";
+import { DEFAULT_NOVATION_PALETTE } from "@/utils/palettes";
 
 import { webMidiDevices, webMidiInformations } from "@/stores/webmidi";
-import { JSX } from "solid-js";
-
-interface GroupedNotes {
-  notes: {
-    /** In MS. */
-    duration: number;
-    /** Between 0 and 1. */
-    velocity: number;
-    /** MIDI note. */
-    midi: number;
-  }[];
-
-  /** In MS. */
-  start_time: number;
-}
 
 export default function UtilitiesMidiVisualizer () {
   let launchpad_ref: HTMLDivElement | undefined;
@@ -63,7 +52,7 @@ export default function UtilitiesMidiVisualizer () {
 
       // Parse the notes.
       const midi_data = midiObject.toJSON();
-      const notesData = loadMidiData(midi_data);
+      const notesData = parseMidiData(midi_data);
 
       // Store the MIDI object and the parsed notes.
       setState({ midi: midiObject, note_groups: notesData, loaded: true });
@@ -72,58 +61,7 @@ export default function UtilitiesMidiVisualizer () {
     reader.readAsArrayBuffer(file);
   };
 
-  const loadMidiData = (midi_data: MidiJSON) => {
-    /** Notes of the first track of the MIDI file. */
-    const notes_data = midi_data.tracks[0].notes;
 
-    /**
-     * Here, we group the notes by time to setup the
-     * setTimeouts for each group, when needed to.
-     */
-    const grouped_notes: GroupedNotes[] = [];
-
-    /**
-     * Delay in MS. Kind of a "hack" to prevent pads from blinking.
-     * TODO: Make it configurable.
-     */
-    const delay = 20;
-
-    // Group the notes by time.
-    notes_data.forEach(note => {
-      const start_time = note.time * 1000;
-      const duration = (note.duration * 1000) + delay;
-
-      const convert_results = convertNoteLayout(note.midi, "drum_rack", "programmer");
-      if (!convert_results.success) return;
-
-      const midi = convert_results.note;
-
-      const parsed_note: typeof grouped_notes[number]["notes"][number] = {
-        velocity: note.velocity,
-        duration,
-        midi
-      };
-
-      // Find the group.
-      const group = grouped_notes.find(
-        group => group.start_time === start_time
-      );
-
-      // If the group doesn't exist, create it.
-      if (!group) {
-        grouped_notes.push({
-          start_time,
-          notes: [parsed_note]
-        });
-
-        return;
-      }
-
-      group.notes.push(parsed_note);
-    });
-
-    return grouped_notes;
-  };
 
   /** Play the MIDI file on the selected output. */
   const playMidi = () => {
@@ -135,7 +73,7 @@ export default function UtilitiesMidiVisualizer () {
       const leds =
         group.notes.map(note => ({
           note: note.midi,
-          color: novationLaunchpadPalette[note.velocity * 127]
+          color: note.color
         }));
 
       if (device) {
@@ -148,7 +86,7 @@ export default function UtilitiesMidiVisualizer () {
       /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
         group.notes.forEach(note => {
-          const color = novationLaunchpadPalette[note.velocity * 127];
+          const color = note.ui_color;
           const duration = note.duration;
 
           // Get the Launchpad element.
@@ -181,7 +119,7 @@ export default function UtilitiesMidiVisualizer () {
               pad.removeAttribute("style");
               if (device) {
                 const sysex = deviceConfiguration().rgb_sysex([{
-                  note: note.midi, color: novationLaunchpadPalette[0]
+                  note: note.midi, color: DEFAULT_NOVATION_PALETTE[0]
                 }]);
                 device.output.sendSysex([], sysex);
               }
