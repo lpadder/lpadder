@@ -18,11 +18,11 @@ const LpadderUpdaterModal: Component = () => {
     }
   });
 
-  createEffect(() => {
-    if (offlineReady()) {
+  createEffect(on(offlineReady, (isOfflineReady) => {
+    if (isOfflineReady) {
       toast("lpadder is ready to be used offline !");
     }
-  });
+  }));
 
   const close = () => {
     setOfflineReady(false);
