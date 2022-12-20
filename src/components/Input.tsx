@@ -1,5 +1,4 @@
 import type { ParentComponent, JSX } from "solid-js";
-import { Show } from "solid-js";
 
 /**
  * Use the HTML attributes of the input element
@@ -13,31 +12,33 @@ type InputProps = ParentComponent<
 >;
 
 const Input: InputProps = (props) => {
+  const [local, others] = splitProps(props, ["tip", "label", "class"]);
+
   return (
     <div>
-      <Show when={props.label}>
+      <Show when={local.label}>
         <label
-          for={`__input_label_${props.label}`}
+          for={`__input_label_${local.label}`}
           class="text-sm font-medium mb-1"
         >
-          {props.label}
+          {local.label}
         </label>
       </Show>
       <input
-        id={`__input_label_${props.label}`}
+        id={`__input_label_${local.label}`}
         class={`
           py-2 px-4 w-full rounded-lg outline-none
           bg-gray-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
-          ${props.class ? props.class : ""}
+          ${local.class ? local.class : ""}
         `}
 
-        {...props}
+        {...others}
       />
 
-      <Show when={props.tip}>
+      <Show when={local.tip}>
         <p class="mt-2 text-sm text-gray-600 text-opacity-60">
-          {props.tip}
+          {local.tip}
         </p>
       </Show>
     </div>
