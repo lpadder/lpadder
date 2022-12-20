@@ -98,12 +98,16 @@ const CreateProjectModal: Component = () => {
             />
           </div>
 
-
           <div class="text-center mt-6 mb-4 mx-auto w-full">
             <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
           </div>
 
-          <Show when={usableDevices().length > 0}>
+          <Show when={usableDevices().length > 0} fallback={
+            <p class="text-center text-xs p-2 bg-gray-700">
+              No MIDI device to set-up. <br />
+              Check if you've connected a MIDI device.
+            </p>
+          }>
             <p>
               Should we automatically set-up these devices in the project for you ?
             </p>
@@ -127,7 +131,7 @@ const CreateProjectModal: Component = () => {
             </div>
           </Show>
 
-          <div class="flex gap-2 justify-between">
+          <div class="flex gap-2 justify-between pt-6">
             <button
               type="button"
               class="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
