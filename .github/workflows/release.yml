@@ -36,4 +36,3 @@ jobs:
             Deployment URL: <${{ steps.vercel-deploy.outputs.preview-url }}>
 
             ${{ github.event.release.body }}
-            

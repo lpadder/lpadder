@@ -4,7 +4,6 @@ about: Suggest an idea for this project.
 title: 'feature: [name of the feature]'
 labels: enhancement
 assignees: Vexcited
-
 ---
 
 **Is your feature request related to a problem? If yes, please describe. If no, remove that line.**

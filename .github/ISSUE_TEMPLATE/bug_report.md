@@ -4,7 +4,6 @@ about: Create a report to help this project to improve.
 title: 'bug report: [name of the bug]'
 labels: bug
 assignees: Vexcited
-
 ---
 
 **Describe the bug**
