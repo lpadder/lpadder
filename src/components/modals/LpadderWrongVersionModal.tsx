@@ -39,7 +39,7 @@ const LpadderWrongVersionModal: Component = () => {
           </div>
 
           <p class="text-slate-400 mt-2">
-              As lpadder <span class="font-bold">v{required_version()}</span> is not available, you can&apos;t play this project.
+            As lpadder <span class="font-bold">v{required_version()}</span> is not available, you can&apos;t play this project.
           </p>
         </div>
       </Show>

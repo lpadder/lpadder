@@ -4,7 +4,7 @@ export type DeviceGridPadType = {
   isPhantom?: boolean;
   isCircle?: boolean;
   id: number;
-}
+};
 export type DeviceLayoutGridType = number[][];
 
 export type DeviceType =
@@ -14,7 +14,7 @@ export type DeviceType =
   | "launchpad_pro_mk2_cfw" // Old CFW
   | "launchpad_pro_mk2_cfy" // Latest CFW
   | "launchpad_mk2"
-  | "launchpad_x"
+  | "launchpad_x";
 
 /** Private function to build the `drum_rack` layout. */
 const buildDrumRackLayout = (): DeviceLayoutGridType => {
@@ -184,7 +184,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     rgb_sysex: (leds) => [
       ...SYSEX_HEADER_NOVATION, 2, 16, 11,
-      ...leds.map(led => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
+      ...leds.map((led) => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
     ],
 
     layout_to_use: layouts["programmer"]
@@ -224,7 +224,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     rgb_sysex: (leds) => [
       ...SYSEX_HEADER_NOVATION, 2, 12, 3,
-      ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+      ...leds.map((led) => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -257,7 +257,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     rgb_sysex: (leds) => [
       ...SYSEX_HEADER_NOVATION, 2, 14, 3,
-      ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+      ...leds.map((led) => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
     ],
 
     get layout_to_use () {
@@ -293,13 +293,13 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
     rgb_sysex: (leds) => [
       ...SYSEX_HEADER_NOVATION, 2, 24, 11,
-      ...leds.map(led => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
+      ...leds.map((led) => [led.note, led.color[0] >> 2, led.color[1] >> 2, led.color[2] >> 2]).flat()
     ],
 
     get layout_to_use () {
       let layout = [...layouts["programmer"]];
 
-      layout = layout.map(row => {
+      layout = layout.map((row) => {
         // Remove the first item, since we don't have left column.
         const new_row = [...row];
         new_row.shift();
@@ -327,7 +327,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
 
       rgb_sysex: (leds) => [
         ...SYSEX_HEADER_NOVATION, 2, 13, 3,
-        ...leds.map(led => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
+        ...leds.map((led) => [3, led.note, led.color[0] >> 1, led.color[1] >> 1, led.color[2] >> 1]).flat()
       ]
     };
   }
@@ -365,57 +365,57 @@ export const guessDeviceType = (output: Output, input: Input): Promise<DeviceTyp
         ) {
           switch (msg[7]) {
           // Launchpad X
-          case 0x03: {
-            if (msg[8] === 17) type = "launchpad_x";
-            else if (msg[8] === 1) type = "launchpad_x";
-            break;
-          }
-
-          // Launchpad Mini MK3
-          case 0x13: {
-            if (msg[8] === 17) type = "launchpad_mini_mk3";
-            else if (msg[8] === 1) type = "launchpad_mini_mk3";
-            break;
-          }
-
-          // Launchpad Pro MK3
-          case 0x23: {
-            if (msg[8] === 17) type = "launchpad_pro_mk3";
-            else if (msg[8] === 1) type = "launchpad_pro_mk3";
-            break;
-          }
-
-          // Launchpad MK2
-          case 0x69: {
-            type = "launchpad_mk2";
-            break;
-          }
-
-          // Launchpad Pro
-          case 0x51: {
-            const versionStr = msg
-              .slice(msg.length - 3)
-              .reduce((prev: string, current: number) =>
-                prev + String.fromCharCode(current), ""
-              );
-
-            switch (versionStr) {
-            case "cfw":
-            case "cfx": {
-              type = "launchpad_pro_mk2_cfw";
+            case 0x03: {
+              if (msg[8] === 17) type = "launchpad_x";
+              else if (msg[8] === 1) type = "launchpad_x";
               break;
             }
-            case "cfy": {
-              type = "launchpad_pro_mk2_cfy";
+
+            // Launchpad Mini MK3
+            case 0x13: {
+              if (msg[8] === 17) type = "launchpad_mini_mk3";
+              else if (msg[8] === 1) type = "launchpad_mini_mk3";
               break;
             }
-            default: {
-              type = "launchpad_pro_mk2";
+
+            // Launchpad Pro MK3
+            case 0x23: {
+              if (msg[8] === 17) type = "launchpad_pro_mk3";
+              else if (msg[8] === 1) type = "launchpad_pro_mk3";
               break;
             }
+
+            // Launchpad MK2
+            case 0x69: {
+              type = "launchpad_mk2";
+              break;
             }
-            break;
-          }
+
+            // Launchpad Pro
+            case 0x51: {
+              const versionStr = msg
+                .slice(msg.length - 3)
+                .reduce((prev: string, current: number) =>
+                  prev + String.fromCharCode(current), ""
+                );
+
+              switch (versionStr) {
+                case "cfw":
+                case "cfx": {
+                  type = "launchpad_pro_mk2_cfw";
+                  break;
+                }
+                case "cfy": {
+                  type = "launchpad_pro_mk2_cfy";
+                  break;
+                }
+                default: {
+                  type = "launchpad_pro_mk2";
+                  break;
+                }
+              }
+              break;
+            }
           }
         }
       }

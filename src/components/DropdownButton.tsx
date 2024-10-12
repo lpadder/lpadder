@@ -35,10 +35,10 @@ const DropdownButton: Component<{
             >
               <Menu class={classNames("transition flex flex-col gap-1 absolute right-0 w-48", props.forceOpenToRight ? "origin-top-left" : "origin-top-right")}>
                 <For each={props.items}>
-                  {group_items => group_items.length > 0 && (
+                  {(group_items) => group_items.length > 0 && (
                     <div class="rounded-md backdrop-filter backdrop-blur bg-slate-800 bg-opacity-80 border border-slate-900 p-1.5">
                       <For each={group_items}>
-                        {item => (
+                        {(item) => (
                           <MenuItem
                             as="button"
                             onClick={() => {

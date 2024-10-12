@@ -56,7 +56,7 @@ export const syncProjectDataGlobally = async () => {
   }
 
   logStart("store", "updating the `current_project` store...");
-  setProjectsMetadataStore("metadatas", projects => projects.slug === current_project.slug, {
+  setProjectsMetadataStore("metadatas", (projects) => projects.slug === current_project.slug, {
     metadata: project_metadata
   });
   logEnd("store");
@@ -200,7 +200,7 @@ export const createNewProject = async (
 
   // Update the metadata store.
   setProjectsMetadataStore(
-    produce((store => {
+    produce(((store) => {
       store.metadatas.push({ slug, metadata });
     }))
   );
@@ -228,8 +228,8 @@ export const deleteProject = async (slug: string): Promise<Response<undefined>> 
 
   // Update the metadata store.
   setProjectsMetadataStore(
-    produce((store => {
-      const index = store.metadatas.findIndex(metadata => metadata.slug === slug);
+    produce(((store) => {
+      const index = store.metadatas.findIndex((metadata) => metadata.slug === slug);
       if (index !== -1) store.metadatas.splice(index, 1);
     }))
   );

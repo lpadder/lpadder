@@ -88,28 +88,28 @@ function getTracksData (tracks: Element) {
 
     /** We parse the audio tracks. */
     switch (trackType) {
-    case "AudioTrack": {
-      const audio_track_name = getTrackName(track);
+      case "AudioTrack": {
+        const audio_track_name = getTrackName(track);
 
-      tracksData.push({
-        type: "audio",
-        name: audio_track_name
-      });
+        tracksData.push({
+          type: "audio",
+          name: audio_track_name
+        });
 
-      break;
-    }
-    case "MidiTrack": {
-      const midi_track_name = getTrackName(track);
-      const midi_track_devices = getDevicesFromMidiGroup(track, "track");
+        break;
+      }
+      case "MidiTrack": {
+        const midi_track_name = getTrackName(track);
+        const midi_track_devices = getDevicesFromMidiGroup(track, "track");
 
-      tracksData.push({
-        type: "midi",
-        name: midi_track_name,
-        devices: midi_track_devices
-      });
+        tracksData.push({
+          type: "midi",
+          name: midi_track_name,
+          devices: midi_track_devices
+        });
 
-      break;
-    }
+        break;
+      }
     }
   }
 
@@ -146,84 +146,84 @@ function getDevicesFromMidiGroup (group: Element, from: "track" | "device") {
 
     switch (deviceType) {
 
-    /** This is the instrument rack. */
-    case "InstrumentGroupDevice": {
-      const instrumentRackData = parseInstrumentRack(device);
-      parsed_devices.push(instrumentRackData);
-      break;
-    }
+      /** This is the instrument rack. */
+      case "InstrumentGroupDevice": {
+        const instrumentRackData = parseInstrumentRack(device);
+        parsed_devices.push(instrumentRackData);
+        break;
+      }
 
-    /** This is the drum rack. */
-    case "DrumGroupDevice": {
-      const drumRackData = parseDrumRack(device);
-      parsed_devices.push(drumRackData);
-      break;
-    }
+      /** This is the drum rack. */
+      case "DrumGroupDevice": {
+        const drumRackData = parseDrumRack(device);
+        parsed_devices.push(drumRackData);
+        break;
+      }
 
-    /** This is the sampler. */
-    case "OriginalSimpler": {
-      const sample_data = device.getElementsByTagName("MultiSamplePart")[0];
-      const sample_name = sample_data.getElementsByTagName("Name")[0].getAttribute("Value") || "";
+      /** This is the sampler. */
+      case "OriginalSimpler": {
+        const sample_data = device.getElementsByTagName("MultiSamplePart")[0];
+        const sample_name = sample_data.getElementsByTagName("Name")[0].getAttribute("Value") || "";
 
-      const sampleRate = parseInt(device
-        .getElementsByTagName("DefaultSampleRate")[0]
-        .getAttribute("Value") || "-1");
+        const sampleRate = parseInt(device
+          .getElementsByTagName("DefaultSampleRate")[0]
+          .getAttribute("Value") || "-1");
 
-      const sampleStart = parseInt(device
-        .getElementsByTagName("SampleStart")[0]
-        .getAttribute("Value") || "-1");
+        const sampleStart = parseInt(device
+          .getElementsByTagName("SampleStart")[0]
+          .getAttribute("Value") || "-1");
 
-      const sampleEnd = parseInt(device
-        .getElementsByTagName("SampleEnd")[0]
-        .getAttribute("Value") || "-1");
+        const sampleEnd = parseInt(device
+          .getElementsByTagName("SampleEnd")[0]
+          .getAttribute("Value") || "-1");
 
-      const sampleFullLength = parseInt(device
-        .getElementsByTagName("DefaultDuration")[0]
-        .getAttribute("Value") || "-1");
+        const sampleFullLength = parseInt(device
+          .getElementsByTagName("DefaultDuration")[0]
+          .getAttribute("Value") || "-1");
 
-      const sample_file_ref = sample_data.getElementsByTagName("FileRef")[0];
+        const sample_file_ref = sample_data.getElementsByTagName("FileRef")[0];
 
-      const sample_file_relative_path_element = sample_file_ref.getElementsByTagName("RelativePath")[0];
-      let sample_file_relative_path = "";
+        const sample_file_relative_path_element = sample_file_ref.getElementsByTagName("RelativePath")[0];
+        let sample_file_relative_path = "";
 
-      /** Behaviour on Ableton Live <11 */
-      if (sample_file_relative_path_element.children.length > 0) {
-        for (const relativePathElement of sample_file_relative_path_element.children) {
-          if (relativePathElement.tagName !== "RelativePathElement") continue;
+        /** Behaviour on Ableton Live <11 */
+        if (sample_file_relative_path_element.children.length > 0) {
+          for (const relativePathElement of sample_file_relative_path_element.children) {
+            if (relativePathElement.tagName !== "RelativePathElement") continue;
 
-          const dir = relativePathElement.getAttribute("Dir") || "";
-          sample_file_relative_path += `${dir}/`;
+            const dir = relativePathElement.getAttribute("Dir") || "";
+            sample_file_relative_path += `${dir}/`;
+          }
+
+          const sample_file_name = sample_file_ref.getElementsByTagName("Name")[0].getAttribute("Value") || "";
+          sample_file_relative_path += sample_file_name;
+        }
+        /** On Ableton Live >11, the RelativePath element directly gives the path. */
+        else if (sample_file_relative_path_element.children.length === 0) {
+          sample_file_relative_path = sample_file_relative_path_element.getAttribute("Value") || "";
         }
 
-        const sample_file_name = sample_file_ref.getElementsByTagName("Name")[0].getAttribute("Value") || "";
-        sample_file_relative_path += sample_file_name;
+        // Values in seconds.
+        const start_time = sampleStart / sampleRate;
+        const end_time = sampleEnd / sampleRate;
+        const duration = end_time - start_time;
+        const sample_length = sampleFullLength / sampleRate;
+
+        const sample: MidiDeviceSampleData = {
+          name: sample_name,
+          type: "sample",
+
+          sample_length,
+          start_time,
+          end_time,
+          duration,
+
+          relative_path: sample_file_relative_path
+        };
+
+        parsed_devices.push(sample);
+        break;
       }
-      /** On Ableton Live >11, the RelativePath element directly gives the path. */
-      else if (sample_file_relative_path_element.children.length === 0) {
-        sample_file_relative_path = sample_file_relative_path_element.getAttribute("Value") || "";
-      }
-
-      // Values in seconds.
-      const start_time = sampleStart / sampleRate;
-      const end_time = sampleEnd / sampleRate;
-      const duration = end_time - start_time;
-      const sample_length = sampleFullLength / sampleRate;
-
-      const sample: MidiDeviceSampleData = {
-        name: sample_name,
-        type: "sample",
-
-        sample_length,
-        start_time,
-        end_time,
-        duration,
-
-        relative_path: sample_file_relative_path
-      };
-
-      parsed_devices.push(sample);
-      break;
-    }
     }
   }
 

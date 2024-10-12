@@ -28,7 +28,7 @@ export default function RootRender () {
         className: "!bg-slate-900 !text-slate-200"
       }} />
 
-      <Router root={props => (
+      <Router root={(props) => (
         <MetaProvider>
           <Title>lpadder</Title>
           <Show

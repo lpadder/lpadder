@@ -37,7 +37,7 @@ const ProjectsEditor: Component = () => {
       logStart("load", `loading ${slug}...`);
 
       logStart("metadata", `finding "${slug}" from store...`);
-      const projectLoadedMetadata = projectsMetadataStore.metadatas.find(project => project.slug === slug);
+      const projectLoadedMetadata = projectsMetadataStore.metadatas.find((project) => project.slug === slug);
       logEnd("metadata");
 
       logStart("data", `getting "${slug}" from localForage...`);

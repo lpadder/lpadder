@@ -29,7 +29,7 @@ const AbletonParsedResults: Component<{
 
       <div class="flex flex-col gap-4 my-6">
         <For each={props.abletonData.tracksData}>
-          {track => (track.type === "midi") && (
+          {(track) => (track.type === "midi") && (
             <div
               class="p-4 bg-slate-900 rounded-lg"
             >
@@ -39,7 +39,7 @@ const AbletonParsedResults: Component<{
               </div>
 
               <For each={track.devices}>
-                {track => (
+                {(track) => (
                   <MidiDevice device={track} />
                 )}
               </For>
@@ -54,7 +54,7 @@ const AbletonParsedResults: Component<{
 
       <div class="flex flex-col gap-4 my-6">
         <For each={props.abletonData.tracksData}>
-          {track => (track.type === "audio") && (
+          {(track) => (track.type === "audio") && (
             <div>
               <h4>{track.name}</h4>
             </div>
@@ -79,15 +79,15 @@ const MidiDevice: Component<{
 }> = (props) => (
   <Switch>
     <Match when={props.device.type === "sample" && props.device}>
-      {device => <MidiDeviceSample sample={device} />}
+      {(device) => <MidiDeviceSample sample={device} />}
     </Match>
 
     <Match when={props.device.type === "drum_rack" && props.device}>
-      {device => <MidiDeviceDrumRack drum_rack={device} />}
+      {(device) => <MidiDeviceDrumRack drum_rack={device} />}
     </Match>
 
     <Match when={props.device.type === "instrument_rack" && props.device}>
-      {device => <MidiDeviceInstrumentRack instrument_rack={device} />}
+      {(device) => <MidiDeviceInstrumentRack instrument_rack={device} />}
     </Match>
   </Switch>
 );
@@ -150,7 +150,7 @@ const MidiDeviceDrumRack: Component<{
     });
 
     onCleanup(() => {
-      props.drum_rack.branches.forEach(branch => {
+      props.drum_rack.branches.forEach((branch) => {
         const note = branch.receivingNote;
 
         const padElement = launchpad.querySelector(`[data-note="${note}"]`);
@@ -176,7 +176,7 @@ const MidiDeviceDrumRack: Component<{
           onPadDown={() => null}
           onPadUp={(note_id) => {
             const branch = props.drum_rack.branches.findIndex(
-              branch => branch.receivingNote === note_id
+              (branch) => branch.receivingNote === note_id
             );
 
             if (branch === -1) return;
@@ -190,7 +190,7 @@ const MidiDeviceDrumRack: Component<{
         <p>Viewing branch {selectedBranch()} (receivedNote: {props.drum_rack.branches[selectedBranch()].receivingNote})</p>
 
         <For each={props.drum_rack.branches[selectedBranch()].devices}>
-          {device => <MidiDevice device={device}/>}
+          {(device) => <MidiDevice device={device}/>}
         </For>
       </div>
     </div>
@@ -225,7 +225,7 @@ const MidiDeviceInstrumentRack: Component<{
       </div>
 
       <For each={props.instrument_rack.branches[selectedBranch()]?.devices}>
-        {device => <MidiDevice device={device}/>}
+        {(device) => <MidiDevice device={device}/>}
       </For>
     </div>
   );

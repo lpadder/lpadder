@@ -57,7 +57,7 @@ const ImportProjectModal: Component = () => {
           placeholder="some-amazing-cover"
           tip="Slug used to identify the cover more easily from URL."
           value={slug()}
-          onInput={evt => {
+          onInput={(evt) => {
             /** We clean the string so it corresponds to a real slug. */
             const cleanedValue = evt.currentTarget.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
             setSlug(cleanedValue);

@@ -25,7 +25,7 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
 
   /** Check if the linked device is connected or not. */
   const linkedDevice = () => webMidiDevices().find(
-    current_device => current_device.raw_name === device.device_linked
+    (current_device) => current_device.raw_name === device.device_linked
   );
 
   const deviceType = () => linkedDevice()?.type || device.type;

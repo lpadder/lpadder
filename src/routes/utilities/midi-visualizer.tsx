@@ -68,10 +68,10 @@ export default function UtilitiesMidiVisualizer () {
     if (!state.note_groups) return;
     const device = selectedDevice();
 
-    state.note_groups.forEach(group => {
+    state.note_groups.forEach((group) => {
       const start_time = group.start_time;
       const leds =
-        group.notes.map(note => ({
+        group.notes.map((note) => ({
           note: note.midi,
           color: note.color
         }));
@@ -85,7 +85,7 @@ export default function UtilitiesMidiVisualizer () {
 
       /** Setup the timing for all the `noteon`s at `start_time`. */
       setTimeout(() => {
-        group.notes.forEach(note => {
+        group.notes.forEach((note) => {
           const color = note.ui_color;
           const duration = note.duration;
 
@@ -165,7 +165,7 @@ export default function UtilitiesMidiVisualizer () {
           <Show when={webMidiInformations.isEnabled}>
             <Select
               title="Select an output..."
-              onChange={e => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
+              onChange={(e) => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
             >
               <option value="none">
                 None

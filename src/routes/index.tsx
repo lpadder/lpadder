@@ -56,7 +56,7 @@ const Home: Component = () => {
           <Show when={!import.meta.env.DEV} fallback="next">{APP_VERSION}</Show>
         </span></p>
         <p class="text-slate-200 text-opacity-80">
-            Made with ❤️ by {" "}
+          Made with ❤️ by {" "}
           <a
             href="https://github.com/Vexcited"
             target="_blank"

@@ -108,7 +108,7 @@ const TicTacToeGame: Component = () => {
       61, 62, 64, 65, 67, 68]; // Second horizontal row (top)
 
 
-    gridNotes.forEach(note => {
+    gridNotes.forEach((note) => {
       lightUpPad(note, [255, 255, 255]);
     });
 
@@ -133,7 +133,7 @@ const TicTacToeGame: Component = () => {
 
       // Set color of pad once again, only on Launchpad to prevent weird behavior
       const rgbString = device_element.style.backgroundColor.replace(/[^\d,]/g, "").split(",");
-      const rgb = rgbString.map(str => {
+      const rgb = rgbString.map((str) => {
         return Number(str);
       });
       fillPressedField(pressedFieldIndex, [rgb[0], rgb[1], rgb[2]]);
@@ -142,7 +142,7 @@ const TicTacToeGame: Component = () => {
     }
 
     // If note is not in valid fields, return
-    if (!validFields.find(field => field.includes(note))) return;
+    if (!validFields.find((field) => field.includes(note))) return;
 
     fillPressedField(pressedFieldIndex);
     checkForWinner();
@@ -165,7 +165,7 @@ const TicTacToeGame: Component = () => {
     ];
 
     const currentFilledFields = getFilledFieldsOfCurrentPlayer();
-    winningCombinations.forEach(element => {
+    winningCombinations.forEach((element) => {
       if (currentFilledFields.includes(element[0]) && currentFilledFields.includes(element[1]) && currentFilledFields.includes(element[2])) {
         console.log("Player " + playerNumber() + " won!");
         setGameWon(true);
@@ -262,7 +262,7 @@ const TicTacToeGame: Component = () => {
             <Select
               id="dropdown"
               title="Select an output..."
-              onChange={e => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
+              onChange={(e) => setState({ selectedDeviceIndex: parseInt(e.currentTarget.value) })}
             >
               <option value="none">
                 None

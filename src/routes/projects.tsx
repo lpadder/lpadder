@@ -62,7 +62,7 @@ const ProjectsLayout: FlowComponent = (props) => {
           <div class="h-20 flex px-8 bg-slate-900 justify-between items-center">
             {/* Mobile->HeaderTopLeft */}
             <button
-              onClick={() => setMobileHeaderVisibility(show => !show)}
+              onClick={() => setMobileHeaderVisibility((show) => !show)}
               class="flex text-2xl md:hidden p-2 text-slate-400 bg-slate-600 bg-opacity-0 rounded transition-colors hover:text-slate-200 hover:bg-opacity-20 focus:bg-opacity-40"
             >
               <Show when={showMobileHeader()} fallback={<IconMdiMenu />}>
@@ -170,7 +170,7 @@ const ProjectsLayout: FlowComponent = (props) => {
                 </div>
               }>
                 <For each={projectsMetadataStore.metadatas}>
-                  {local_project => (
+                  {(local_project) => (
                     <NavbarItem
                       slug={local_project.slug}
                       name={local_project.metadata.name}

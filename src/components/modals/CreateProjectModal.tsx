@@ -12,7 +12,7 @@ import { createNewProject } from "@/utils/projects";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
-  const usableDevices = () => webMidiDevices().filter(device => device.enabled && typeof device.type !== "undefined");
+  const usableDevices = () => webMidiDevices().filter((device) => device.enabled && typeof device.type !== "undefined");
 
   const [state, setState] = createStore<{
     name: string,
@@ -29,7 +29,7 @@ const CreateProjectModal: Component = () => {
     if (!state.name || !state.slug) return;
 
     /** Get the selected devices with full informations. */
-    const devices = webMidiDevices().filter(device => state.selected_devices[device.raw_name]);
+    const devices = webMidiDevices().filter((device) => state.selected_devices[device.raw_name]);
 
     const response = await createNewProject(state.slug, {
       importing: false,
@@ -114,7 +114,7 @@ const CreateProjectModal: Component = () => {
 
             <div class="flex flex-wrap justify-evenly my-4 gap-2">
               <For each={usableDevices()}>
-                {device => (
+                {(device) => (
                   <button
                     type="button"
                     class="text-sm h-26 w-26 p-2 border border-fuchsia-500 bg-fuchsia-500 transition-colors cursor-pointer rounded"

@@ -53,7 +53,7 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
   if (isNewDevices) {
     for (const output of WebMidi.outputs) {
       const input = WebMidi.inputs.find(
-        input => removeInOutFromName(input.name) === removeInOutFromName(output.name)
+        (input) => removeInOutFromName(input.name) === removeInOutFromName(output.name)
       );
 
       // Skip to the next one if we can't pair the output with an input.
@@ -73,7 +73,7 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
        * Whether the device already in the store or not.
        * When the device is already in the store, skip to the next one.
        */
-      const alreadyInStore = devices.find(device => device.raw_name === device_raw_name);
+      const alreadyInStore = devices.find((device) => device.raw_name === device_raw_name);
       if (alreadyInStore) continue;
 
       // When new devices are connected, give them some time to boot before sending version query.
@@ -88,7 +88,7 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
       if (!device_type) device_enabled = false;
 
       // Check if the device have a saved profile and use these settings if they exists..
-      const device_profile = profiles.find(profile => profile.raw_name === device_raw_name);
+      const device_profile = profiles.find((profile) => profile.raw_name === device_raw_name);
       if (device_profile) {
         log("profile", "found the profile for", device_raw_name);
         if (device_profile.name) device_name = device_profile.name;
@@ -134,7 +134,7 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
       }
 
       log("webmidi", `adding ${device.name} to the store...`);
-      setWebMidiDevices(prev => [...prev, device]);
+      setWebMidiDevices((prev) => [...prev, device]);
 
       toast(`${device.name} connected!`);
     }
@@ -143,11 +143,11 @@ const checkWebMidiDevices = async ({ isNewDevices }: { isNewDevices: boolean }) 
   /** Check for disconnected devices. */
   else {
     // Keep only the still connected devices.
-    const filteredDevices = [...devices].filter(device => {
+    const filteredDevices = [...devices].filter((device) => {
       const isStillConnected = WebMidi.outputs.find(
-        output => output.id === device.output.id)
+        (output) => output.id === device.output.id)
       && WebMidi.inputs.find(
-        input => input.id === device.input.id
+        (input) => input.id === device.input.id
       );
 
       if (!isStillConnected) {

@@ -37,14 +37,14 @@ export const correctCanvasMove = () => {
   // Correcting left/width from the left.
   const widthOffset = canvas_ref.offsetLeft;
   if (widthOffset > 0) {
-    setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + widthOffset);
+    setCurrentProjectStore("metadata", "canvasWidth", (currentWidth) => currentWidth + widthOffset);
     updateCanvasPosition(-widthOffset, undefined);
   }
 
   // Correcting top/height from the top.
   const heightOffset = canvas_ref.offsetTop;
   if (heightOffset > 0) {
-    setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + heightOffset);
+    setCurrentProjectStore("metadata", "canvasHeight", (currentHeight) => currentHeight + heightOffset);
     updateCanvasPosition(undefined, -heightOffset);
   }
 
@@ -52,14 +52,14 @@ export const correctCanvasMove = () => {
   const widthRightOffset = canvas_ref.offsetWidth + canvas_ref.offsetLeft - window.innerWidth;
   if (widthRightOffset <= 0) {
     const missingOffset = -widthRightOffset;
-    setCurrentProjectStore("metadata", "canvasWidth", currentWidth => currentWidth + missingOffset);
+    setCurrentProjectStore("metadata", "canvasWidth", (currentWidth) => currentWidth + missingOffset);
   }
 
   // Correcting top/height from the bottom.
   const heightBottomOffset = canvas_ref.offsetHeight + canvas_ref.offsetTop - window.innerHeight;
   if (heightBottomOffset <= 0) {
     const missingOffset = -heightBottomOffset;
-    setCurrentProjectStore("metadata", "canvasHeight", currentHeight => currentHeight + missingOffset);
+    setCurrentProjectStore("metadata", "canvasHeight", (currentHeight) => currentHeight + missingOffset);
   }
 };
 
@@ -177,7 +177,7 @@ const ProjectPreview: Component = () => {
   };
 
   return (
-    <Show when={currentProjectStore.slug !== null && currentProjectStore}>{project => (
+    <Show when={currentProjectStore.slug !== null && currentProjectStore}>{(project) => (
       <div class="relative h-full bg-slate-800 overflow-hidden">
         <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
           <ProjectPreviewButton
@@ -232,7 +232,7 @@ const ProjectPreview: Component = () => {
           />
           <ProjectPreviewButton
             title="Fullscreen"
-            action={() => setPreviewCanvasFullscreen(prev => !prev)}
+            action={() => setPreviewCanvasFullscreen((prev) => !prev)}
             icon={isPreviewCanvasFullscreen() ? <IconMdiFullscreenExit /> : <IconMdiFullscreen />}
           />
         </div>
@@ -262,7 +262,7 @@ const ProjectPreview: Component = () => {
             {/* <span class="absolute bg-slate-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
 
             <For each={project.metadata.devices}>
-              {device => <DeviceInPreview {...device} />}
+              {(device) => <DeviceInPreview {...device} />}
             </For>
           </div>
         </div>

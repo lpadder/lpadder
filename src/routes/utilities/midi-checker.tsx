@@ -19,7 +19,7 @@ type MidiEvent =
   | { type: "noteon", event: NoteMessageEvent }
   | { type: "noteoff", event: NoteMessageEvent }
   | { type: "controlchange", event: ControlChangeMessageEvent }
-  | { type: "sysex", event: MessageEvent }
+  | { type: "sysex", event: MessageEvent };
 
 const MidiOutputSender = () => {
   const [selectedDeviceIndex, setSelectedDeviceIndex] = createSignal<number | null>(null);
@@ -60,7 +60,7 @@ const MidiOutputSender = () => {
         >
           <option value="none">None</option>
 
-          <For each={webMidiDevices().filter(device => device.enabled)}>
+          <For each={webMidiDevices().filter((device) => device.enabled)}>
             {(device, deviceIndex) => (
               <option value={deviceIndex()}>
                 {device.name}
@@ -109,7 +109,7 @@ const MidiInputChecker = () => {
   const [midiEvents, setMidiEvents] = createSignal<MidiEvent[]>([]);
 
   /** Add an item to the midi events array. */
-  const appendToMidiEvent = (midiEvent: MidiEvent) => setMidiEvents(events => {
+  const appendToMidiEvent = (midiEvent: MidiEvent) => setMidiEvents((events) => {
     /** If we go more than the limit, remove last item. */
     if (events.length >= midiEventsLimit()) {
       events.pop();
@@ -149,7 +149,7 @@ const MidiInputChecker = () => {
   createEffect(() => {
     console.group("[midi-checker/mount] Subscribe to listeners.");
 
-    for (const { input, name } of webMidiDevices().filter(device => device.enabled)) {
+    for (const { input, name } of webMidiDevices().filter((device) => device.enabled)) {
       input.addListener("noteon", inputEventCallback);
       input.addListener("noteoff", inputEventCallback);
       input.addListener("controlchange", inputEventCallback);
@@ -165,7 +165,7 @@ const MidiInputChecker = () => {
     onCleanup(() => {
       console.group("[midi-checker/cleanup] Unsubscribe to listeners.");
 
-      for (const { input, name } of webMidiDevices().filter(device => device.enabled)) {
+      for (const { input, name } of webMidiDevices().filter((device) => device.enabled)) {
         input.removeListener("noteon", inputEventCallback);
         input.removeListener("noteoff", inputEventCallback);
         input.removeListener("controlchange", inputEventCallback);
@@ -184,7 +184,7 @@ const MidiInputChecker = () => {
     <Show when={webMidiInformations.isEnabled} fallback={<p>WebMidi is currently loading... Please wait !</p>}>
       <div class="flex flex-col gap-4">
         <For each={midiEvents()}>
-          {event_info => (
+          {(event_info) => (
             <div
               class="p-4 bg-slate-900 rounded-lg cursor-pointer hover:bg-opacity-60"
             >

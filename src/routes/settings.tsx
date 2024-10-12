@@ -21,7 +21,7 @@ const SettingsLayout: FlowComponent = (props) => {
       </header>
       <nav class="py-2 flex gap-2 pl-4 overflow-x-scroll">
         <For each={settingsList}>
-          {setting => (
+          {(setting) => (
             <div class="px-2 py-1 bg-slate-900">
               <A href={setting.link}>
                 {setting.name}

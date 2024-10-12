@@ -35,7 +35,7 @@ const UtilitiesHome: Component = () => {
           <h1
             class="text-3xl font-medium"
           >
-          Welcome to the Utilities
+            Welcome to the Utilities
           </h1>
           <p>Here you&apos;ll find a lot of utilities around the Launchpad and MIDI devices.</p>
         </div>

@@ -57,7 +57,7 @@ const SettingsMidi: Component = () => {
                   };
 
                   const profiles = deviceCustomProfiles();
-                  const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                  const profilIndex = profiles.findIndex((profile) => profile.raw_name === device().raw_name);
                   profiles[profilIndex] = {
                     ...profiles[profilIndex],
                     name: evt.currentTarget.value
@@ -82,7 +82,7 @@ const SettingsMidi: Component = () => {
                   };
 
                   const profiles = deviceCustomProfiles();
-                  const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                  const profilIndex = profiles.findIndex((profile) => profile.raw_name === device().raw_name);
                   profiles[profilIndex] = {
                     ...profiles[profilIndex],
                     type
@@ -114,7 +114,7 @@ const SettingsMidi: Component = () => {
                     };
 
                     const profiles = deviceCustomProfiles();
-                    const profilIndex = profiles.findIndex(profile => profile.raw_name === device().raw_name);
+                    const profilIndex = profiles.findIndex((profile) => profile.raw_name === device().raw_name);
                     profiles[profilIndex] = {
                       ...profiles[profilIndex],
                       enabled: evt.currentTarget.checked

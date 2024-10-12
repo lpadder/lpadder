@@ -22,7 +22,7 @@ export const parseMidiData = (midi_data: MidiJSON) => {
   const delay = 20;
 
   // Group the notes by time.
-  notes_data.forEach(note => {
+  notes_data.forEach((note) => {
     const start_time = note.time * 1000;
     const duration = (note.duration * 1000) + delay;
 
@@ -45,7 +45,7 @@ export const parseMidiData = (midi_data: MidiJSON) => {
 
     // Find the group.
     const group = grouped_notes.find(
-      group => group.start_time === start_time
+      (group) => group.start_time === start_time
     );
 
     // If the group doesn't exist, create it.

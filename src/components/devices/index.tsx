@@ -25,7 +25,7 @@ export const DeviceButton: Component<{
     class={props.class}
     data-note={props.id}
 
-    onContextMenu={event => {
+    onContextMenu={(event) => {
       event.preventDefault();
 
       // Execute the custom behaviour if it exists.
@@ -33,7 +33,7 @@ export const DeviceButton: Component<{
       return props.context(props.id, event);
     }}
 
-    onTouchStart={down_event => {
+    onTouchStart={(down_event) => {
       /** By stopping propagation, we prevent the `onMouseDown` event. */
       down_event.stopPropagation();
 
@@ -48,7 +48,7 @@ export const DeviceButton: Component<{
       document.addEventListener("touchend", handleTouchEnd);
     }}
 
-    onMouseDown={down_event => {
+    onMouseDown={(down_event) => {
       if (down_event.button === 2) return;
 
       const handleMouseUp = (up_event: MouseEvent) => {

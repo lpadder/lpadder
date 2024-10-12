@@ -7,7 +7,7 @@ type UISelectorType =
   | "none"
   | "timeline"
   | "piano_roll"
-  | "sampling"
+  | "sampling";
 
 const [selected, setSelected] = createSignal<UISelectorType>("none");
 
@@ -22,7 +22,7 @@ const IconItemSelector: Component<{
       "bg-slate-800": selected() === props.selector,
       "hover:(bg-slate-800 bg-opacity-60)": selected() !== props.selector
     }}
-    onClick={() => setSelected(prev => prev === props.selector ? "none" : props.selector)}
+    onClick={() => setSelected((prev) => prev === props.selector ? "none" : props.selector)}
   >
     {props.icon}
   </button>

@@ -5,7 +5,7 @@ export default defineConfig({
 
   theme: {
     fontFamily: {
-      sans: "Poppins",
+      sans: "Poppins"
     }
-  },
+  }
 });

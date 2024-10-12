@@ -14,7 +14,7 @@ type CurrentProjectStore = {
   current_page: null | number;
   metadata: ProjectMetadata;
   data: ProjectData;
-}
+};
 
 /**
  * Store used when a project is opened.
