@@ -17,7 +17,6 @@ import LpadderUpdater from "@/components/LpadderUpdater";
 
 import { enableAndSetup } from "@/utils/webmidi";
 import { webMidiInformations } from "@/stores/webmidi";
-import { JSX } from "solid-js";
 
 export default function RootRender () {
   onMount(() => enableAndSetup());
@@ -46,7 +45,7 @@ export default function RootRender () {
           </Show>
         </MetaProvider>
       )}>
-        {routes as unknown as JSX.Element}
+        {routes}
       </Router>
     </>
   );
