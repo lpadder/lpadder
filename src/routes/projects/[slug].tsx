@@ -87,7 +87,7 @@ const ProjectsEditor: Component = () => {
 
         {/* <div class="absolute z-5 right-4">
               <DropdownButton
-                buttonClassName="bg-gray-600 px-4 py-2 rounded shadow"
+                buttonClassName="bg-slate-600 px-4 py-2 rounded shadow"
                 buttonIcon={
                   <Show when={project.current_page !== null} fallback="Select a page !">
                     {project.data.pages[project.current_page as number].name}

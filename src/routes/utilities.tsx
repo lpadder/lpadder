@@ -1,6 +1,6 @@
-import type { Component } from "solid-js";
+import type { FlowComponent } from "solid-js";
 
-const UtilitiesLayout: Component = () => {
+const UtilitiesLayout: FlowComponent = (props) => {
   const location = useLocation();
   const isUtilitiesRoot = createMemo(() => location.pathname === "/utilities");
 
@@ -12,16 +12,16 @@ const UtilitiesLayout: Component = () => {
         <header
           class="flex justify-start items-center px-8 w-full h-24"
         >
-          <Link
+          <A
             href={isUtilitiesRoot() ? "/" : "/utilities"}
-            class="z-50 px-4 py-2 bg-gray-900 bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80"
+            class="z-50 px-4 py-2 bg-slate-900 bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80"
           >
           Go back
-          </Link>
+          </A>
         </header>
 
         <main class="relative p-4 h-full">
-          <Outlet />
+          {props.children}
         </main>
       </div>
     </>

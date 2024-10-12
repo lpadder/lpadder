@@ -37,8 +37,8 @@ const SettingsMidi: Component = () => {
                 bg-opacity-20
               `}
               classList={{
-                "bg-pink-600": !device().enabled,
-                "bg-blue-600": device().enabled
+                "bg-fuchsia-600": !device().enabled,
+                "bg-sky-600": device().enabled
               }}
             >
               <Input

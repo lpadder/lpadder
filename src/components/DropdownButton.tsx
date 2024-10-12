@@ -36,7 +36,7 @@ const DropdownButton: Component<{
               <Menu class={classNames("transition flex flex-col gap-1 absolute right-0 w-48", props.forceOpenToRight ? "origin-top-left" : "origin-top-right")}>
                 <For each={props.items}>
                   {group_items => group_items.length > 0 && (
-                    <div class="rounded-md backdrop-filter backdrop-blur bg-gray-800 bg-opacity-80 border border-gray-900 p-1.5">
+                    <div class="rounded-md backdrop-filter backdrop-blur bg-slate-800 bg-opacity-80 border border-slate-900 p-1.5">
                       <For each={group_items}>
                         {item => (
                           <MenuItem
@@ -45,7 +45,7 @@ const DropdownButton: Component<{
                               setState(false); // Closes the dropdown.
                               if (item.action) item.action();
                             }}
-                            class="hover:(bg-gray-600 bg-opacity-100) bg-gray-400 bg-opacity-60 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
+                            class="hover:(bg-slate-600 bg-opacity-100) bg-slate-400 bg-opacity-60 w-full block px-2 py-2 text-sm rounded transition-colors cursor-pointer mb-1 last:mb-0"
                           >
                             {item.name}
                           </MenuItem>

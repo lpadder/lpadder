@@ -25,7 +25,7 @@ const LaunchpadProMK2: DeviceComponent = (props) => {
                     )
                       ? "__phantom-pad rounded-full after:rounded-full"
                       : "rounded-sm",
-                    "bg-gray-400 h-full w-full aspect-square"
+                    "bg-slate-400 h-full w-full aspect-square"
                   )}
                   id={padId}
                   context={props.onContext}
@@ -41,7 +41,7 @@ const LaunchpadProMK2: DeviceComponent = (props) => {
       {/** Mode light on the LP Pro MK2 has the `99` MIDI note. */}
       <div
         data-note={99}
-        class="absolute bottom-0 left-0 right-0 w-1 h-1 bg-gray-600 mx-auto"
+        class="absolute bottom-0 left-0 right-0 w-1 h-1 bg-slate-600 mx-auto"
       />
     </div>
   );

@@ -66,7 +66,7 @@ const DeviceInPreview: ParentComponent<ProjectMetadata["devices"][number]> = (de
     <div style={{
       left: canvasX0() + device.canvasX + "px", top: canvasY0() + device.canvasY + "px",
       height: "200px", width: "200px", transform: `scale(${device.canvasScale})`
-    }} class="bg-gray-900 absolute rounded p-2">
+    }} class="bg-slate-900 absolute rounded p-2">
       <Device
         ref={device_ref}
         linkedDevice={linkedDevice()}

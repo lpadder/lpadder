@@ -32,7 +32,7 @@ const Modal: ParentComponent<{
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <DialogOverlay class="fixed inset-0 bg-gray-900 bg-opacity-80" />
+              <DialogOverlay class="fixed inset-0 bg-slate-900 bg-opacity-80" />
             </TransitionChild>
 
             <TransitionChild
@@ -44,7 +44,7 @@ const Modal: ParentComponent<{
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-85"
             >
-              <DialogPanel class="mx-0 my-auto p-4 w-full max-w-md bg-gray-800 rounded-lg border-2 border-gray-900">
+              <DialogPanel class="mx-0 my-auto p-4 w-full max-w-md bg-slate-800 rounded-lg border-2 border-slate-900">
                 {props.children}
               </DialogPanel>
             </TransitionChild>

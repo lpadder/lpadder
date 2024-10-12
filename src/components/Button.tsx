@@ -5,9 +5,9 @@ const Button: ParentComponent<JSX.IntrinsicElements["button"]> = (props) => {
     <button
       class={`
         whitespace-nowrap px-4 py-2 rounded-lg
-        text-gray-300 flex justify-center items-center
-        bg-gray-900 bg-opacity-20
-        border border-gray-900 
+        text-slate-300 flex justify-center items-center
+        bg-slate-900 bg-opacity-20
+        border border-slate-900 
         transition-all
         ${props.class ? props.class : ""}
       `}

@@ -224,15 +224,15 @@ const TicTacToeGame: Component = () => {
     <>
       <Title>lpadder - tic tac toe game</Title>
       <div id="game" class="flex flex-col items-start my-8 mx-8">
-        <Link href="/games" class="flex flex-center justify-center bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80 mb-2 group">
-          <IconMdiArrowBack class="mr-1 group-hover:text-blue-500" />
-          <span class="group-hover:text-blue-500">Go back</span>
-        </Link>
+        <A href="/games" class="flex flex-center justify-center bg-opacity-60 rounded-lg transition-colors hover:bg-opacity-80 mb-2 group">
+          <IconMdiArrowBack class="mr-1 group-hover:text-sky-500" />
+          <span class="group-hover:text-sky-500">Go back</span>
+        </A>
         <h1 class="text-4xl font-bold mb-1">Tic Tac Toe</h1>
         <span class="mb-8">Play a game of TicTacToe against a friend, right on your Launchpad!</span>
         <div id="main-frame" class="flex flex-row gap-12">
           <div id="launchpad-frame">
-            <div class="relative bg-gray-900 p-2 h-[32rem] w-[32rem] rounded-md">
+            <div class="relative bg-slate-900 p-2 h-[32rem] w-[32rem] rounded-md">
               <Device
                 ref={device_ref}
                 linkedDevice={linkedDevice()}
@@ -243,19 +243,19 @@ const TicTacToeGame: Component = () => {
             </div>
             <div class="flex flex-col items-center w-full">
               <Show when={!gameStarted()}>
-                <button class="w-full p-2 bg-gray-700 hover:bg-gray-600 mt-4 rounded-md" onClick={startGame}>{gameWon() ? "Play Again" : "Start Game"}</button>
+                <button class="w-full p-2 bg-slate-700 hover:bg-slate-600 mt-4 rounded-md" onClick={startGame}>{gameWon() ? "Play Again" : "Start Game"}</button>
               </Show>
-              <button class="mt-2 hover:text-blue-500" onClick={clearAllButtons}>Clear Launchpad Output</button>
+              <button class="mt-2 hover:text-sky-500" onClick={clearAllButtons}>Clear Launchpad Output</button>
             </div>
           </div>
           <div id="info-frame">
             <h2 class="text-2xl font-bold">Game status</h2>
             <p>Status: {gameStarted() ? "Playing" : "Game stopped"}</p>
             <Show when={gameStarted() && !gameWon()}>
-              <p class="mt-8 italic tracking-wide text-xl text-blue-300">It is Player {playerNumber}'s turn! (color: {playerNumber() === 1 ? "blue" : "red"})</p>
+              <p class="mt-8 italic tracking-wide text-xl text-sky-300">It is Player {playerNumber()}'s turn! (color: {playerNumber() === 1 ? "blue" : "red"})</p>
             </Show>
             <Show when={gameWon()}>
-              <p class="mt-8 font-bold tracking-wide text-4xl text-pink-600">Player {playerNumber} won!</p>
+              <p class="mt-8 font-bold tracking-wide text-4xl text-fuchsia-600">Player {playerNumber()} won!</p>
             </Show>
             <h2 class="text-2xl font-bold mt-8 mb-4">Settings</h2>
             <label for="dropdown">Output device:</label>

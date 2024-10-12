@@ -20,7 +20,7 @@
 
 /** Utility for the phantoms pads on the devices. */
 .__phantom-pad::after {
-  @apply bg-gray-900 block box-border h-full w-full bg-clip-content;
+  @apply bg-slate-900 block box-border h-full w-full bg-clip-content;
   
   content: "";
   padding: 2px;

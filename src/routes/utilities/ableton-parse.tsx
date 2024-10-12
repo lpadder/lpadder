@@ -31,11 +31,11 @@ const AbletonParsedResults: Component<{
         <For each={props.abletonData.tracksData}>
           {track => (track.type === "midi") && (
             <div
-              class="p-4 bg-gray-900 rounded-lg"
+              class="p-4 bg-slate-900 rounded-lg"
             >
               <div class="mb-4">
-                <h4 class="font-medium text-lg text-gray-300">{track.name}</h4>
-                <p class="text-gray-400">This track is made of {track.devices.length} device(s).</p>
+                <h4 class="font-medium text-lg text-slate-300">{track.name}</h4>
+                <p class="text-slate-400">This track is made of {track.devices.length} device(s).</p>
               </div>
 
               <For each={track.devices}>
@@ -104,12 +104,12 @@ const MidiDeviceSample: Component<{
   const start_time_percent = () => inPercent(props.sample.start_time);
 
   return (
-    <div class="bg-gray-600 p-2 rounded-lg">
+    <div class="bg-slate-600 p-2 rounded-lg">
       <h4>Sample: {props.sample.name} ({props.sample.relative_path})</h4>
 
-      <div class="relative w-full bg-gray-200 h-4 dark:bg-gray-700 rounded-md">
+      <div class="relative w-full bg-slate-200 h-4 dark:bg-slate-700 rounded-md">
         <div
-          class="absolute bg-blue-600 h-full rounded-sm"
+          class="absolute bg-sky-600 h-full rounded-sm"
           style={{
             width: `${duration_percent()}%`,
             left: `${start_time_percent()}%`
@@ -140,11 +140,11 @@ const MidiDeviceDrumRack: Component<{
       if (!padElement) return;
 
       /** Disable the default color. */
-      padElement.classList.toggle("bg-gray-400", false);
+      padElement.classList.toggle("bg-slate-400", false);
 
       /** Highlight the pads. Highlight the selected pad in a lighter color. */
       padElement.classList.toggle(
-        selectedBranch() === currentBranchIndex ? "bg-blue-400" : "bg-blue-800",
+        selectedBranch() === currentBranchIndex ? "bg-sky-400" : "bg-sky-800",
         true
       );
     });
@@ -157,11 +157,11 @@ const MidiDeviceDrumRack: Component<{
         if (!padElement) return;
 
         /** Disable any highlighted pad. */
-        padElement.classList.toggle("bg-blue-400", false);
-        padElement.classList.toggle("bg-blue-800", false);
+        padElement.classList.toggle("bg-sky-400", false);
+        padElement.classList.toggle("bg-sky-800", false);
 
         /** Restore the default color to the pad. */
-        padElement.classList.toggle("bg-gray-400", true);
+        padElement.classList.toggle("bg-slate-400", true);
       });
     });
   });
@@ -206,14 +206,14 @@ const MidiDeviceInstrumentRack: Component<{
     <div>
       <h5>InstrumentRack: {props.instrument_rack.name}</h5>
 
-      <div class="bg-gray-600 flex flex-wrap mb-5">
+      <div class="bg-slate-600 flex flex-wrap mb-5">
         <For each={props.instrument_rack.branches}>
           {(branch, branch_index) => (
             <button
               class={`
                 px-4 py-2 ${selectedBranch() === branch_index()
-              ? "bg-blue-600"
-              : "bg-gray-800 hover:bg-opacity-60"
+              ? "bg-sky-600"
+              : "bg-slate-800 hover:bg-opacity-60"
             }
               `}
               onClick={() => setSelectedBranch(branch_index())}

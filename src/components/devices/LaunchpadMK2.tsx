@@ -21,7 +21,7 @@ const LaunchpadMK2: DeviceComponent = (props) => {
                       || padId.toString()[1] === "9"
                     )
                       ? "__phantom-pad rounded-full after:rounded-full" : "rounded-sm",
-                    "bg-gray-400 h-full w-full aspect-square"
+                    "bg-slate-400 h-full w-full aspect-square"
                   )}
                   id={padId}
                   context={props.onContext}

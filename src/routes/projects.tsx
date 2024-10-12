@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import type { FlowComponent } from "solid-js";
 
 import LpadderLogo from "@/assets/icon.png";
 
@@ -25,8 +25,10 @@ import {
   projectsMetadataStore,
   setProjectsMetadataStore
 } from "@/stores/projects_metadata";
+import ImportProjectModal from "@/components/modals/ImportProjectModal";
+import CreateProjectModal from "@/components/modals/CreateProjectModal";
 
-const ProjectsLayout: Component = () => {
+const ProjectsLayout: FlowComponent = (props) => {
   /** We group the mount and cleanup for debugging purposes. */
   onMount(() => console.group("[PROJECTS->MOUNT]"));
   onCleanup(() => console.groupEnd());
@@ -50,15 +52,18 @@ const ProjectsLayout: Component = () => {
     <>
       <Title>lpadder - projects</Title>
 
+      <ImportProjectModal />
+      <CreateProjectModal />
+
       <Show when={projectsMetadataStore.loaded} fallback={
         <FullLoader message="Preloading the projects' metadata..." />
       }>
         <div class="h-screen overflow-y-hidden">
-          <div class="h-20 flex px-8 bg-gray-900 justify-between items-center">
+          <div class="h-20 flex px-8 bg-slate-900 justify-between items-center">
             {/* Mobile->HeaderTopLeft */}
             <button
               onClick={() => setMobileHeaderVisibility(show => !show)}
-              class="flex text-2xl md:hidden p-2 text-gray-400 bg-gray-600 bg-opacity-0 rounded transition-colors hover:text-gray-200 hover:bg-opacity-20 focus:bg-opacity-40"
+              class="flex text-2xl md:hidden p-2 text-slate-400 bg-slate-600 bg-opacity-0 rounded transition-colors hover:text-slate-200 hover:bg-opacity-20 focus:bg-opacity-40"
             >
               <Show when={showMobileHeader()} fallback={<IconMdiMenu />}>
                 <IconMdiClose />
@@ -68,7 +73,7 @@ const ProjectsLayout: Component = () => {
             {/* Desktop->HeaderTopLeft */}
             <div class="hidden md:(flex items-center gap-4)">
               <img class="w-10 h-10" src={LpadderLogo} alt="lpadder's logo" />
-              <span class="font-medium text-xl text-gray-300">lpadder.</span>
+              <span class="font-medium text-xl text-slate-300">lpadder.</span>
             </div>
 
             {/* HeaderTopRight */}
@@ -104,7 +109,7 @@ const ProjectsLayout: Component = () => {
                       ]
                     ]}
 
-                    buttonClassName="p-2 text-xl transition-colors hover:bg-pink-800 hover:bg-opacity-20 text-gray-400 hover:text-pink-400 rounded cursor-pointer"
+                    buttonClassName="p-2 text-xl transition-colors hover:bg-fuchsia-800 hover:bg-opacity-20 text-slate-400 hover:text-fuchsia-400 rounded cursor-pointer"
                     buttonIcon={<IconMdiDotsVertical />}
                   />
                 </HeaderItem>
@@ -124,14 +129,14 @@ const ProjectsLayout: Component = () => {
           </div>
 
           {/** Projects navigation */}
-          <nav class="z-5 md:z-0 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-gray-700"
+          <nav class="z-5 md:z-0 md:block fixed h-full top-20 left-0 md:w-72 w-full bg-slate-700"
             classList={{
               "hidden": !showMobileHeader()
             }}
           >
 
             {/** Import / Create */}
-            <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-blue-600 to-pink-600">
+            <div class="flex justify-around items-center w-auto h-12 bg-gradient-to-r from-sky-600 to-fuchsia-600">
               <NavbarHeadItem onClick={createImportProject}>
                 Import
               </NavbarHeadItem>
@@ -149,14 +154,14 @@ const ProjectsLayout: Component = () => {
                   </p>
                   <div class="flex flex-col gap-4 justify-center items-center">
                     <button
-                      class="px-4 py-2 font-medium bg-pink-600 bg-opacity-20 rounded border-2 border-pink-600"
+                      class="px-4 py-2 font-medium bg-fuchsia-600 bg-opacity-20 rounded border-2 border-fuchsia-600"
                       onClick={() => setModalsStore({ createProjectModal: true })}
                     >
                       Create a new project !
                     </button>
                     <span>OR</span>
                     <button
-                      class="px-4 py-2 font-medium bg-blue-600 bg-opacity-20 rounded border-2 border-blue-600"
+                      class="px-4 py-2 font-medium bg-sky-600 bg-opacity-20 rounded border-2 border-sky-600"
                       onClick={createImportProject}
                     >
                       Import a lpadder project
@@ -175,17 +180,17 @@ const ProjectsLayout: Component = () => {
               </Show>
             </div>
 
-            <Link
+            <A
               href="/"
-              class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-gray-500 hover:bg-pink-500 focus:bg-blue-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
+              class="fixed bottom-0 md:h-16 h-20 w-full md:w-72 bg-slate-500 hover:bg-fuchsia-500 focus:bg-sky-500 flex justify-center items-center font-medium text-lg transition-colors shadow-lg"
             >
               EXIT
-            </Link>
+            </A>
           </nav>
 
           {/** Project editor */}
           <div class="fixed bottom-0 top-20 left-0 md:left-72 right-0 overflow-y-auto">
-            <Outlet />
+            {props.children}
           </div>
         </div>
       </Show>

@@ -39,8 +39,8 @@ const MidiOutputSender = () => {
   };
 
   return (
-    <div class="max-w-xl mx-auto mb-8 p-6 bg-gray-900 shadow-lg rounded-lg bg-opacity-40">
-      <h2 class="mb-4 text-xl text-gray-300">Send output to MIDI</h2>
+    <div class="max-w-xl mx-auto mb-8 p-6 bg-slate-900 shadow-lg rounded-lg bg-opacity-40">
+      <h2 class="mb-4 text-xl text-slate-300">Send output to MIDI</h2>
 
       <div>
         <label for="midi-output-select" class="text-sm font-medium mb-1">
@@ -95,7 +95,7 @@ const MidiOutputSender = () => {
       </div> */}
 
       <button
-        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded"
         onClick={handleSysExSend}
       >
         Send SysEx
@@ -186,7 +186,7 @@ const MidiInputChecker = () => {
         <For each={midiEvents()}>
           {event_info => (
             <div
-              class="p-4 bg-gray-900 rounded-lg cursor-pointer hover:bg-opacity-60"
+              class="p-4 bg-slate-900 rounded-lg cursor-pointer hover:bg-opacity-60"
             >
               <h4>[{event_info.event.port.name}]</h4>
               <p>Channel {event_info.event.message.channel ?? "UNKNOWN"}</p>
@@ -230,7 +230,7 @@ const UtilitiesMidiChecker: Component = () => {
         <h1 class="font-medium text-2xl">
           MIDI Checker
         </h1>
-        <p class="text-gray-400">
+        <p class="text-slate-400">
           This utility listens to all the events of
           the available inputs and show them there.
           You can also trigger events to the available outputs.

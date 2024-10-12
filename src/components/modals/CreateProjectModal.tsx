@@ -59,23 +59,23 @@ const CreateProjectModal: Component = () => {
   return (
     <Modal open={modalsStore.createProjectModal} onClose={resetAndClose}>
       <div class="p-4 pb-0">
-        <DialogTitle as="h2" class="mb-2 text-2xl font-bold text-gray-200">
+        <DialogTitle as="h2" class="mb-2 text-2xl font-bold text-slate-200">
           Create a project
         </DialogTitle>
-        <p class="text-gray-400 text-sm">
+        <p class="text-slate-400 text-sm">
           This is the project creation process.
           You can easily set-up a project by filling out this form.
         </p>
 
         <form onSubmit={handleCreation}>
           <div class="text-center mt-6 mb-4 mx-auto w-full">
-            <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">Global informations</h4>
+            <h4 class="bg-slate-900 inline-block px-4 py-1 rounded-md text-lg">Global informations</h4>
           </div>
 
           <div class="space-y-2">
             <Input
               autocomplete="off"
-              class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
+              class="border border-slate-900 hover:bg-opacity-60 focus:border-fuchsia-400"
               label="Personal slug"
               placeholder="some-amazing-project"
               tip="Slug used to identify the project more easily from URL."
@@ -89,7 +89,7 @@ const CreateProjectModal: Component = () => {
 
             <Input
               autocomplete="off"
-              class="border border-gray-900 hover:bg-opacity-60 focus:border-pink-400"
+              class="border border-slate-900 hover:bg-opacity-60 focus:border-fuchsia-400"
               label="Cover's name"
               placeholder="Author - Title (Launchpad Cover)"
               onChange={(e) => setState({ ...state, name: e.currentTarget.value })}
@@ -99,11 +99,11 @@ const CreateProjectModal: Component = () => {
           </div>
 
           <div class="text-center mt-6 mb-4 mx-auto w-full">
-            <h4 class="bg-gray-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
+            <h4 class="bg-slate-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
           </div>
 
           <Show when={usableDevices().length > 0} fallback={
-            <p class="text-center text-xs p-2 bg-gray-700">
+            <p class="text-center text-xs p-2 bg-slate-700">
               No MIDI device to set-up. <br />
               Check if you've connected a MIDI device.
             </p>
@@ -117,11 +117,11 @@ const CreateProjectModal: Component = () => {
                 {device => (
                   <button
                     type="button"
-                    class="text-sm h-26 w-26 p-2 border border-pink-500 bg-pink-500 transition-colors cursor-pointer rounded"
+                    class="text-sm h-26 w-26 p-2 border border-fuchsia-500 bg-fuchsia-500 transition-colors cursor-pointer rounded"
                     onClick={() => setState("selected_devices", device.raw_name, (prev) => !prev)}
                     classList={{
                       "bg-opacity-100 hover:bg-opacity-95": state.selected_devices[device.raw_name],
-                      "bg-opacity-20 hover:bg-opacity-40 text-pink-200": !state.selected_devices[device.raw_name]
+                      "bg-opacity-20 hover:bg-opacity-40 text-fuchsia-200": !state.selected_devices[device.raw_name]
                     }}
                   >
                     {device.name}
@@ -134,14 +134,14 @@ const CreateProjectModal: Component = () => {
           <div class="flex gap-2 justify-between pt-6">
             <button
               type="button"
-              class="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
+              class="px-4 py-2 w-full text-sm font-medium text-slate-400 text-opacity-60 transition-colors hover:text-opacity-80"
               onClick={resetAndClose}
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="px-4 py-2 w-full text-sm font-medium text-pink-400 bg-pink-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
+              class="px-4 py-2 w-full text-sm font-medium text-fuchsia-400 bg-fuchsia-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
             >
               Create
             </button>

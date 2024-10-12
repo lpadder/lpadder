@@ -7,18 +7,18 @@ const SubMenu: Component<{
   href: string
 }> = (props) => {
   return (
-    <Link href={props.href} class="w-full max-w-80 sm:w-96">
-      <div class="p-4 bg-gray-500 bg-opacity-40 rounded-md backdrop-filter backdrop-blur transition-colors hover:bg-opacity-60">
-        <h2 class="text-xl font-medium text-blue-50">{props.title}</h2>
-        <p class="font-thin text-blue-100 opacity-80">{props.description}</p>
+    <A href={props.href} class="w-full max-w-80 sm:w-96">
+      <div class="p-4 bg-slate-500 bg-opacity-40 rounded-md backdrop-filter backdrop-blur transition-colors hover:bg-opacity-60">
+        <h2 class="text-xl font-medium text-sky-50">{props.title}</h2>
+        <p class="font-thin text-sky-100 opacity-80">{props.description}</p>
       </div>
-    </Link>
+    </A>
   );
 };
 
 const Home: Component = () => {
   return (
-    <div class="flex flex-col justify-between p-8 min-h-screen bg-bottom bg-no-repeat bg-contain bg-home-mobile sm:bg-home-desktop sm:bg-right">
+    <div class="flex flex-col justify-between p-8 min-h-screen bg-bottom bg-no-repeat bg-contain bg-[url(/src/assets/backgrounds/home-mobile.svg)] sm:bg-[url(/src/assets/backgrounds/home-desktop.svg)] sm:bg-right">
       <header>
         <nav class="flex flex-row justify-center w-full mb-12 bg-transparent sm:justify-start">
           <img class="w-24 h-24" alt="lpadder's logo" src={LpadderLogo} />
@@ -55,13 +55,13 @@ const Home: Component = () => {
         <p class="text-opacity-60">Version: <span class="font-medium">
           <Show when={!import.meta.env.DEV} fallback="next">{APP_VERSION}</Show>
         </span></p>
-        <p class="text-gray-200 text-opacity-80">
+        <p class="text-slate-200 text-opacity-80">
             Made with ❤️ by {" "}
           <a
             href="https://github.com/Vexcited"
             target="_blank"
             rel="noreferrer noopener"
-            class="text-gray-200 text-opacity-90 hover:text-opacity-100"
+            class="text-slate-200 text-opacity-90 hover:text-opacity-100"
           >
             Vexcited
           </a>

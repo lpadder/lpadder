@@ -14,7 +14,7 @@ const ProjectPreviewButton: Component<{
   action: () => unknown;
 }> = (props) => (
   <button
-    class="p-1.5 flex text-xl rounded-md shadow-md bg-gray-500 bg-opacity-40 opacity-80 transition hover:(opacity-100 bg-opacity-60)"
+    class="p-1.5 flex text-xl rounded-md shadow-md bg-slate-500 bg-opacity-40 opacity-80 transition hover:(opacity-100 bg-opacity-60)"
     onClick={() => props.action()}
     title={props.title}
   >
@@ -178,7 +178,7 @@ const ProjectPreview: Component = () => {
 
   return (
     <Show when={currentProjectStore.slug !== null && currentProjectStore}>{project => (
-      <div class="relative h-full bg-gray-800 overflow-hidden">
+      <div class="relative h-full bg-slate-800 overflow-hidden">
         <div class={`z-15 ${isPreviewCanvasFullscreen() ? "fixed" : "absolute"} top-4 left-4 flex flex-col gap-2`}>
           <ProjectPreviewButton
             title="Zoom in"
@@ -246,7 +246,7 @@ const ProjectPreview: Component = () => {
             ref={canvas_ref}
             class={`
               fixed 
-              ${isPreviewCanvasFullscreen() ? "z-10 bg-gray-800" : "-z-99 bg-transparent"}
+              ${isPreviewCanvasFullscreen() ? "z-10 bg-slate-800" : "-z-99 bg-transparent"}
             `}
             style={{
               height: project.metadata.canvasHeight + "px",
@@ -257,9 +257,9 @@ const ProjectPreview: Component = () => {
             }}
           >
             {/** Line for Y */}
-            {/* <span class="absolute bg-gray-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
+            {/* <span class="absolute bg-slate-700 h-full w-1" style={{ left: project.metadata.canvasWidth / 2 + "px" }}></span> */}
             {/** Line for X */}
-            {/* <span class="absolute bg-gray-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
+            {/* <span class="absolute bg-slate-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
 
             <For each={project.metadata.devices}>
               {device => <DeviceInPreview {...device} />}

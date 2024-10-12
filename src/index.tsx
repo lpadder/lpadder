@@ -3,7 +3,8 @@ import "@fontsource/poppins/latin-300.css";
 import "@fontsource/poppins/latin-400.css";
 import "@fontsource/poppins/latin-500.css";
 import "@/styles/globals.css";
-import "virtual:windi.css";
+import "@unocss/reset/tailwind.css";
+import "virtual:uno.css";
 
 import { MetaProvider } from "@solidjs/meta";
 import { Toaster } from "solid-toast";
@@ -12,43 +13,41 @@ import routes from "~solid-pages";
 
 import FullLoader from "@/components/FullLoader";
 import WebMidiErrorModal from "@/components/modals/WebMidiErrorModal";
-import CreateProjectModal from "@/components/modals/CreateProjectModal";
-import ImportProjectModal from "@/components/modals/ImportProjectModal";
 import LpadderUpdater from "@/components/LpadderUpdater";
 
 import { enableAndSetup } from "@/utils/webmidi";
 import { webMidiInformations } from "@/stores/webmidi";
+import { JSX } from "solid-js";
 
 export default function RootRender () {
-  const Routes = useRoutes(routes);
   onMount(() => enableAndSetup());
 
   return (
     <>
       <LpadderUpdater />
       <Toaster position="bottom-right" toastOptions={{
-        className: "!bg-gray-900 !text-gray-200"
+        className: "!bg-slate-900 !text-slate-200"
       }} />
 
-      <MetaProvider>
-        <Title>lpadder.</Title>
-        <Router>
+      <Router root={props => (
+        <MetaProvider>
+          <Title>lpadder</Title>
           <Show
             when={webMidiInformations.wasRequested}
             fallback={<FullLoader message="Requesting WebMIDI..." />}
           >
             <WebMidiErrorModal />
-            <ImportProjectModal />
-            <CreateProjectModal />
 
             <Suspense
               fallback={<FullLoader message="Loading route..." />}
             >
-              <Routes />
+              {props.children}
             </Suspense>
           </Show>
-        </Router>
-      </MetaProvider>
+        </MetaProvider>
+      )}>
+        {routes as unknown as JSX.Element}
+      </Router>
     </>
   );
 }

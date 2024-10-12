@@ -34,7 +34,7 @@ const LpadderUpdaterModal: Component = () => {
       <div class="
         p-4 mb-4
         font-medium
-        bg-blue-800 bg-opacity-40 rounded text-blue-200
+        bg-sky-800 bg-opacity-40 rounded text-sky-200
       ">
         <span>New version available, click on <span class="font-bold">Reload</span> button to update.</span>
       </div>
@@ -44,7 +44,7 @@ const LpadderUpdaterModal: Component = () => {
           onClick={() => close()}
           class="
             px-6 py-2 rounded
-            hover:bg-blue-800 hover:bg-opacity-20
+            hover:bg-sky-800 hover:bg-opacity-20
             font-medium transition bg-transparent
           "
         >
@@ -52,7 +52,7 @@ const LpadderUpdaterModal: Component = () => {
         </button>
 
         <button
-          class="px-6 py-2 transition bg-blue-800 rounded hover:bg-opacity-60 font-medium"
+          class="px-6 py-2 transition bg-sky-800 rounded hover:bg-opacity-60 font-medium"
           onClick={() => updateServiceWorker(true)}
         >
           Reload

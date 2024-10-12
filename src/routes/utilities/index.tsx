@@ -45,21 +45,21 @@ const UtilitiesHome: Component = () => {
         >
           <For each={utilities}>
             {({ slug, description }) => (
-              <Link
+              <A
                 href={`/utilities/${slug}`}
-                class="group p-4 rounded-lg w-full bg-gray-900 bg-opacity-20 shadow-gray-900/50 hover:bg-opacity-60 shadow-sm hover:shadow-lg transition cursor-pointer"
+                class="group p-4 rounded-lg w-full bg-slate-900 bg-opacity-20 shadow-slate-900/50 hover:bg-opacity-60 shadow-sm hover:shadow-lg transition cursor-pointer"
               >
                 <h2
-                  class="transition-colors text-gray-400 group-hover:text-gray-200 font-medium text-xl mb-2"
+                  class="transition-colors text-slate-400 group-hover:text-slate-200 font-medium text-xl mb-2"
                 >
                   {slug}
                 </h2>
                 <p
-                  class="transition-colors text-gray-400 text-opacity-60 group-hover:text-opacity-100"
+                  class="transition-colors text-slate-400 text-opacity-60 group-hover:text-opacity-100"
                 >
                   {description}
                 </p>
-              </Link>
+              </A>
             )}
           </For>
         </div>

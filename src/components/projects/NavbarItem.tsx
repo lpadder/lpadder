@@ -32,9 +32,9 @@ const NavbarItem: Component<{
       class={`
         flex flex-row items-center justify-between
         w-full px-4 py-6 cursor-pointer
-        ${current_slug() === props.slug ? "bg-gray-600" : "bg-gray-700"}
-        hover:bg-gray-800 hover:bg-opacity-40
-        border-solid border-t-2 border-gray-800
+        ${current_slug() === props.slug ? "bg-slate-600" : "bg-slate-700"}
+        hover:bg-slate-800 hover:bg-opacity-40
+        border-solid border-t-2 border-slate-800
       `}
     >
       <div>
@@ -44,7 +44,7 @@ const NavbarItem: Component<{
 
       <DropdownButton
         buttonIcon={<IconMdiDotsVertical  />}
-        buttonClassName="text-lg p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-gray-900 cursor-pointer"
+        buttonClassName="text-lg p-2 rounded-lg transition-colors hover:bg-opacity-40 hover:bg-slate-900 cursor-pointer"
 
         items={[[
           {

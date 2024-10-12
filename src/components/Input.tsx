@@ -28,7 +28,7 @@ const Input: InputProps = (props) => {
         id={`__input_label_${local.label}`}
         class={`
           py-2 px-4 w-full rounded-lg outline-none
-          bg-gray-900 bg-opacity-40
+          bg-slate-900 bg-opacity-40
           transition-colors focus:bg-opacity-100
           ${local.class ? local.class : ""}
         `}
@@ -37,7 +37,7 @@ const Input: InputProps = (props) => {
       />
 
       <Show when={local.tip}>
-        <p class="mt-2 text-sm text-gray-600 text-opacity-60">
+        <p class="mt-2 text-sm text-slate-600 text-opacity-60">
           {local.tip}
         </p>
       </Show>

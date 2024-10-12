@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import pkg from "./package.json";
 import path from "path";
 
+import unocss from "unocss/vite";
 import solid from "vite-plugin-solid";
-import windi from "vite-plugin-windicss";
 import { VitePWA as pwa } from "vite-plugin-pwa";
 
 import icons from "unplugin-icons/vite";
@@ -14,8 +14,8 @@ import imports from "unplugin-auto-import/vite";
 
 export default defineConfig({
   plugins: [
+    unocss(),
     solid(),
-    windi(),
 
     pages({
       dirs: "./src/routes"
@@ -37,12 +37,13 @@ export default defineConfig({
 
       imports: [
         "solid-js",
-        "@solidjs/router",
         {
-          // "@solid-primitives/i18n": [
-          //   "useI18n",
-          //   "createI18nContext"
-          // ],
+          "@solidjs/router": [
+            "A",
+            "Router",
+            "Navigate",
+            "useNavigate"
+          ],
           "@solidjs/meta": [
             "Title"
           ]

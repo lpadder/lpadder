@@ -14,10 +14,10 @@ const FileInput: FileInputProps = (props) => {
       <button class="
         text-white font-medium inline-flex items-center justify-center
         py-2 px-6 w-full rounded-lg outline-none
-        bg-gray-900 bg-opacity-60
+        bg-slate-900 bg-opacity-60
         transition-colors
 
-        border border-gray-900 group-hover:bg-opacity-80 focus:border-gray-400
+        border border-slate-900 group-hover:bg-opacity-80 focus:border-slate-400
       ">
         {props.label}
       </button>

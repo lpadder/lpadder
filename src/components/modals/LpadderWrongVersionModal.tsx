@@ -18,27 +18,27 @@ const LpadderWrongVersionModal: Component = () => {
 
   return (
     <Modal open={modalsStore.lpadderWrongVersionModal} onClose={resetAndClose}>
-      <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-200">
+      <h2 class="mt-6 text-3xl font-extrabold text-center text-slate-200">
         Version not matching !
       </h2>
 
-      <p class="p-3 bg-gray-600 bg-opacity-40 rounded-lg">
-        To play and import this project, you need version <span class="font-bold text-blue-400">v{required_version()}</span> of lpadder
-        while you&apos;re currently on version <span class="font-bold text-pink-400">v{APP_VERSION}</span>.
+      <p class="p-3 bg-slate-600 bg-opacity-40 rounded-lg">
+        To play and import this project, you need version <span class="font-bold text-sky-400">v{required_version()}</span> of lpadder
+        while you&apos;re currently on version <span class="font-bold text-fuchsia-400">v{APP_VERSION}</span>.
       </p>
 
       <Show when={!version_check_result()} fallback={
-        <p class="text-gray-400">
+        <p class="text-slate-400">
           A deployment URL for lpadder <span class="font-bold">v{required_version()}</span> is available.
           Click on the button below to access it !
         </p>
       }>
         <div>
-          <div class="mt-2 p-2 bg-pink-600 bg-opacity-40 rounded-lg text-center">
+          <div class="mt-2 p-2 bg-fuchsia-600 bg-opacity-40 rounded-lg text-center">
             {modal_data()}
           </div>
 
-          <p class="text-gray-400 mt-2">
+          <p class="text-slate-400 mt-2">
               As lpadder <span class="font-bold">v{required_version()}</span> is not available, you can&apos;t play this project.
           </p>
         </div>
@@ -47,7 +47,7 @@ const LpadderWrongVersionModal: Component = () => {
       <div class="flex gap-2 justify-between">
         <button
           type="button"
-          class="px-4 py-2 w-full text-sm font-medium text-gray-400 text-opacity-60 transition-colors hover:text-opacity-80"
+          class="px-4 py-2 w-full text-sm font-medium text-slate-400 text-opacity-60 transition-colors hover:text-opacity-80"
           onClick={resetAndClose}
         >
           {version_check_result() ? "Abort" : "Cancel"}
@@ -56,7 +56,7 @@ const LpadderWrongVersionModal: Component = () => {
         <Show when={version_check_result() && modal_data()}>
           <a
             href={modal_data()}
-            class="px-4 py-2 w-full text-center text-sm font-medium text-blue-400 bg-blue-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
+            class="px-4 py-2 w-full text-center text-sm font-medium text-sky-400 bg-sky-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
           >
             Go to v{required_version()}
           </a>

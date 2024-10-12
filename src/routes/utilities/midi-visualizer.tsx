@@ -138,14 +138,14 @@ export default function UtilitiesMidiVisualizer () {
         <h1 class="font-medium text-2xl">
           Launchpad MIDI Visualizer
         </h1>
-        <p class="text-gray-400">
+        <p class="text-slate-400">
           This utility takes any MIDI file and shows a preview of
           it on the browser and on a selected Launchpad output.
         </p>
       </header>
 
       <form
-        class="mb-8 mx-auto w-max p-6 rounded-lg bg-gradient-to-tr from-blue-600 to-pink-600 shadow-lg"
+        class="mb-8 mx-auto w-max p-6 rounded-lg bg-gradient-to-tr from-sky-600 to-fuchsia-600 shadow-lg"
         onSubmit={(e) => e.preventDefault()}
       >
         <FileInput
@@ -179,7 +179,7 @@ export default function UtilitiesMidiVisualizer () {
             </Select>
           </Show>
 
-          <div class="relative max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-3 border-2 border-gray-900 bg-gray-900 bg-opacity-40 shadow-lg">
+          <div class="relative max-w-md rounded-lg h-auto sm:w-64 sm:h-64 mx-auto p-3 border-2 border-slate-900 bg-slate-900 bg-opacity-40 shadow-lg">
             <Launchpad
               ref={launchpad_ref}
               linkedDevice={selectedDevice()}
@@ -190,7 +190,7 @@ export default function UtilitiesMidiVisualizer () {
           </div>
 
           <button
-            class="px-4 py-2 rounded-lg bg-gray-900 font-medium"
+            class="px-4 py-2 rounded-lg bg-slate-900 font-medium"
             onClick={playMidi}
           >
             Play MIDI

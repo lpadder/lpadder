@@ -23,7 +23,7 @@ const LaunchpadX: DeviceComponent = (props) => {
                       || padId.toString()[1] === "9"
                     )
                       ? "__phantom-pad rounded-sm" : "",
-                    "bg-gray-400 h-full w-full aspect-square rounded-sm"
+                    "bg-slate-400 h-full w-full aspect-square rounded-sm"
                   )}
                   id={padId}
                   context={props.onContext}
@@ -32,7 +32,7 @@ const LaunchpadX: DeviceComponent = (props) => {
                 /> : (padId === 99)
                   ? (
                     <div
-                      class="h-full w-full bg-gray-400 rounded-sm aspect-square transform scale-75"
+                      class="h-full w-full bg-slate-400 rounded-sm aspect-square transform scale-75"
                       data-note={padId}
                     >
                       <img
