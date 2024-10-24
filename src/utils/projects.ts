@@ -13,6 +13,7 @@ import {
 import { produce, unwrap } from "solid-js/store";
 
 import { log, error, logStart, logEnd } from "@/utils/logger";
+import { DeviceType } from "./devices";
 // Import JSZip from "jszip";
 
 /** Saves the current project to localForage. */
@@ -123,33 +124,57 @@ export const checkProjectVersion = async (version: string) => {
   return { success: true } as const;
 };
 
-/** Takes a `slug` parameter and creates/imports a new project with that slug. */
-export const createNewProject = async (
-  slug: string,
-  options: {
-    importing: true,
-    project: { data: ProjectData, metadata: ProjectMetadata }
-  } | {
-    importing: false,
-    project: {
-      name: string,
-      devices: ConnectedDeviceData[]
-    }
-  }
-): Promise<Response<undefined>> => {
-  if (!slug) return {
-    success: false,
-    message: "Slug is required."
-  };
+/**
+ * throws if any of the assertions are false
+ */
+const _assert_project_can_be_created = async (slug: string): Promise<void> => {
+  if (!slug)
+    throw new Error("Slug is required.");
 
-  // Check if the project's slug already exists.
   const { success: alreadyExists } = await projectsMetadataLocal.get(slug);
-  if (alreadyExists) return {
-    success: false,
-    message: "A project with this slug already exists."
-  };
 
-  const data: ProjectData = options.importing ? options.project.data : {
+  if (alreadyExists)
+    throw new Error("A project with this slug already exists.");
+};
+
+/** Takes a `slug` parameter and creates/imports a new project with that slug. */
+export const importProject = async (
+  slug: string,
+  data: ProjectData,
+  metadata: ProjectMetadata
+): Promise<void> => {
+  await _assert_project_can_be_created(slug);
+  return _project_creation_completion(slug, data, metadata);
+};
+
+
+const _project_creation_completion = async (
+  slug: string,
+  data: ProjectData,
+  metadata: ProjectMetadata
+): Promise<void> => {
+  // Update the data localForage.
+  const data_response = await projectsDataLocal.update(slug, data);
+  if (!data_response.success)
+    throw new Error(data_response.message);
+
+  // Update the metadata localForage.
+  const metadata_response = await projectsMetadataLocal.update(slug, metadata);
+  if (!metadata_response.success)
+    throw new Error(metadata_response.message);
+
+  // Update the metadata store.
+  setProjectsMetadataStore(
+    produce(((store) => {
+      store.metadatas.push({ slug, metadata });
+    }))
+  );
+};
+
+export const generateProject = async (slug: string, name: string, devices: DeviceType[]): Promise<void> => {
+  await _assert_project_can_be_created(slug);
+
+  const data: ProjectData = {
     pages: [],
     files: {},
 
@@ -157,22 +182,18 @@ export const createNewProject = async (
     global_bpm: 120
   };
 
-  const metadata: ProjectMetadata = options.importing ? options.project.metadata : {
-    name: options.project.name,
+  const metadata: ProjectMetadata = {
+    name: name,
     authors: [],
     creators: [],
 
-    devices: options.project.devices.map((device, deviceIndex) => ({
-      name: device.name,
-      /** Default device to use is the Lanchpad Pro MK2 (without CFW). */
-      type: device.type || "launchpad_pro_mk2",
-      device_linked: device.raw_name,
-
-      // Default values.
+    devices: devices.map((device, index) => ({
+      type: device,
       canvasScale: 1,
+
       // Put them next to each other, in the middle of the canvas, with a gap of 15px.
       // Original equation: `(deviceIndex * (200 + 15)) - ((200 + (15 / 2)) * options.project.devices.length / 2)`.
-      canvasX: (215 * deviceIndex) - (103.75 * options.project.devices.length),
+      canvasX: (215 * index) - (103.75 * devices.length),
       canvasY: -(200 / 2)
     })),
 
@@ -190,25 +211,7 @@ export const createNewProject = async (
     }
   };
 
-  // Update the data localForage.
-  const data_response = await projectsDataLocal.update(slug, data);
-  if (!data_response.success) return data_response;
-
-  // Update the metadata localForage.
-  const metadata_response = await projectsMetadataLocal.update(slug, metadata);
-  if (!metadata_response.success) return metadata_response;
-
-  // Update the metadata store.
-  setProjectsMetadataStore(
-    produce(((store) => {
-      store.metadatas.push({ slug, metadata });
-    }))
-  );
-
-  return {
-    success: true,
-    data: undefined
-  };
+  await _project_creation_completion(slug, data, metadata);
 };
 
 /** Takes a `slug` parameter and deletes the corresponding project. */

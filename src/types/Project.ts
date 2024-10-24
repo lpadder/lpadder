@@ -75,8 +75,11 @@ export interface ProjectMetadata {
 
   /** Devices handling. */
   devices: {
-    /** Friendly name of the device in the editor. */
-    name: string;
+    /**
+     * Friendly name of the device in the editor.
+     * Should show the `type` internal name if undefined.
+     */
+    name?: string;
 
     /** Device to use so we can use the good layout. */
     type: DeviceType;

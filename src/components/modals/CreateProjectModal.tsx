@@ -6,40 +6,27 @@ import Modal from "@/components/Modal";
 import Input from "@/components/Input";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
-import { webMidiDevices } from "@/stores/webmidi";
 
-import { createNewProject } from "@/utils/projects";
+import { generateProject } from "@/utils/projects";
+import { devicesConfiguration, DeviceType } from "@/utils/devices";
 
 const CreateProjectModal: Component = () => {
   const navigate = useNavigate();
-  const usableDevices = () => webMidiDevices().filter((device) => device.enabled && typeof device.type !== "undefined");
+  const [deviceToAdd, setDeviceToAdd] = createSignal<DeviceType>(DeviceType.LAUNCHPAD_MK2);
 
-  const [state, setState] = createStore<{
-    name: string,
-    slug: string,
-    selected_devices: { [raw_name: string]: boolean }
-  }>({
+  const [state, setState] = createStore({
     name: "",
     slug: "",
-    selected_devices: {}
+    // a list of devices we have by default in the project.
+    // we keep the device type to differentiate the devices.
+    devices: [] as Array<DeviceType>
   });
 
   const handleCreation: JSX.EventHandler<HTMLFormElement, Event> = async (event) => {
     event.preventDefault();
+
     if (!state.name || !state.slug) return;
-
-    /** Get the selected devices with full informations. */
-    const devices = webMidiDevices().filter((device) => state.selected_devices[device.raw_name]);
-
-    const response = await createNewProject(state.slug, {
-      importing: false,
-      project: {
-        name: state.name,
-        devices
-      }
-    });
-
-    if (!response.success) return;
+    await generateProject(state.slug, state.name, state.devices);
 
     navigate(`/projects/${state.slug}`);
     resetAndClose();
@@ -50,11 +37,12 @@ const CreateProjectModal: Component = () => {
     setState({
       slug: "",
       name: "",
-      selected_devices: {}
+      devices: []
     });
 
     setModalsStore({ createProjectModal: false });
   };
+
 
   return (
     <Modal open={modalsStore.createProjectModal} onClose={resetAndClose}>
@@ -102,34 +90,50 @@ const CreateProjectModal: Component = () => {
             <h4 class="bg-slate-900 inline-block px-4 py-1 rounded-md text-lg">MIDI set-up</h4>
           </div>
 
-          <Show when={usableDevices().length > 0} fallback={
-            <p class="text-center text-xs p-2 bg-slate-700">
-              No MIDI device to set-up. <br />
-              Check if you've connected a MIDI device.
-            </p>
-          }>
-            <p>
-              Should we automatically set-up these devices in the project for you ?
-            </p>
-
-            <div class="flex flex-wrap justify-evenly my-4 gap-2">
-              <For each={usableDevices()}>
-                {(device) => (
-                  <button
-                    type="button"
-                    class="text-sm h-26 w-26 p-2 border border-fuchsia-500 bg-fuchsia-500 transition-colors cursor-pointer rounded"
-                    onClick={() => setState("selected_devices", device.raw_name, (prev) => !prev)}
-                    classList={{
-                      "bg-opacity-100 hover:bg-opacity-95": state.selected_devices[device.raw_name],
-                      "bg-opacity-20 hover:bg-opacity-40 text-fuchsia-200": !state.selected_devices[device.raw_name]
-                    }}
+          <div class="flex gap-4">
+            <select
+              class={`
+                py-2 px-4 w-full rounded-lg outline-none
+                bg-slate-900 bg-opacity-40
+                transition-colors focus:bg-opacity-100 border border-slate-900
+                hover:bg-opacity-60 focus:border-fuchsia-400
+              `}
+              onChange={(event) => setDeviceToAdd(event.currentTarget.value as DeviceType)}
+            >
+              <For each={Object.values(DeviceType)}>
+                {(type) => (
+                  <option
+                    value={type}
+                    selected={deviceToAdd() === type}
                   >
-                    {device.name}
-                  </button>
+                    {devicesConfiguration[type].name}
+                  </option>
                 )}
               </For>
-            </div>
-          </Show>
+            </select>
+
+            <button
+              type="button"
+              class="px-4 py-2 w-fit text-sm font-medium text-fuchsia-400 bg-fuchsia-800 bg-opacity-40 rounded-md transition-colors hover:bg-opacity-60 focus:bg-opacity-70"
+              onClick={() => setState("devices", (prev) => [...prev, deviceToAdd()])}
+            >
+              Add
+            </button>
+          </div>
+
+          <div class="flex flex-wrap my-4 gap-2">
+            <For each={state.devices}>
+              {(device, index) => (
+                <button
+                  type="button"
+                  class="text-sm truncate py-1.5 px-3 border border-slate-6 bg-slate-9 bg-opacity-20 hover:bg-opacity-40 hover:border-slate-5 transition-colors cursor-pointer rounded"
+                  onClick={() => setState("devices", (prev) => prev.filter((_, current) => current !== index()))}
+                >
+                  {index() + 1}. {device}
+                </button>
+              )}
+            </For>
+          </div>
 
           <div class="flex gap-2 justify-between pt-6">
             <button
