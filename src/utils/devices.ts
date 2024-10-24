@@ -7,14 +7,17 @@ export type DeviceGridPadType = {
 };
 export type DeviceLayoutGridType = number[][];
 
-export type DeviceType =
-  | "launchpad_pro_mk3"
-  | "launchpad_mini_mk3"
-  | "launchpad_pro_mk2"
-  | "launchpad_pro_mk2_cfw" // Old CFW
-  | "launchpad_pro_mk2_cfy" // Latest CFW
-  | "launchpad_mk2"
-  | "launchpad_x";
+export const DeviceType = {
+  LAUNCHPAD_PRO_MK3: "launchpad_pro_mk3",
+  LAUNCHPAD_MINI_MK3: "launchpad_mini_mk3",
+  LAUNCHPAD_PRO_MK2: "launchpad_pro_mk2",
+  LAUNCHPAD_PRO_MK2_CFW: "launchpad_pro_mk2_cfw", // Old CFW
+  LAUNCHPAD_PRO_MK2_CFY: "launchpad_pro_mk2_cfy", // Latest CFW
+  LAUNCHPAD_MK2: "launchpad_mk2",
+  LAUNCHPAD_X: "launchpad_x"
+} as const;
+
+export type DeviceType = typeof DeviceType[keyof typeof DeviceType];
 
 /** Private function to build the `drum_rack` layout. */
 const buildDrumRackLayout = (): DeviceLayoutGridType => {
@@ -170,7 +173,7 @@ export interface DeviceProperty {
 const SYSEX_HEADER_NOVATION = [0x00, 0x20, 0x29];
 
 export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } = {
-  launchpad_pro_mk2: {
+  [DeviceType.LAUNCHPAD_PRO_MK2]: {
     name: "Launchpad Pro MK2",
 
     initialization_sysex: [
@@ -190,7 +193,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     layout_to_use: layouts["programmer"]
   },
 
-  get launchpad_pro_mk2_cfw () {
+  get [DeviceType.LAUNCHPAD_PRO_MK2_CFW] () {
     return {
       ...this.launchpad_pro_mk2,
       name: "Launchpad Pro MK2 (Outdated CFW)",
@@ -207,14 +210,14 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
   },
 
   /** Same as `launchpad_pro_cfw` but updated. */
-  get launchpad_pro_mk2_cfy () {
+  get [DeviceType.LAUNCHPAD_PRO_MK2_CFY] () {
     return {
       ...this.launchpad_pro_mk2_cfw,
       name: "Launchpad Pro MK2 (CFW)"
     };
   },
 
-  launchpad_x: {
+  [DeviceType.LAUNCHPAD_X]: {
     name: "Launchpad X",
 
     initialization_sysex: [
@@ -247,7 +250,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     }
   },
 
-  launchpad_pro_mk3: {
+  [DeviceType.LAUNCHPAD_PRO_MK3]: {
     name: "Launchpad Pro MK3",
 
     initialization_sysex: [
@@ -287,7 +290,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     }
   },
 
-  launchpad_mk2: {
+  [DeviceType.LAUNCHPAD_MK2]: {
     name: "Launchpad MK2",
     initialization_sysex: [],
 
@@ -315,7 +318,7 @@ export const devicesConfiguration: { [Property in DeviceType]: DeviceProperty } 
     }
   },
 
-  get launchpad_mini_mk3 (): DeviceProperty {
+  get [DeviceType.LAUNCHPAD_MINI_MK3] (): DeviceProperty {
     return {
       ...this.launchpad_x,
       name: "Launchpad Mini MK3",
