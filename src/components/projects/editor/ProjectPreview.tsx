@@ -14,7 +14,7 @@ const ProjectPreviewButton: Component<{
   action: () => unknown;
 }> = (props) => (
   <button
-    class="p-1.5 flex text-xl rounded-md shadow-md bg-slate-500 bg-opacity-40 opacity-80 transition hover:(opacity-100 bg-opacity-60)"
+    class="backdrop-blur-lg p-1.5 flex text-xl rounded-md shadow-md bg-slate-500 bg-opacity-40 transition hover:bg-opacity-90"
     onClick={() => props.action()}
     title={props.title}
   >
@@ -249,11 +249,11 @@ const ProjectPreview: Component = () => {
               ${isPreviewCanvasFullscreen() ? "z-10 bg-slate-800" : "-z-99 bg-transparent"}
             `}
             style={{
-              height: project.metadata.canvasHeight + "px",
-              width: project.metadata.canvasWidth + "px",
-              transform: `scale(${project.metadata.defaultCanvasViewPosition.scale})`,
-              left: canvasRealMiddle().left + project.metadata.defaultCanvasViewPosition.x + "px",
-              top: canvasRealMiddle().top + project.metadata.defaultCanvasViewPosition.y + "px"
+              height: project().metadata.canvasHeight + "px",
+              width: project().metadata.canvasWidth + "px",
+              transform: `scale(${project().metadata.defaultCanvasViewPosition.scale})`,
+              left: canvasRealMiddle().left + project().metadata.defaultCanvasViewPosition.x + "px",
+              top: canvasRealMiddle().top + project().metadata.defaultCanvasViewPosition.y + "px"
             }}
           >
             {/** Line for Y */}
@@ -261,7 +261,7 @@ const ProjectPreview: Component = () => {
             {/** Line for X */}
             {/* <span class="absolute bg-slate-700 w-full h-1" style={{ top: project.metadata.canvasHeight / 2 + "px" }}></span> */}
 
-            <For each={project.metadata.devices}>
+            <For each={project().metadata.devices}>
               {(device) => <DeviceInPreview {...device} />}
             </For>
           </div>

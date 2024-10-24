@@ -64,7 +64,7 @@ const ProjectEditorOverlay: Component = () => {
             />
           </div>
 
-          <Select>
+          <Select class="backdrop-blur-lg">
             <option>Select a page</option>
           </Select>
         </div>
