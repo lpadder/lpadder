@@ -7,7 +7,7 @@ import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 
 import { modalsStore, setModalsStore } from "@/stores/modals";
-import { createNewProject } from "@/utils/projects";
+import { importProject } from "@/utils/projects";
 
 const ImportProjectModal: Component = () => {
   const [slug, setSlug] = createSignal("");
@@ -16,26 +16,32 @@ const ImportProjectModal: Component = () => {
     e.preventDefault();
 
     if (!slug() || !modalsStore.importProjectModalData) return;
-    const project_data = unwrap(modalsStore.importProjectModalData);
+    const project = unwrap(modalsStore.importProjectModalData);
 
-    const response = await createNewProject(slug(), { importing: true, project: project_data });
-    if (!response.success) {
-      alert(response.message);
-      return;
+    try {
+      await importProject(slug(), project.data, project.metadata);
+      resetAndClose();
     }
-
-    resetAndClose();
+    catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+      else {
+        console.error(error);
+        alert("an unknown error happenned, please look into the console");
+      }
+    }
   };
 
   /** We reset the values and close modal. */
-  const resetAndClose = () => {
+  const resetAndClose = () => batch(() => {
     setSlug("");
 
     setModalsStore({
       importProjectModalData: null,
       importProjectModal: false
     });
-  };
+  });
 
   return (
     <Modal open={modalsStore.importProjectModal} onClose={resetAndClose}>
