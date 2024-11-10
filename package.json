@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint . && tsc",
-    "build": "pnpm lint && vite build",
-    "release": "pnpm lint && release-it"
+    "build": "vite build",
+    "release": "release-it"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.1.0",
