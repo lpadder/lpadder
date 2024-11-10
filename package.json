@@ -1,7 +1,7 @@
 {
   "name": "lpadder",
   "description": "A web application that lets you play Launchpad covers directly from your web browser.",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
