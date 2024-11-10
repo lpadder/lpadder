@@ -1,4 +1,5 @@
 import type { FlowComponent } from "solid-js";
+import { useLocation } from "@solidjs/router";
 
 const UtilitiesLayout: FlowComponent = (props) => {
   const location = useLocation();
