@@ -1,6 +1,6 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
-    "voorjaar.windicss-intellisense"
+    "antfu.unocss",
   ]
 }
