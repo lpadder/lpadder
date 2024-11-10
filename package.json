@@ -60,7 +60,7 @@
     "github": {
       "draft": false,
       "release": true,
-      "releaseName": "Release v${version}"
+      "releaseName": "v${version}"
     },
     "npm": {
       "publish": false
