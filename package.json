@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "lint": "eslint .",
+    "lint": "eslint . && tsc",
     "build": "pnpm lint && vite build",
     "release": "pnpm lint && release-it"
   },
